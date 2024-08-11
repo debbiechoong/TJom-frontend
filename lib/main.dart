@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jejom/modules/dashboard/dashboard.dart';
+import 'package:jejom/modules/onboarding/onboarding.dart';
 import 'package:jejom/utils/theme.dart';
 import 'package:jejom/utils/typography.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -36,7 +37,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       // theme: brightness == Brightness.light ? theme.light() : theme.dark(),
       theme: theme.dark(),
-      home: const Dashboard(),
+      home: const OnBoarding(),
     );
   }
 }
