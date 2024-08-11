@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "254944558379",
+    "project_id": "jejom-d5d61",
+    "storage_bucket": "jejom-d5d61.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:254944558379:android:ca9e10cd4b5abe753fd96e",
+        "android_client_info": {
+          "package_name": "com.example.jejom"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAqVytjcDW7phcU6pktGJIgx3cra4iZrs0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
