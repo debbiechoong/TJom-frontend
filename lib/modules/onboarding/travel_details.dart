@@ -31,37 +31,36 @@ class _TravelDetailsState extends State<TravelDetails> {
               // size: 24,
             )),
         const SizedBox(height: 16),
-        Text(
-          "Destination",
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge
-              ?.copyWith(fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 16),
-        Text("Seperate your destinations with comma (,)",
-            style: Theme.of(context).textTheme.bodyLarge),
-        const SizedBox(height: 16),
-        TextField(
-          keyboardType: TextInputType.multiline,
-          maxLines: null,
-          decoration: InputDecoration(
-            hintText: "Rome, Jeju, Tokyo, etc.",
-            prefixIcon: const Icon(Icons.location_on_rounded),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-          ),
-        ),
-        const SizedBox(height: 40),
-        Text(
-          "Duration",
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge
-              ?.copyWith(fontWeight: FontWeight.bold),
-        ),
+        // Text(
+        //   "Destination",
+        //   style: Theme.of(context)
+        //       .textTheme
+        //       .titleLarge
+        //       ?.copyWith(fontWeight: FontWeight.bold),
+        // ),
         // const SizedBox(height: 16),
+        // Text("Seperate your destinations with comma (,)",
+        //     style: Theme.of(context).textTheme.bodyLarge),
+        // const SizedBox(height: 16),
+        // TextField(
+        //   keyboardType: TextInputType.multiline,
+        //   maxLines: null,
+        //   decoration: InputDecoration(
+        //     hintText: "Rome, Jeju, Tokyo, etc.",
+        //     prefixIcon: const Icon(Icons.location_on_rounded),
+        //     border: OutlineInputBorder(
+        //       borderRadius: BorderRadius.circular(16),
+        //     ),
+        //   ),
+        // ),
+        // const SizedBox(height: 40),
+        // Text(
+        //   "Duration",
+        //   style: Theme.of(context)
+        //       .textTheme
+        //       .titleLarge
+        //       ?.copyWith(fontWeight: FontWeight.bold),
+        // ),
         Row(
           children: [
             Text(

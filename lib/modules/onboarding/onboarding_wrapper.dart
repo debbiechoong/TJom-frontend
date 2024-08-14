@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jejom/modules/onboarding/flights.dart';
+import 'package:jejom/modules/onboarding/itinerary.dart';
 import 'package:jejom/modules/onboarding/landing.dart';
 import 'package:jejom/modules/onboarding/prompt.dart';
 import 'package:jejom/modules/onboarding/travel_details.dart';
@@ -46,6 +47,7 @@ class _OnBoardingState extends State<OnBoarding> {
                 Prompt(),
                 TravelDetails(),
                 Flights(),
+                Itinerary(),
               ],
             )
           ],

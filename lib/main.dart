@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jejom/modules/dashboard/dashboard.dart';
 import 'package:jejom/modules/onboarding/onboarding_wrapper.dart';
 import 'package:jejom/providers/onboarding_provider.dart';
+import 'package:jejom/providers/trip_provider.dart';
 import 'package:jejom/utils/theme.dart';
 import 'package:jejom/utils/typography.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -37,6 +38,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => OnboardingProvider()),
+        ChangeNotifierProvider(create: (context) => TripProvider()),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',

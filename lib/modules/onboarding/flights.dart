@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:intl/intl.dart';
+import 'package:jejom/models/flight.dart';
+import 'package:jejom/providers/onboarding_provider.dart';
+import 'package:jejom/utils/constants/curve.dart';
 import 'package:jejom/utils/glass_container.dart';
+import 'package:provider/provider.dart';
 
 class Flights extends StatefulWidget {
   const Flights({super.key});
@@ -11,48 +17,213 @@ class Flights extends StatefulWidget {
 class _FlightsState extends State<Flights> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 80),
-        IconButton(
-            visualDensity: VisualDensity.adaptivePlatformDensity,
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: const Icon(
-              Icons.arrow_back,
-              // size: 24,
-            )),
-        const SizedBox(height: 16),
-        Text(
-          "Flights",
-          style: Theme.of(context)
-              .textTheme
-              .headlineLarge
-              ?.copyWith(fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 16),
-        Text("Kuala Lumpur to Jeju",
-            style: Theme.of(context).textTheme.bodyLarge),
-        const SizedBox(height: 16),
-        GlassContainer(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("Kuala Lumpur to Jeju",
-                style: Theme.of(context).textTheme.bodyLarge),
-            Text("Departure: 12:00 PM - 2:00 PM",
-                style: Theme.of(context).textTheme.bodyLarge),
-            Text("Arrival: 3:00 PM",
-                style: Theme.of(context).textTheme.bodyLarge),
-            Text("Duration: 3 hours",
-                style: Theme.of(context).textTheme.bodyLarge),
-            Text("Price: RM 500", style: Theme.of(context).textTheme.bodyLarge),
-          ],
-        )),
-        const Spacer(),
-      ],
+    final onboardingProvider = Provider.of<OnboardingProvider>(context);
+
+    List<Flight> flightsDummy = [
+      Flight(
+        id: 1,
+        startTms: DateTime.now(),
+        endTms: DateTime.now().add(Duration(hours: 3)),
+        origin: 'Kuala Lumpur',
+        destinations: ['Jeju'],
+        price: 500,
+        flightCarrier: 'ABC Airlines',
+      ),
+      Flight(
+        id: 2,
+        startTms: DateTime.now().add(Duration(days: 1)),
+        endTms: DateTime.now().add(Duration(days: 1, hours: 3)),
+        origin: 'Jeju',
+        destinations: ['Kuala Lumpur'],
+        price: 400,
+        flightCarrier: 'XYZ Airlines',
+      ),
+      Flight(
+        id: 3,
+        startTms: DateTime.now().add(Duration(days: 2)),
+        endTms: DateTime.now().add(Duration(days: 2, hours: 3)),
+        origin: 'Kuala Lumpur',
+        destinations: ['Jeju'],
+        price: 600,
+        flightCarrier: 'DEF Airlines',
+      ),
+    ];
+
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 80),
+          IconButton(
+              visualDensity: VisualDensity.adaptivePlatformDensity,
+              onPressed: () {
+                onboardingProvider.previousPage();
+              },
+              icon: const Icon(
+                Icons.arrow_back,
+                // size: 24,
+              )),
+          const SizedBox(height: 16),
+          Text(
+            "Flights",
+            style: Theme.of(context)
+                .textTheme
+                .headlineLarge
+                ?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("Kuala Lumpur",
+                  style: Theme.of(context).textTheme.bodyLarge),
+              Transform.rotate(
+                angle: 1.5708,
+                child: const Icon(Icons.flight),
+              ),
+              Text("Jeju", style: Theme.of(context).textTheme.bodyLarge),
+            ],
+          ),
+          const SizedBox(height: 32),
+          AnimationLimiter(
+            child: MediaQuery.removePadding(
+              context: context,
+              removeTop: true,
+              child: ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: flightsDummy.length,
+                itemBuilder: (context, index) {
+                  final flight = flightsDummy[index];
+                  return AnimationConfiguration.staggeredList(
+                    position: index,
+                    duration: const Duration(milliseconds: 375),
+                    child: SlideAnimation(
+                      curve: EMPHASIZED_DECELERATE,
+                      child: FadeInAnimation(
+                        curve: EMPHASIZED_DECELERATE,
+                        child: GlassContainer(
+                          padding: 0,
+                          marginBottom: 16,
+                          width: double.infinity,
+                          child: flightCard(
+                              flight: flight,
+                              isSelected: onboardingProvider.selectedFlights
+                                  .any((element) => element.id == flight.id)),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+          const SizedBox(height: 32),
+          Row(
+            children: [
+              const Spacer(),
+              FilledButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(
+                      Theme.of(context).colorScheme.primaryContainer),
+                  visualDensity: VisualDensity.adaptivePlatformDensity,
+                  padding: MaterialStateProperty.all(
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  ),
+                ),
+                onPressed: () {
+                  onboardingProvider.nextPage();
+                },
+                child: Text("Next",
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color:
+                              Theme.of(context).colorScheme.onPrimaryContainer,
+                        )),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget flightCard({required Flight flight, required bool isSelected}) {
+    final onboardingProvider = Provider.of<OnboardingProvider>(context);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: isSelected
+            ? Theme.of(context).colorScheme.primaryContainer.withOpacity(0.1)
+            : null,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '${DateFormat('kk:mm a').format(flight.startTms.toLocal())} - ${DateFormat('kk:mm a').format(flight.endTms.toLocal())}',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              Text(
+                '${flight.endTms.toLocal().difference(flight.startTms.toLocal()).inHours}h  ${flight.flightCarrier}',
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onBackground
+                          .withOpacity(0.8),
+                    ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                '\$${flight.price}',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            ],
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              InkWell(
+                onTap: () {
+                  onboardingProvider.toggleSelectedFlight(flight);
+                },
+                child: Container(
+                    width: 64,
+                    height: 64,
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      border: isSelected
+                          ? null
+                          : Border.all(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .primaryContainer,
+                              width: 2,
+                            ),
+                      color: isSelected
+                          ? Theme.of(context).colorScheme.primaryContainer
+                          : null,
+                      borderRadius: BorderRadius.circular(32),
+                    ),
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 300),
+                      child: isSelected
+                          ? const Icon(Icons.check)
+                          : Transform.rotate(
+                              angle: 1.5708 / 2,
+                              child: const Icon(Icons.arrow_upward_rounded),
+                            ),
+                    )),
+              )
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
