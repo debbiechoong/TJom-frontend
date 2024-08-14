@@ -22,7 +22,7 @@ class _OnBoardingState extends State<OnBoarding> {
 
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Stack(
           children: [
             Opacity(

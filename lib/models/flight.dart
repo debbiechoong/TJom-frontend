@@ -1,32 +1,31 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Flight {
-  final int id;
-  final DateTime startTms;
-  final DateTime endTms;
+  final String id;
+  final DateTime departureTms;
+  final DateTime arrivalTms;
   final String origin;
-  final List<String> destinations; // Modified field
+  final String destination;
   final double price;
   final String flightCarrier;
 
   Flight({
     required this.id,
-    required this.startTms,
-    required this.endTms,
+    required this.departureTms,
+    required this.arrivalTms,
     required this.origin,
-    required this.destinations,
+    required this.destination,
     required this.price,
     required this.flightCarrier,
   });
 
   factory Flight.fromJson(Map<String, dynamic> json) {
     return Flight(
-      id: json['id'] as int,
-      startTms: (json['start_tms'] as Timestamp).toDate(),
-      endTms: (json['end_tms'] as Timestamp).toDate(),
+      id: json['id'],
+      departureTms: (json['start_tms'] as Timestamp).toDate(),
+      arrivalTms: (json['end_tms'] as Timestamp).toDate(),
       origin: json['origin'] as String,
-      destinations:
-          List<String>.from(json['destinations'] as List), // Modified line
+      destination: json['destinations'] as String,
       price: (json['price'] as num).toDouble(),
       flightCarrier: json['flight_carrier'] as String,
     );
@@ -35,30 +34,30 @@ class Flight {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'start_tms': Timestamp.fromDate(startTms),
-      'end_tms': Timestamp.fromDate(endTms),
+      'start_tms': Timestamp.fromDate(departureTms),
+      'end_tms': Timestamp.fromDate(arrivalTms),
       'origin': origin,
-      'destinations': destinations,
+      'destination': destination,
       'price': price,
       'flight_carrier': flightCarrier,
     };
   }
 
   Flight copyWith({
-    int? id,
+    String? id,
     DateTime? startTms,
     DateTime? endTms,
     String? origin,
-    List<String>? destinations,
+    String? destination,
     double? price,
     String? flightCarrier,
   }) {
     return Flight(
       id: id ?? this.id,
-      startTms: startTms ?? this.startTms,
-      endTms: endTms ?? this.endTms,
+      departureTms: startTms ?? this.departureTms,
+      arrivalTms: endTms ?? this.arrivalTms,
       origin: origin ?? this.origin,
-      destinations: destinations ?? this.destinations,
+      destination: destination ?? this.destination,
       price: price ?? this.price,
       flightCarrier: flightCarrier ?? this.flightCarrier,
     );
@@ -66,6 +65,6 @@ class Flight {
 
   @override
   String toString() {
-    return 'Flight{id: $id, startTms: $startTms, endTms: $endTms, origin: $origin, destinations: $destinations, price: $price, flightCarrier: $flightCarrier}';
+    return 'Flight{id: $id, startTms: $departureTms, endTms: $arrivalTms, origin: $origin, destinations: $destination, price: $price, flightCarrier: $flightCarrier}';
   }
 }

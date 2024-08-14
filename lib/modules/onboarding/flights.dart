@@ -21,29 +21,29 @@ class _FlightsState extends State<Flights> {
 
     List<Flight> flightsDummy = [
       Flight(
-        id: 1,
-        startTms: DateTime.now(),
-        endTms: DateTime.now().add(Duration(hours: 3)),
+        id: '1',
+        departureTms: DateTime.now(),
+        arrivalTms: DateTime.now().add(Duration(hours: 3)),
         origin: 'Kuala Lumpur',
-        destinations: ['Jeju'],
+        destination: 'Jeju',
         price: 500,
         flightCarrier: 'ABC Airlines',
       ),
       Flight(
-        id: 2,
-        startTms: DateTime.now().add(Duration(days: 1)),
-        endTms: DateTime.now().add(Duration(days: 1, hours: 3)),
-        origin: 'Jeju',
-        destinations: ['Kuala Lumpur'],
+        id: '2',
+        departureTms: DateTime.now().add(Duration(days: 1)),
+        arrivalTms: DateTime.now().add(Duration(days: 1, hours: 3)),
+        origin: 'Kuala Lumpur',
+        destination: 'Jeju',
         price: 400,
         flightCarrier: 'XYZ Airlines',
       ),
       Flight(
-        id: 3,
-        startTms: DateTime.now().add(Duration(days: 2)),
-        endTms: DateTime.now().add(Duration(days: 2, hours: 3)),
+        id: '3',
+        departureTms: DateTime.now().add(Duration(days: 2)),
+        arrivalTms: DateTime.now().add(Duration(days: 2, hours: 3)),
         origin: 'Kuala Lumpur',
-        destinations: ['Jeju'],
+        destination: 'Jeju',
         price: 600,
         flightCarrier: 'DEF Airlines',
       ),
@@ -165,11 +165,11 @@ class _FlightsState extends State<Flights> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '${DateFormat('kk:mm a').format(flight.startTms.toLocal())} - ${DateFormat('kk:mm a').format(flight.endTms.toLocal())}',
+                '${DateFormat('kk:mm a').format(flight.departureTms.toLocal())} - ${DateFormat('kk:mm a').format(flight.arrivalTms.toLocal())}',
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               Text(
-                '${flight.endTms.toLocal().difference(flight.startTms.toLocal()).inHours}h  ${flight.flightCarrier}',
+                '${flight.arrivalTms.toLocal().difference(flight.departureTms.toLocal()).inHours}h  ${flight.flightCarrier}',
                 style: Theme.of(context).textTheme.labelLarge?.copyWith(
                       color: Theme.of(context)
                           .colorScheme

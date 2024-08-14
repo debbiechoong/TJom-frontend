@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jejom/providers/onboarding_provider.dart';
+import 'package:jejom/utils/loading_screen.dart';
 import 'package:provider/provider.dart';
 
 enum Interest { Adventure, Relax, Culture, Food, Shopping, Nature }
@@ -12,59 +13,112 @@ class TravelDetails extends StatefulWidget {
 }
 
 class _TravelDetailsState extends State<TravelDetails> {
-  Set<Interest> selectedInterests = {};
-  DateTime startDate = DateTime.now();
-  DateTime endDate = DateTime.now();
-
   @override
   Widget build(BuildContext context) {
-    final onBoardingProvider = Provider.of<OnboardingProvider>(context);
+    final OnboardingProvider onBoardingProvider =
+        Provider.of<OnboardingProvider>(context);
 
-    return SingleChildScrollView(
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const SizedBox(height: 80),
-        IconButton(
-            visualDensity: VisualDensity.adaptivePlatformDensity,
-            onPressed: () => onBoardingProvider.previousPage(),
-            icon: const Icon(
-              Icons.arrow_back,
-              // size: 24,
-            )),
+    return onBoardingProvider.isLoading
+        ? const LoadingWidget()
+        : SingleChildScrollView(
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const SizedBox(height: 80),
+              IconButton(
+                  visualDensity: VisualDensity.adaptivePlatformDensity,
+                  onPressed: () => onBoardingProvider.previousPage(),
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    // size: 24,
+                  )),
+              const SizedBox(height: 16),
+              onBoardingProvider.isDestination
+                  ? _buildDestination(onBoardingProvider)
+                  : const SizedBox(),
+              onBoardingProvider.isDuration
+                  ? _buildDuration(onBoardingProvider)
+                  : const SizedBox(),
+              onBoardingProvider.isBudget
+                  ? _buildBudget(onBoardingProvider)
+                  : const SizedBox(),
+              onBoardingProvider.isInterest
+                  ? _buildInterest(onBoardingProvider)
+                  : const SizedBox(),
+              Row(
+                children: [
+                  const Spacer(),
+                  FilledButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(
+                          Theme.of(context).colorScheme.primaryContainer),
+                      visualDensity: VisualDensity.adaptivePlatformDensity,
+                      padding: MaterialStateProperty.all(
+                        const EdgeInsets.symmetric(
+                            horizontal: 32, vertical: 16),
+                      ),
+                    ),
+                    onPressed: () => onBoardingProvider.sendTravelDetails(),
+                    child: Text("I'm in!",
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onPrimaryContainer,
+                            )),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+            ]),
+          );
+  }
+
+  Widget _buildDestination(OnboardingProvider onBoardingProvider) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Destination",
+          style: Theme.of(context)
+              .textTheme
+              .titleLarge
+              ?.copyWith(fontWeight: FontWeight.bold),
+        ),
         const SizedBox(height: 16),
-        // Text(
-        //   "Destination",
-        //   style: Theme.of(context)
-        //       .textTheme
-        //       .titleLarge
-        //       ?.copyWith(fontWeight: FontWeight.bold),
-        // ),
-        // const SizedBox(height: 16),
-        // Text("Seperate your destinations with comma (,)",
-        //     style: Theme.of(context).textTheme.bodyLarge),
-        // const SizedBox(height: 16),
-        // TextField(
-        //   keyboardType: TextInputType.multiline,
-        //   maxLines: null,
-        //   decoration: InputDecoration(
-        //     hintText: "Rome, Jeju, Tokyo, etc.",
-        //     prefixIcon: const Icon(Icons.location_on_rounded),
-        //     border: OutlineInputBorder(
-        //       borderRadius: BorderRadius.circular(16),
-        //     ),
-        //   ),
-        // ),
-        // const SizedBox(height: 40),
-        // Text(
-        //   "Duration",
-        //   style: Theme.of(context)
-        //       .textTheme
-        //       .titleLarge
-        //       ?.copyWith(fontWeight: FontWeight.bold),
-        // ),
+        Text("Seperate your destinations with comma (,)",
+            style: Theme.of(context).textTheme.bodyLarge),
+        const SizedBox(height: 16),
+        TextField(
+          keyboardType: TextInputType.multiline,
+          maxLines: null,
+          decoration: InputDecoration(
+            hintText: "Rome, Jeju, Tokyo, etc.",
+            prefixIcon: const Icon(Icons.location_on_rounded),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+          ),
+          onChanged: (value) => onBoardingProvider.updateDestination(value),
+        ),
+        const SizedBox(height: 40),
+      ],
+    );
+  }
+
+  Widget _buildDuration(OnboardingProvider onBoardingProvider) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Duration",
+          style: Theme.of(context)
+              .textTheme
+              .titleLarge
+              ?.copyWith(fontWeight: FontWeight.bold),
+        ),
         Row(
           children: [
             Text(
-                "${startDate.toIso8601String().substring(0, 10)} - ${endDate.toIso8601String().substring(0, 10)}"),
+                "${onBoardingProvider.startDate.toIso8601String().substring(0, 10)} - ${onBoardingProvider.endDate.toIso8601String().substring(0, 10)}"),
             const Spacer(),
             IconButton(
               onPressed: () async {
@@ -75,8 +129,8 @@ class _TravelDetailsState extends State<TravelDetails> {
                 );
                 if (picked != null) {
                   setState(() {
-                    startDate = picked.start;
-                    endDate = picked.end;
+                    onBoardingProvider.startDate = picked.start;
+                    onBoardingProvider.endDate = picked.end;
                     //below have methods that runs once a date range is picked
                   });
                 }
@@ -86,6 +140,14 @@ class _TravelDetailsState extends State<TravelDetails> {
           ],
         ),
         const SizedBox(height: 40),
+      ],
+    );
+  }
+
+  Widget _buildBudget(OnboardingProvider onBoardingProvider) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Text(
           "Budget",
           style: Theme.of(context)
@@ -96,7 +158,6 @@ class _TravelDetailsState extends State<TravelDetails> {
         const SizedBox(height: 16),
         TextField(
           keyboardType: TextInputType.multiline,
-          maxLines: null,
           decoration: InputDecoration(
             hintText: "xxx + any currency!",
             prefixIcon: const Icon(Icons.currency_pound_rounded),
@@ -104,8 +165,18 @@ class _TravelDetailsState extends State<TravelDetails> {
               borderRadius: BorderRadius.circular(16),
             ),
           ),
+          onChanged: (value) => onBoardingProvider.updateBudget(value),
+          
         ),
         const SizedBox(height: 40),
+      ],
+    );
+  }
+
+  Widget _buildInterest(OnboardingProvider onBoardingProvider) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Text(
           "Interest",
           style: Theme.of(context)
@@ -151,13 +222,9 @@ class _TravelDetailsState extends State<TravelDetails> {
               avatar: Icon(icon),
               label: Text(label),
               showCheckmark: false,
-              selected: selectedInterests.contains(interest),
+              selected: onBoardingProvider.selectedInterests.contains(interest),
               onSelected: (selected) {
-                setState(() {
-                  selected
-                      ? selectedInterests.add(interest)
-                      : selectedInterests.remove(interest);
-                });
+                onBoardingProvider.toggleInterest(interest);
               },
               // selectedColor: Colors.lightGreenAccent,
               // backgroundColor: Colors.grey.shade200,
@@ -165,28 +232,7 @@ class _TravelDetailsState extends State<TravelDetails> {
           }).toList(),
         ),
         const SizedBox(height: 40),
-        Row(
-          children: [
-            const Spacer(),
-            FilledButton(
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(
-                    Theme.of(context).colorScheme.primaryContainer),
-                visualDensity: VisualDensity.adaptivePlatformDensity,
-                padding: MaterialStateProperty.all(
-                  const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                ),
-              ),
-              onPressed: () => onBoardingProvider.nextPage(),
-              child: Text("I'm in!",
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Theme.of(context).colorScheme.onPrimaryContainer,
-                      )),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-      ]),
+      ],
     );
   }
 }
