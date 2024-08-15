@@ -28,13 +28,13 @@ class TripProvider extends ChangeNotifier {
           id: "1",
           name: "Eiffel Tower",
           description: "Iconic landmark in Paris",
-          startDate: DateTime.now(),
-          endDate: DateTime.now().add(const Duration(days: 5)),
+          startDate: DateTime.now().add(const Duration(days: 5)),
+          endDate: DateTime.now().add(const Duration(days: 5, hours: 1)),
           price: 0,
           imageUrl: [
-            "https://example.com/eiffel_tower_1.jpg",
-            "https://example.com/eiffel_tower_2.jpg",
-            "https://example.com/eiffel_tower_3.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Tour_Eiffel_Wikimedia_Commons_%28cropped%29.jpg/800px-Tour_Eiffel_Wikimedia_Commons_%28cropped%29.jpg",
+            // "https://assets.editorial.aetnd.com/uploads/2011/06/gettyimages-142198198.jpg?width=1920&height=960&crop=1920%3A960%2Csmart&quality=75&auto=webp",
+            // "https://cdn.mos.cms.futurecdn.net/z3rNHS9Y6PV6vbhH8w83Yn-650-80.jpg.webp",
           ],
           address:
               "Champ de Mars, 5 Avenue Anatole France, 75007 Paris, France",
@@ -45,13 +45,11 @@ class TripProvider extends ChangeNotifier {
           id: "2",
           name: "Louvre Museum",
           description: "World's largest art museum and historic monument",
-          startDate: DateTime.now(),
-          endDate: DateTime.now().add(const Duration(days: 5)),
+          startDate: DateTime.now().add(const Duration(days: 5, hours: 2)),
+          endDate: DateTime.now().add(const Duration(days: 5, hours: 3)),
           price: 0,
           imageUrl: [
-            "https://example.com/louvre_museum_1.jpg",
-            "https://example.com/louvre_museum_2.jpg",
-            "https://example.com/louvre_museum_3.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Louvre_Museum_Wikimedia_Commons.jpg/800px-Louvre_Museum_Wikimedia_Commons.jpg",
           ],
           address: "Rue de Rivoli, 75001 Paris, France",
           lat: 48.8606,
@@ -61,13 +59,11 @@ class TripProvider extends ChangeNotifier {
           id: "3",
           name: "Notre-Dame Cathedral",
           description: "Famous Gothic cathedral in Paris",
-          startDate: DateTime.now(),
-          endDate: DateTime.now().add(const Duration(days: 5)),
+          startDate: DateTime.now().add(const Duration(days: 6)),
+          endDate: DateTime.now().add(const Duration(days: 6, hours: 1)),
           price: 0,
           imageUrl: [
-            "https://example.com/notre_dame_cathedral_1.jpg",
-            "https://example.com/notre_dame_cathedral_2.jpg",
-            "https://example.com/notre_dame_cathedral_3.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Notre-Dame_de_Paris%2C_4_October_2017.jpg/1920px-Notre-Dame_de_Paris%2C_4_October_2017.jpg",
           ],
           address:
               "6 Parvis Notre-Dame - Pl. Jean-Paul II, 75004 Paris, France",
@@ -132,6 +128,9 @@ class TripProvider extends ChangeNotifier {
     ),
   ];
 
+  String newPrompt = "";
+
+
   void addTrip(Trip trip) {
     trips.add(trip);
     notifyListeners();
@@ -154,5 +153,10 @@ class TripProvider extends ChangeNotifier {
 
   List<Trip> getTrips() {
     return trips;
+  }
+
+  void sendNewPrompt(String value, String tripId) {
+    newPrompt = value;
+    notifyListeners();
   }
 }
