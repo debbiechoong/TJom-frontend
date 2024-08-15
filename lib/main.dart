@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         // theme: brightness == Brightness.light ? theme.light() : theme.dark(),
         theme: theme.dark(),
-        home: const OnBoarding(),
+        home: const Dashboard(),
       ),
     );
   }
