@@ -17,28 +17,61 @@ class _MapPageState extends State<MapPage> {
   static const LatLng _jeju = LatLng(33.489011, 126.498302);
   LatLng? _currentLocation;
 
-  // Store all markers including those from the backend
   final Set<Marker> _markers = {};
 
   @override
   void initState() {
     super.initState();
     getLocation();
-    fetchBackendLocations(); // Fetch locations from the backend
+    fetchLocations();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _currentLocation == null
-          ? const Center(
-              child: Text("Loading..."),
-            )
-          : GoogleMap(
+      extendBodyBehindAppBar:
+          true, // This will make the Scaffold content extend behind the AppBar
+      backgroundColor: Colors.transparent, // Transparent background
+      body: SafeArea(
+        child: Stack(
+          // Use Stack to layer the back button over the map
+          children: [
+            GoogleMap(
               initialCameraPosition: CameraPosition(target: _jeju, zoom: 13),
               markers: _markers,
               onTap: _handleTap, // Add onTap functionality
             ),
+            Positioned(
+              // Position the back button on top of the map
+              top: 16,
+              left: 16,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white, // White background for the circle
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 6,
+                    ),
+                  ],
+                ),
+                child: IconButton(
+                  visualDensity: VisualDensity.adaptivePlatformDensity,
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.black, // Black icon for contrast
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -73,7 +106,7 @@ class _MapPageState extends State<MapPage> {
     });
   }
 
-  Future<void> fetchBackendLocations() async {
+  Future<void> fetchLocations() async {
     // Soli hard code for now
     String response = '''
     [
@@ -83,7 +116,6 @@ class _MapPageState extends State<MapPage> {
     ]
     ''';
 
-    // Parse the JSON response
     List<dynamic> locations = jsonDecode(response);
 
     Set<Marker> fetchedMarkers = locations.map((location) {
@@ -134,7 +166,7 @@ class _MapPageState extends State<MapPage> {
               description = value;
             },
             decoration: const InputDecoration(
-              hintText: "Enter a short description",
+              hintText: "Tell us about the location!",
             ),
           ),
           actions: <Widget>[
