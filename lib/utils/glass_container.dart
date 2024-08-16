@@ -24,7 +24,7 @@ class GlassContainer extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16.0),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
           child: Container(
             width: width,
             height: height,
@@ -34,15 +34,15 @@ class GlassContainer extends StatelessWidget {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomLeft,
                 colors: [
-                  Color.fromARGB(49, 217, 217, 217),
-                  Color.fromARGB(49, 115, 115, 115),
+                  Color.fromARGB(100, 92, 92, 92),
+                  Color.fromARGB(80, 0, 0, 0),
                 ],
               ),
               borderRadius: BorderRadius.circular(16.0),
-              // border: Border.all(
-              //   width: 2,
-              //   color: Colors.white.withOpacity(0.3),
-              // ),
+              border: Border.all(
+                width: 2,
+                color: Colors.white.withOpacity(0.3),
+              ),
             ),
             child: child,
           ),

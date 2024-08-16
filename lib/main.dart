@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final brightness = View.of(context).platformDispatcher.platformBrightness;
-
+    
     // Retrieves the default theme for the platform
     // TextTheme textTheme = Theme.of(context).textTheme;
 

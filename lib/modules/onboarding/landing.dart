@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_swipe_button/flutter_swipe_button.dart';
 import 'package:jejom/providers/onboarding_provider.dart';
 import 'package:jejom/utils/glass_container.dart';
@@ -30,10 +31,41 @@ class _LandingState extends State<Landing> {
         Text("New Trip", style: Theme.of(context).textTheme.headlineLarge),
         const SizedBox(height: 16),
         Text(
-            "Type in your destinations, budget, duration, interest and number of traveller to get started!",
+            "Let's plan your next trip with AI Powered Jejom. Where would you like to go?",
             style: Theme.of(context).textTheme.bodyLarge),
         const SizedBox(height: 32),
-        const GlassContainer(child: Text("Hello")),
+        GlassContainer(
+            padding: 0,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(16.0),
+                    bottomLeft: Radius.circular(16.0),
+                  ),
+                  child: Image.network(
+                      "https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcTzE4_RYUCn-k0sb_wiO3sRCIvnxOq3b0U8pCgiWeMz5qxYyDbRxFmy0wmv-wE6fLXuB6rC4B1-j7u27attTsFDkIsmCSLs6Bb_PUl5L1w",
+                      width: 160),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("Destination of the day!",
+                            style: Theme.of(context).textTheme.labelLarge),
+                        const SizedBox(height: 8),
+                        Text("Jeju Island",
+                            style: Theme.of(context).textTheme.titleLarge),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            )),
         const Spacer(),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 80.0),
@@ -72,7 +104,7 @@ class _LandingState extends State<Landing> {
                     .secondaryContainer
                     .withOpacity(0),
                 child: Text(
-                  "            Explore",
+                  "            > >",
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: Theme.of(context).colorScheme.onBackground,
                       ),
