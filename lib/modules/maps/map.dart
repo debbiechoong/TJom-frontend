@@ -1,8 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:jejom/models/interest_destination.dart';
+import 'package:jejom/modules/maps/destination_sheet.dart';
+import 'package:jejom/providers/interest_provider.dart';
 import 'package:location/location.dart';
 import 'dart:convert';
+
+import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -14,88 +20,135 @@ class MapPage extends StatefulWidget {
 class _MapPageState extends State<MapPage> {
   final Location _locationController = Location();
 
-  static const LatLng _jeju = LatLng(33.489011, 126.498302);
+  final LatLng _jeju = const LatLng(33.489011, 126.498302);
   LatLng? _currentLocation;
 
   final Set<Marker> _markers = {};
 
+  //bottom sheet
+  final DraggableScrollableController _destinationSheetController =
+      DraggableScrollableController();
+  final GlobalKey _destinationSheetKey = GlobalKey();
+  bool isSheetShow = false;
+  InterestDestination? pickedDestination;
+
   @override
   void initState() {
     super.initState();
-    getLocation();
+    // getLocation();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     fetchLocations();
   }
 
   @override
+  void dispose() {
+    _locationController.onLocationChanged
+        .listen((_) {})
+        .cancel(); // Cancel the subscription
+    super.dispose();
+  }
+
+  void openSheet() {
+    if (!isSheetShow) {
+      _destinationSheetController.animateTo(0.5,
+          duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+    }
+    isSheetShow = true;
+  }
+
+  void closeSheet() {
+    if (isSheetShow) {
+      _destinationSheetController.animateTo(0.0,
+          duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+    }
+    isSheetShow = false;
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final interestProvider = Provider.of<InterestProvider>(context);
+
     return Scaffold(
       extendBodyBehindAppBar:
           true, // This will make the Scaffold content extend behind the AppBar
       backgroundColor: Colors.transparent, // Transparent background
-      body: SafeArea(
-        child: Stack(
-          // Use Stack to layer the back button over the map
-          children: [
-            GoogleMap(
-              initialCameraPosition: CameraPosition(target: _jeju, zoom: 13),
-              markers: _markers,
-              onTap: _handleTap, // Add onTap functionality
-            ),
-            Positioned(
-              // Position the back button on top of the map
-              top: 16,
-              left: 16,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white, // White background for the circle
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 6,
-                    ),
-                  ],
-                ),
-                child: IconButton(
-                  visualDensity: VisualDensity.adaptivePlatformDensity,
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: const Icon(
-                    Icons.arrow_back,
-                    color: Colors.black, // Black icon for contrast
+      body: Stack(
+        children: [
+          GoogleMap(
+            initialCameraPosition: CameraPosition(target: _jeju, zoom: 13),
+            markers: _markers,
+            onTap: _handleTap,
+            
+          ),
+          DestinationBottomSheet(
+            destinationSheetKey: _destinationSheetKey,
+            destinationSheetController: _destinationSheetController,
+            openSheet: openSheet,
+            closeSheet: closeSheet,
+            pickedDestination: pickedDestination,
+          ),
+          Positioned(
+            top: 80,
+            left: 16,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.onBackground,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.5),
+                    spreadRadius: 2,
+                    blurRadius: 6,
                   ),
+                ],
+              ),
+              child: IconButton(
+                visualDensity: VisualDensity.adaptivePlatformDensity,
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: const Icon(
+                  Icons.arrow_back,
+                  color: Colors.black, // Black icon for contrast
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  Future<void> getLocation() async {
-    bool _serviceEnabled;
-    PermissionStatus _permission;
+  
 
-    _serviceEnabled = await _locationController.serviceEnabled();
-    if (_serviceEnabled) {
-      _serviceEnabled = await _locationController.requestService();
-    } else {
-      return;
+  Future<void> getLocation() async {
+    bool serviceEnabled;
+    PermissionStatus permission;
+
+    serviceEnabled = await _locationController.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await _locationController.requestService();
+      if (!serviceEnabled) {
+        return;
+      }
     }
 
-    _permission = await _locationController.hasPermission();
-    if (_permission == PermissionStatus.denied) {
-      _permission = await _locationController.requestPermission();
-      if (_permission != PermissionStatus.granted) {
+    permission = await _locationController.hasPermission();
+    if (permission == PermissionStatus.denied) {
+      permission = await _locationController.requestPermission();
+      if (permission != PermissionStatus.granted) {
         return;
       }
     }
 
     _locationController.onLocationChanged
         .listen((LocationData currentLocation) {
+      if (!mounted) return; // Check if widget is still mounted
+
       if (currentLocation.latitude != null &&
           currentLocation.longitude != null) {
         setState(() {
@@ -106,26 +159,22 @@ class _MapPageState extends State<MapPage> {
     });
   }
 
-  Future<void> fetchLocations() async {
-    // Soli hard code for now
-    String response = '''
-    [
-      {"latitude": 33.499011, "longitude": 126.498302, "description": "GM"},
-      {"latitude": 33.501010, "longitude": 126.491020, "description": "YX"},
-      {"latitude": 33.493000, "longitude": 126.489001, "description": "Debbie"}
-    ]
-    ''';
+  void fetchLocations() async {
+    final interestProvider = Provider.of<InterestProvider>(context);
+    print("Where are you ${interestProvider.getInterests()}");
 
-    List<dynamic> locations = jsonDecode(response);
-
-    Set<Marker> fetchedMarkers = locations.map((location) {
+    Set<Marker> fetchedMarkers = interestProvider.getInterests().map((des) {
       return Marker(
-        markerId: MarkerId(location['description']),
-        position: LatLng(location['latitude'], location['longitude']),
-        infoWindow: InfoWindow(
-          title: location['description'],
-        ),
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+        markerId: MarkerId(des.id),
+        position: LatLng(des.lat, des.long),
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+        onTap: () {
+          
+          setState(() {
+            pickedDestination = des;
+          });
+          openSheet();
+        },
       );
     }).toSet();
 
