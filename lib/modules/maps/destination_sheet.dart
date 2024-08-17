@@ -86,12 +86,14 @@ class _DestinationBottomSheetState extends State<DestinationBottomSheet> {
                 widget.pickedDestination?.name ?? "",
                 style: Theme.of(context).textTheme.titleLarge,
               )),
-              IconButton(
-                  visualDensity: VisualDensity.compact,
-                  icon: const Icon(Icons.close),
-                  onPressed: () => {}),
+
+              // IconButton(
+              //     visualDensity: VisualDensity.compact,
+              //     icon: const Icon(Icons.close),
+              //     onPressed: () => {}),
             ],
           ),
+          const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
