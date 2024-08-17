@@ -27,6 +27,7 @@ dependencies:
   widget_circular_animator: ^1.0.0
   crystal_navigation_bar: ^1.0.0
   star_menu: ^4.0.1
+  url_launcher: ^6.3.0
 
 dev_dependencies:
   flutter_test:

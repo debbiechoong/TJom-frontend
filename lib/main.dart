@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jejom/modules/dashboard/dashboard.dart';
-import 'package:jejom/modules/onboarding/onboarding_wrapper.dart';
+import 'package:jejom/providers/interest_provider.dart';
 import 'package:jejom/providers/onboarding_provider.dart';
 import 'package:jejom/providers/trip_provider.dart';
 import 'package:jejom/utils/theme.dart';
@@ -26,12 +26,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final brightness = View.of(context).platformDispatcher.platformBrightness;
-    
-    // Retrieves the default theme for the platform
-    // TextTheme textTheme = Theme.of(context).textTheme;
-
-    // Use with Google Fonts package to use downloadable fonts
     TextTheme textTheme = createTextTheme(context, "DM Sans", "DM Sans");
 
     MaterialTheme theme = MaterialTheme(textTheme);
@@ -39,6 +33,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => OnboardingProvider()),
         ChangeNotifierProvider(create: (context) => TripProvider()),
+        ChangeNotifierProvider(create: (context) => InterestProvider()),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
