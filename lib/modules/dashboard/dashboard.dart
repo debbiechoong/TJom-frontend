@@ -1,7 +1,7 @@
 import 'package:crystal_navigation_bar/crystal_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:jejom/modules/explore/explore.dart';
-import 'package:jejom/modules/food/menu.dart';
+import 'package:jejom/modules/food/ocr.dart';
 import 'package:jejom/modules/home/home.dart';
 import 'package:jejom/modules/maps/map.dart';
 import 'package:o3d/o3d.dart';
@@ -37,7 +37,7 @@ class _DashboardState extends State<Dashboard> {
               Home(),
               Explore(),
               MapPage(),
-              MealPreferences(),
+              MenuOCRPage(),
             ],
           ),
         ],

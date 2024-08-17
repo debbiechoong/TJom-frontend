@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jejom/modules/explore/explore.dart';
 import 'package:jejom/modules/food/menu.dart';
+import 'package:jejom/modules/food/ocr.dart';
 import 'package:jejom/modules/maps/map.dart';
 import 'package:jejom/providers/trip_provider.dart';
 import 'package:jejom/utils/glass_container.dart';
@@ -113,7 +114,7 @@ class _HomeState extends State<Home> {
                         onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => const MealPreferences(),
+                              builder: (context) => const MenuOCRPage(),
                             ),
                           );
                         },
