@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:lottie/lottie.dart';
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class MenuOCRPage extends StatefulWidget {
   const MenuOCRPage({Key? key}) : super(key: key);
@@ -89,7 +90,8 @@ class _MenuOCRPageState extends State<MenuOCRPage> {
 
     final url = Uri.parse('https://api.upstage.ai/v1/document-ai/ocr');
     final request = http.MultipartRequest('POST', url);
-    request.headers['Authorization'] = 'Bearer API_KEY';
+    String apiKey = dotenv.env['UPSTAGE_API_KEY'] ?? 'No API Key Found';
+    request.headers['Authorization'] = 'Bearer $apiKey';
     request.files.add(
         await http.MultipartFile.fromPath('document', _selectedImage!.path));
 
@@ -131,8 +133,9 @@ class _MenuOCRPageState extends State<MenuOCRPage> {
     });
 
     final url = Uri.parse('https://api.upstage.ai/v1/solar/chat/completions');
+    String apiKey = dotenv.env['UPSTAGE_API_KEY'] ?? 'No API Key Found';
     final headers = {
-      'Authorization': 'Bearer API_KEY',
+      'Authorization': 'Bearer $apiKey',
       'Content-Type': 'application/json',
     };
 
