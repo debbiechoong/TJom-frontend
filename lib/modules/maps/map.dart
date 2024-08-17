@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:jejom/models/interest_destination.dart';
 import 'package:jejom/modules/maps/destination_sheet.dart';
@@ -82,14 +83,17 @@ class _MapPageState extends State<MapPage> {
             initialCameraPosition: CameraPosition(target: _jeju, zoom: 13),
             markers: _markers,
             onTap: _handleTap,
-            
           ),
-          DestinationBottomSheet(
-            destinationSheetKey: _destinationSheetKey,
-            destinationSheetController: _destinationSheetController,
-            openSheet: openSheet,
-            closeSheet: closeSheet,
-            pickedDestination: pickedDestination,
+          AnimatedOpacity(
+            opacity: !isSheetShow ? 0 : 1,
+            duration: const Duration(milliseconds: 300),
+            child: DestinationBottomSheet(
+              destinationSheetKey: _destinationSheetKey,
+              destinationSheetController: _destinationSheetController,
+              openSheet: openSheet,
+              closeSheet: closeSheet,
+              pickedDestination: pickedDestination,
+            ),
           ),
           Positioned(
             top: 80,
@@ -122,8 +126,6 @@ class _MapPageState extends State<MapPage> {
       ),
     );
   }
-
-  
 
   Future<void> getLocation() async {
     bool serviceEnabled;
@@ -169,7 +171,6 @@ class _MapPageState extends State<MapPage> {
         position: LatLng(des.lat, des.long),
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
         onTap: () {
-          
           setState(() {
             pickedDestination = des;
           });
