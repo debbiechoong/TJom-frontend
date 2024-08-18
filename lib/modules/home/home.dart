@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:jejom/modules/explore/explore.dart';
-import 'package:jejom/modules/food/menu.dart';
 import 'package:jejom/modules/food/ocr.dart';
 import 'package:jejom/modules/maps/map.dart';
+import 'package:jejom/modules/onboarding/onboarding_wrapper.dart';
+import 'package:jejom/modules/script_game/game_list.dart';
+import 'package:jejom/providers/onboarding_provider.dart';
 import 'package:jejom/providers/trip_provider.dart';
 import 'package:jejom/utils/glass_container.dart';
 import 'package:o3d/o3d.dart';
@@ -21,6 +23,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     final TripProvider tripProvider = Provider.of<TripProvider>(context);
+    final onboardingProvider = Provider.of<OnboardingProvider>(context);
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -82,7 +85,17 @@ class _HomeState extends State<Home> {
                       ),
                     ),
                     textInputAction: TextInputAction.send,
-                    onSubmitted: (value) => print(value),
+                    onSubmitted: (value) {
+                      onboardingProvider.updatePrompt(value);
+                      onboardingProvider.sendPrompt();
+
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const OnBoarding(isOnboarding: false),
+                        ),
+                      );
+                    },
                   ),
                   const SizedBox(height: 16),
                   const Spacer(),
@@ -128,6 +141,28 @@ class _HomeState extends State<Home> {
                             ),
                             child: Icon(
                               Icons.restaurant_menu_rounded,
+                              color: Theme.of(context).colorScheme.background,
+                            )),
+                      ),
+                      const SizedBox(width: 16),
+                      InkWell(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const GameList(),
+                            ),
+                          );
+                        },
+                        child: Container(
+                            width: 64,
+                            height: 64,
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.onBackground,
+                              borderRadius: BorderRadius.circular(32),
+                            ),
+                            child: Icon(
+                              Icons.local_play_rounded,
                               color: Theme.of(context).colorScheme.background,
                             )),
                       ),
