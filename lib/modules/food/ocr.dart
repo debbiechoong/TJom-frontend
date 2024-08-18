@@ -253,6 +253,8 @@ class _MenuOCRPageState extends State<MenuOCRPage> {
     _scrollToBottom();
   }
 
+  // TODO: Implement the allergy check
+
   void _handleOrder() {
     if (_ocrText != null) {
       _callLLM(
