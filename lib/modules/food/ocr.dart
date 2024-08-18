@@ -331,8 +331,6 @@ For example, 아이스 아메리카노 한 잔 주세요 (Aiseu Amerikano han ja
 
   void _handleAllergyCheck() async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-    await userProvider.fetchUser(userProvider.user?.userId ?? "defaultUserId");
-
     final user = userProvider.user;
 
     if (user != null) {
@@ -349,11 +347,14 @@ For example, 아이스 아메리카노 한 잔 주세요 (Aiseu Amerikano han ja
         _continueAllergyCheck();
       }
     } else {
-      setState(() {
-        _messages.add(
-            {'role': 'system', 'content': 'Error: Unable to fetch user data.'});
-      });
-      _scrollToBottom();
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MealPreferences(onPreferencesUpdated: () {
+            _continueAllergyCheck();
+          }),
+        ),
+      );
     }
   }
 
@@ -371,9 +372,9 @@ For example, 아이스 아메리카노 한 잔 주세요 (Aiseu Amerikano han ja
       After that, you need to identify which food items in the menu may contain the allergens listed. 
       The menu might contain the ingredients of each dish, you need to think step by step to identify the ingredients in each dish that may contain the allergens listed.
       Respond in the following format: 
-      Food item that suits the dietary preference:
+      Food item that suits the dietary preference (the name of the dietary preference):
       [Food item] - Reason
-      Food item with allergens: 
+      Food item with allergens (the name of the allergens): 
       [Food item] - Reason 
       ''';
 
