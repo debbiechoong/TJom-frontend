@@ -4,6 +4,9 @@ class ScriptGame {
   final String scriptWriter;
   final String clueGenerator;
   final String playerInstructionWriter;
+  final String title;
+  final String duration;
+  final List<String> restaurantIds;
 
   ScriptGame({
     required this.scriptPlanner,
@@ -11,6 +14,9 @@ class ScriptGame {
     required this.scriptWriter,
     required this.clueGenerator,
     required this.playerInstructionWriter,
+    required this.title,
+    required this.duration,
+    required this.restaurantIds,
   });
 
   // Factory constructor to create a ScriptGame from JSON
@@ -21,6 +27,9 @@ class ScriptGame {
       scriptWriter: json['Script Writer'],
       clueGenerator: json['Clue Generator'],
       playerInstructionWriter: json['Player Instruction Writer'],
+      title: json['Title'],
+      duration: json['Duration'],
+      restaurantIds: List<String>.from(json['restaurants']),
     );
   }
 
@@ -32,6 +41,9 @@ class ScriptGame {
       'Script Writer': scriptWriter,
       'Clue Generator': clueGenerator,
       'Player Instruction Writer': playerInstructionWriter,
+      'restaurants': restaurantIds,
+      'Title': title,
+      'Duration': duration,
     };
   }
 }

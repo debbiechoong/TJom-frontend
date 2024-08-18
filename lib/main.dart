@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:jejom/api/user_api.dart';
+import 'package:jejom/models/language_enum.dart';
 import 'package:jejom/modules/home/home.dart';
 import 'package:jejom/providers/accomodation_provider.dart';
 import 'package:jejom/providers/interest_provider.dart';
@@ -48,7 +49,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => OnboardingProvider()),
         ChangeNotifierProvider(create: (context) => TripProvider()),
         ChangeNotifierProvider(create: (context) => InterestProvider()),
-        ChangeNotifierProvider(create: (context) => ScriptGameProvider()),
+        ChangeNotifierProvider(
+            create: (context) =>
+                ScriptGameProvider()..fetchGames(Language.english)),
         ChangeNotifierProvider(create: (context) => AccommodationProvider()),
         ChangeNotifierProvider(create: (context) => UserProvider(userId)),
       ],
