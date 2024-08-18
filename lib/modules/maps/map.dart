@@ -1,234 +1,209 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:jejom/models/interest_destination.dart';
-import 'package:jejom/modules/maps/destination_sheet.dart';
 import 'package:jejom/providers/interest_provider.dart';
-import 'package:location/location.dart';
-import 'dart:convert';
-
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
-
   @override
-  State<MapPage> createState() => _MapPageState();
+  _MapPageState createState() => _MapPageState();
 }
 
 class _MapPageState extends State<MapPage> {
-  final Location _locationController = Location();
-
-  final LatLng _jeju = const LatLng(33.489011, 126.498302);
-  LatLng? _currentLocation;
-
-  final Set<Marker> _markers = {};
-
-  //bottom sheet
-  final DraggableScrollableController _destinationSheetController =
-      DraggableScrollableController();
-  final GlobalKey _destinationSheetKey = GlobalKey();
-  bool isSheetShow = false;
-  InterestDestination? pickedDestination;
+  GoogleMapController? mapController;
+  Set<Marker> markers = {};
+  LatLng? initialPosition;
 
   @override
   void initState() {
     super.initState();
-    // getLocation();
+    _initializeMap();
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    fetchLocations();
-  }
-
-  @override
-  void dispose() {
-    _locationController.onLocationChanged
-        .listen((_) {})
-        .cancel(); // Cancel the subscription
-    super.dispose();
-  }
-
-  void openSheet() {
-    if (!isSheetShow) {
-      _destinationSheetController.animateTo(0.5,
-          duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
-    }
-    isSheetShow = true;
-  }
-
-  void closeSheet() {
-    if (isSheetShow) {
-      _destinationSheetController.animateTo(0.0,
-          duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
-    }
-    isSheetShow = false;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final interestProvider = Provider.of<InterestProvider>(context);
-
-    return Scaffold(
-      extendBodyBehindAppBar:
-          true, // This will make the Scaffold content extend behind the AppBar
-      backgroundColor: Colors.transparent, // Transparent background
-      body: Stack(
-        children: [
-          GoogleMap(
-            initialCameraPosition: CameraPosition(target: _jeju, zoom: 13),
-            markers: _markers,
-            onTap: _handleTap,
-          ),
-          AnimatedOpacity(
-            opacity: !isSheetShow ? 0 : 1,
-            duration: const Duration(milliseconds: 300),
-            child: DestinationBottomSheet(
-              destinationSheetKey: _destinationSheetKey,
-              destinationSheetController: _destinationSheetController,
-              openSheet: openSheet,
-              closeSheet: closeSheet,
-              pickedDestination: pickedDestination,
-            ),
-          ),
-          Positioned(
-            top: 80,
-            left: 16,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.onBackground,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.5),
-                    spreadRadius: 2,
-                    blurRadius: 6,
-                  ),
-                ],
-              ),
-              child: IconButton(
-                visualDensity: VisualDensity.adaptivePlatformDensity,
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                icon: const Icon(
-                  Icons.arrow_back,
-                  color: Colors.black, // Black icon for contrast
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> getLocation() async {
-    bool serviceEnabled;
-    PermissionStatus permission;
-
-    serviceEnabled = await _locationController.serviceEnabled();
-    if (!serviceEnabled) {
-      serviceEnabled = await _locationController.requestService();
-      if (!serviceEnabled) {
-        return;
-      }
-    }
-
-    permission = await _locationController.hasPermission();
-    if (permission == PermissionStatus.denied) {
-      permission = await _locationController.requestPermission();
-      if (permission != PermissionStatus.granted) {
-        return;
-      }
-    }
-
-    _locationController.onLocationChanged
-        .listen((LocationData currentLocation) {
-      if (!mounted) return; // Check if widget is still mounted
-
-      if (currentLocation.latitude != null &&
-          currentLocation.longitude != null) {
+  void _initializeMap() {
+    final interestProvider =
+        Provider.of<InterestProvider>(context, listen: false);
+    interestProvider.fetchUserInterests().then((_) {
+      _setMarkers(interestProvider.getInterests());
+      if (markers.isNotEmpty) {
         setState(() {
-          _currentLocation =
-              LatLng(currentLocation.latitude!, currentLocation.longitude!);
+          initialPosition = markers.first.position;
         });
       }
     });
   }
 
-  void fetchLocations() async {
-    final interestProvider = Provider.of<InterestProvider>(context);
-    // print("Where are you ${interestProvider.getInterests()}");
-
-    Set<Marker> fetchedMarkers = interestProvider.getInterests().map((des) {
-      return Marker(
-        markerId: MarkerId(des.id),
-        position: LatLng(des.lat, des.long),
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-        onTap: () {
-          setState(() {
-            pickedDestination = des;
-          });
-          openSheet();
-        },
-      );
-    }).toSet();
-
-    setState(() {
-      _markers.addAll(fetchedMarkers);
-    });
-  }
-
-  void _handleTap(LatLng tappedPoint) async {
-    String? description = await _showPinDialog();
-    if (description != null && description.isNotEmpty) {
-      setState(() {
-        _markers.add(
+  void _setMarkers(List<InterestDestination> interests) {
+    markers.clear();
+    for (var interest in interests) {
+      if (interest.llmDescription != null &&
+          interest.llmDescription!.isNotEmpty) {
+        markers.add(
           Marker(
-            markerId: MarkerId(tappedPoint.toString()),
-            position: tappedPoint,
+            markerId: MarkerId(interest.id),
+            position: LatLng(interest.lat, interest.long),
             infoWindow: InfoWindow(
-              title: description,
-            ),
-            icon: BitmapDescriptor.defaultMarkerWithHue(
-              BitmapDescriptor.hueBlue,
+              title: interest.name,
+              onTap: () => _showInterestDetails(interest),
             ),
           ),
         );
-      });
+      }
     }
   }
 
-  Future<String?> _showPinDialog() async {
-    String? description;
-    return showDialog<String>(
+  void _showInterestDetails(InterestDestination interest) {
+    showModalBottomSheet(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Pin Description"),
-          content: TextField(
-            onChanged: (value) {
-              description = value;
-            },
-            decoration: const InputDecoration(
-              hintText: "Tell us about the location!",
+      builder: (context) => Container(
+        padding: EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8.0),
+              child: Image.network(
+                interest.imageUrl.isNotEmpty
+                    ? interest.imageUrl[0]
+                    : 'assets/images/image1.jpg',
+                height: 100,
+                width: 100,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Image.asset(
+                    'assets/images/image1.jpg',
+                    height: 100,
+                    width: 100,
+                    fit: BoxFit.cover,
+                  );
+                },
+              ),
             ),
+            SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    interest.name,
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 8),
+                  Text(interest.address),
+                  SizedBox(height: 8),
+                  if (interest.llmDescription != null)
+                    Text(interest.llmDescription!),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _handleMapTap(LatLng position) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        TextEditingController descriptionController = TextEditingController();
+        return AlertDialog(
+          title: Text('Add a new location'),
+          content: TextField(
+            controller: descriptionController,
+            decoration: InputDecoration(hintText: 'Enter a description'),
           ),
-          actions: <Widget>[
+          actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(description);
+                Navigator.of(context).pop();
               },
-              child: const Text("Add"),
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                _addNewInterest(position, descriptionController.text);
+                Navigator.of(context).pop();
+              },
+              child: Text('Add'),
             ),
           ],
         );
       },
+    );
+  }
+
+  void _addNewInterest(LatLng position, String description) async {
+    final interestProvider =
+        Provider.of<InterestProvider>(context, listen: false);
+    final newInterest = InterestDestination(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      name: 'New Location',
+      description: description,
+      imageUrl: [],
+      address: '',
+      lat: position.latitude,
+      long: position.longitude,
+    );
+
+    setState(() {
+      interestProvider.interests!.add(newInterest);
+      markers.add(
+        Marker(
+          markerId: MarkerId(newInterest.id),
+          position: LatLng(newInterest.lat, newInterest.long),
+          infoWindow: InfoWindow(
+            title: newInterest.name,
+            onTap: () => _showInterestDetails(newInterest),
+          ),
+        ),
+      );
+    });
+
+    await interestProvider.saveInterestsToFirebase();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          initialPosition == null
+              ? Center(child: CircularProgressIndicator())
+              : GoogleMap(
+                  onMapCreated: (controller) => mapController = controller,
+                  initialCameraPosition: CameraPosition(
+                    target: initialPosition!,
+                    zoom: 14.0,
+                  ),
+                  markers: markers,
+                  onTap: _handleMapTap,
+                ),
+          Positioned(
+            top: 40,
+            left: 20,
+            child: GestureDetector(
+              onTap: () => Navigator.of(context).pop(),
+              child: Container(
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 6,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Icon(Icons.arrow_back, color: Colors.black),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -26,13 +26,12 @@ class _ExploreState extends State<Explore> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 IconButton(
-                    visualDensity: VisualDensity.adaptivePlatformDensity,
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: const Icon(
-                      Icons.arrow_back,
-                    )),
+                  visualDensity: VisualDensity.adaptivePlatformDensity,
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: const Icon(Icons.arrow_back),
+                ),
                 const SizedBox(height: 16),
                 Text(
                   "Explore Top Destinations",
@@ -50,8 +49,6 @@ class _ExploreState extends State<Explore> {
                     if (interestProvider.interests == null) {
                       return const Center(child: CircularProgressIndicator());
                     }
-
-                    print(interestProvider.interests);
 
                     final filteredInterests = interestProvider.interests!
                         .where((destination) =>
@@ -107,7 +104,6 @@ class _ExploreState extends State<Explore> {
     );
   }
 
-  // Gih ming code de
   Future<void> launchGoogleMaps(
       double destinationLatitude, double destinationLongitude) async {
     final uri = Uri(
@@ -130,7 +126,7 @@ class _ExploreState extends State<Explore> {
             'Destination: ${destination.name}, LLM Description: ${destination.llmDescription}');
         showModalBottomSheet(
           context: context,
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(16.0)),
           ),
           builder: (BuildContext context) {

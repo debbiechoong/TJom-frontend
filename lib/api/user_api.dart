@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:jejom/models/interest_destination.dart';
 
 Future<void> fetchUserFromFirestore(String userId) async {
   try {
@@ -37,4 +38,51 @@ Future<void> updateUserInFirestore(String userId,
     data['interests'] = interests;
   }
   await FirebaseFirestore.instance.collection('users').doc(userId).update(data);
+}
+
+Future<void> addOrUpdateInterestDestination(
+    String userId, InterestDestination destination) async {
+  try {
+    final docRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('interestDestinations')
+        .doc(destination.id);
+
+    await docRef.set(destination.toJson(), SetOptions(merge: true));
+  } catch (e) {
+    print('Error adding or updating destination: $e');
+  }
+}
+
+Future<List<InterestDestination>> fetchInterestDestinations(
+    String userId) async {
+  try {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('interestDestinations')
+        .get();
+
+    return querySnapshot.docs
+        .map((doc) => InterestDestination.fromJson(doc.data()))
+        .toList();
+  } catch (e) {
+    print('Error fetching destinations: $e');
+    return [];
+  }
+}
+
+Future<void> deleteInterestDestination(
+    String userId, String destinationId) async {
+  try {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('interestDestinations')
+        .doc(destinationId)
+        .delete();
+  } catch (e) {
+    print('Error deleting destination: $e');
+  }
 }

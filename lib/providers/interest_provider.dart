@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:jejom/models/interest_destination.dart';
@@ -6,6 +7,7 @@ import 'package:http/http.dart' as http;
 
 class InterestProvider extends ChangeNotifier {
   List<InterestDestination>? interests;
+  final String userId;
 
   final String _googleApiKey = dotenv.env['GOOGLE_API_KEY'] ?? '';
   final List<Map<String, String>> _locations = [
@@ -14,8 +16,40 @@ class InterestProvider extends ChangeNotifier {
     {'name': 'Busan', 'lat': '35.1796', 'long': '129.0756'}
   ];
 
-  InterestProvider() {
-    fetchTrendingInterests();
+  InterestProvider(this.userId) {
+    fetchUserInterests();
+  }
+
+  Future<void> fetchUserInterests() async {
+    try {
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+
+      if (userDoc.exists) {
+        final interestsCollection =
+            userDoc.reference.collection('interestDestinations');
+        final querySnapshot = await interestsCollection.get();
+
+        if (querySnapshot.docs.isNotEmpty) {
+          interests = querySnapshot.docs
+              .map((doc) => InterestDestination.fromJson(doc.data()))
+              .toList();
+        } else {
+          await fetchTrendingInterests();
+          await saveInterestsToFirebase();
+        }
+      } else {
+        await _createUserInFirestore();
+        await fetchTrendingInterests();
+        await saveInterestsToFirebase();
+      }
+    } catch (e) {
+      debugPrint('Error fetching user interests: $e');
+    }
+
+    notifyListeners();
   }
 
   Future<void> fetchTrendingInterests() async {
@@ -37,7 +71,7 @@ class InterestProvider extends ChangeNotifier {
               name: place['name'],
               description: place['types'] != null && place['types'].isNotEmpty
                   ? place['types'].join(', ')
-                  : 'Tourist Attraction', // Use the types or a fallback description
+                  : 'Tourist Attraction',
               imageUrl: (place['photos'] != null && place['photos'].isNotEmpty)
                   ? [
                       'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${place['photos'][0]['photo_reference']}&key=$_googleApiKey'
@@ -50,11 +84,11 @@ class InterestProvider extends ChangeNotifier {
           }).toList();
           allInterests.addAll(locationInterests);
         } else {
-          print(
+          debugPrint(
               "Trending error for ${location['name']}: ${response.statusCode}");
         }
       } catch (e) {
-        print("Fetching error for ${location['name']}: $e");
+        debugPrint("Fetching error for ${location['name']}: $e");
       }
     }
 
@@ -70,28 +104,44 @@ class InterestProvider extends ChangeNotifier {
     if (interests == null || interests!.isEmpty) return;
 
     try {
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+
+      if (!userDoc.exists) {
+        debugPrint("User does not exist in Firestore.");
+        return;
+      }
+
+      List<String> userInterests =
+          List<String>.from(userDoc.data()?['interests'] ?? []);
+
+      String interestsString = userInterests.isNotEmpty
+          ? userInterests.join(', ')
+          : 'no specific interests';
+
+      String userPrompt = '''
+      Based on the user's interests in $interestsString, please recommend the top 10 destinations from the following list.
+      Provide a brief justification for each recommendation.
+      Here are the trending places in Jeju, Seoul, and Busan: 
+      ${interests!.map((interest) => "Name: ${interest.name}\nDescription: ${interest.description}.").join("\n")}
+      
+      Your response format should be as follows:
+      1. Destination Name 1 > Reason 1
+      2. Destination Name 2 > Reason 2
+      3. Destination Name 3 > Reason 3
+      4. Destination Name 4 > Reason 4
+      5. Destination Name 5 > Reason 5
+      6. Destination Name 6 > Reason 6
+    ''';
+
       final url = Uri.parse('https://api.upstage.ai/v1/solar/chat/completions');
       String apiKey = dotenv.env['UPSTAGE_API_KEY'] ?? '';
       final headers = {
         'Authorization': 'Bearer $apiKey',
         'Content-Type': 'application/json',
       };
-
-      String userPrompt =
-          "Here are some trending places in Jeju, Seoul, and Busan: \n" +
-              interests!.map((interest) {
-                return "Name: ${interest.name}\nDescription: ${interest.description}.";
-              }).join("\n") +
-              '''\nPlease evaluate the list and recommend the top 7 destinations. Justify your recommendations with a brief explanation for each.
-        Your response format should be as follows:
-        1. Destination Name 1 > Reason 1
-        2. Destination Name 2 > Reason 2
-        3. Destination Name 3 > Reason 3
-        4. Destination Name 4 > Reason 4
-        5. Destination Name 5 > Reason 5
-        6. Destination Name 6 > Reason 6
-        
-        ''';
 
       final body = json.encode({
         'model': 'solar-1-mini-chat',
@@ -123,14 +173,33 @@ class InterestProvider extends ChangeNotifier {
 
           notifyListeners();
         } else {
-          print('Error: Unexpected LLM response structure.');
+          debugPrint('Error: Unexpected LLM response structure.');
         }
       } else {
-        print('LLM error: ${response.statusCode}');
+        debugPrint('LLM error: ${response.statusCode}');
       }
     } catch (e) {
-      print('LLM Fetching error: $e');
+      debugPrint('LLM Fetching error: $e');
     }
+  }
+
+  Future<void> saveInterestsToFirebase() async {
+    final userDoc = FirebaseFirestore.instance.collection('users').doc(userId);
+    final interestsCollection = userDoc.collection('interestDestinations');
+
+    final batch = FirebaseFirestore.instance.batch();
+
+    for (final interest in interests!) {
+      final docRef = interestsCollection.doc(interest.id);
+      batch.set(docRef, interest.toJson());
+    }
+
+    await batch.commit();
+  }
+
+  Future<void> _createUserInFirestore() async {
+    final userDoc = FirebaseFirestore.instance.collection('users').doc(userId);
+    await userDoc.set({'userId': userId});
   }
 
   String extractReasonForDestination(
@@ -139,7 +208,7 @@ class InterestProvider extends ChangeNotifier {
     for (final line in lines) {
       final match = RegExp(r'^\d+\.\s*(.*?)\s*>\s*(.*)').firstMatch(line);
       if (match != null && match.group(1)?.trim() == destinationName) {
-        print(match.group(2)?.trim());
+        debugPrint(match.group(2)?.trim());
         return match.group(2)?.trim() ?? '';
       }
     }

@@ -48,7 +48,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => OnboardingProvider()),
         ChangeNotifierProvider(create: (context) => TripProvider()),
-        ChangeNotifierProvider(create: (context) => InterestProvider()),
+        ChangeNotifierProvider(create: (context) => InterestProvider(userId)),
         ChangeNotifierProvider(
             create: (context) =>
                 ScriptGameProvider()..fetchGames(Language.english)),
