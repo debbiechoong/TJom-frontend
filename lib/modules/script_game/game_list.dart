@@ -67,7 +67,7 @@ class _GameListState extends State<GameList> {
                   child: ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: scriptGameProvider.games!.length,
+                    itemCount: scriptGameProvider.games.length,
                     itemBuilder: (context, index) {
                       return AnimationConfiguration.staggeredList(
                         position: index,
@@ -84,16 +84,23 @@ class _GameListState extends State<GameList> {
                                 children: [
                                   Expanded(
                                     child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          scriptGameProvider
-                                              .games![index].characterDesigner,
+                                          scriptGameProvider.games[index].title,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleLarge,
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
                                         ),
+                                        const SizedBox(height: 8),
                                         Text(
-                                          scriptGameProvider
-                                              .games![index].clueGenerator,
+                                          "Duration: ${scriptGameProvider.games[index].duration}",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge,
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
                                         ),
@@ -102,8 +109,8 @@ class _GameListState extends State<GameList> {
                                   ),
                                   InkWell(
                                     onTap: () {
-                                      scriptGameProvider.selectedGame =
-                                          scriptGameProvider.games![index];
+                                      scriptGameProvider.selectGame(
+                                          scriptGameProvider.games[index]);
                                       Navigator.of(context).push(
                                         MaterialPageRoute(
                                           builder: (context) =>
