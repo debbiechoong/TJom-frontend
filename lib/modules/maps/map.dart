@@ -163,7 +163,7 @@ class _MapPageState extends State<MapPage> {
 
   void fetchLocations() async {
     final interestProvider = Provider.of<InterestProvider>(context);
-    print("Where are you ${interestProvider.getInterests()}");
+    // print("Where are you ${interestProvider.getInterests()}");
 
     Set<Marker> fetchedMarkers = interestProvider.getInterests().map((des) {
       return Marker(

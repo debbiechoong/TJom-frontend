@@ -6,6 +6,7 @@ class InterestDestination {
   final String address;
   final double lat;
   final double long;
+  String? llmDescription;
 
   InterestDestination({
     required this.id,
@@ -15,6 +16,7 @@ class InterestDestination {
     required this.address,
     required this.lat,
     required this.long,
+    this.llmDescription,
   });
 
   // Factory constructor to create an InterestDestination from JSON
@@ -27,6 +29,7 @@ class InterestDestination {
       address: json['address'],
       lat: json['lat'],
       long: json['long'],
+      llmDescription: json['llmDescription'],
     );
   }
 
@@ -40,6 +43,7 @@ class InterestDestination {
       'address': address,
       'lat': lat,
       'long': long,
+      'llmDescription': llmDescription,
     };
   }
 
@@ -52,6 +56,7 @@ class InterestDestination {
     String? address,
     double? lat,
     double? long,
+    String? llmDescription,
   }) {
     return InterestDestination(
       id: id ?? this.id,
@@ -61,6 +66,7 @@ class InterestDestination {
       address: address ?? this.address,
       lat: lat ?? this.lat,
       long: long ?? this.long,
+      llmDescription: llmDescription ?? this.llmDescription,
     );
   }
 }
