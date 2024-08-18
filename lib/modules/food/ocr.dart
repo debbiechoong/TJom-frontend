@@ -4,6 +4,10 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:jejom/models/user.dart';
+import 'package:jejom/modules/food/menu.dart';
+import 'package:jejom/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class MenuOCRPage extends StatefulWidget {
   const MenuOCRPage({Key? key}) : super(key: key);
@@ -114,12 +118,12 @@ class _MenuOCRPageState extends State<MenuOCRPage> {
     if (_selectedImage == null) return;
 
     setState(() {
-      _messages.add({'role': 'system', 'content': 'loading...'});
+      _messages.add({'role': 'system', 'content': 'Loading...'});
     });
 
     final url = Uri.parse('https://api.upstage.ai/v1/document-ai/ocr');
     final request = http.MultipartRequest('POST', url);
-    String apiKey = dotenv.env['UPSTAGE_API_KEY'] ?? 'No API Key Found';
+    String apiKey = dotenv.env['UPSTAGE_API_KEY'] ?? '';
     request.headers['Authorization'] = 'Bearer $apiKey';
     request.files.add(
         await http.MultipartFile.fromPath('document', _selectedImage!.path));
@@ -135,23 +139,25 @@ class _MenuOCRPageState extends State<MenuOCRPage> {
         final extractedText = responseBody['text'];
         setState(() {
           _ocrText = extractedText;
-          _messages.removeWhere((msg) => msg['content'] == 'loading...');
-          _messages.add({'role': 'system', 'content': extractedText});
+          _messages.removeWhere((msg) => msg['content'] == 'Loading...');
         });
         _scrollToBottom();
+
+        await _callTranslation(extractedText);
       } else {
         setState(() {
-          _messages.removeWhere((msg) => msg['content'] == 'loading...');
-          _messages
-              .add({'role': 'system', 'content': 'Error: Incorrect response.'});
+          _messages.removeWhere((msg) => msg['content'] == 'Loading...');
+          _messages.add(
+              {'role': 'system', 'content': 'Error: Incorrect OCR response.'});
         });
         _scrollToBottom();
       }
     } else {
       print('OCR failed: ${response.statusCode}');
       setState(() {
-        _messages.removeWhere((msg) => msg['content'] == 'loading...');
-        _messages.add({'role': 'system', 'content': 'Error occurred.'});
+        _messages.removeWhere((msg) => msg['content'] == 'Loading...');
+        _messages
+            .add({'role': 'system', 'content': 'Error occurred during OCR.'});
       });
       _scrollToBottom();
     }
@@ -159,11 +165,11 @@ class _MenuOCRPageState extends State<MenuOCRPage> {
 
   Future<void> _callLLM(String userPrompt) async {
     setState(() {
-      _messages.add({'role': 'system', 'content': 'loading...'});
+      _messages.add({'role': 'system', 'content': 'Loading...'});
     });
 
     final url = Uri.parse('https://api.upstage.ai/v1/solar/chat/completions');
-    String apiKey = dotenv.env['UPSTAGE_API_KEY'] ?? 'No API Key Found';
+    String apiKey = dotenv.env['UPSTAGE_API_KEY'] ?? '';
     final headers = {
       'Authorization': 'Bearer $apiKey',
       'Content-Type': 'application/json',
@@ -205,17 +211,16 @@ class _MenuOCRPageState extends State<MenuOCRPage> {
           responseBody.containsKey('choices')) {
         final llmMessage = responseBody['choices'][0]['message']['content'];
         setState(() {
-          _messages.removeWhere((msg) => msg['content'] == 'loading...');
+          _messages.removeWhere((msg) => msg['content'] == 'Loading...');
           _messages.add({'role': 'system', 'content': llmMessage});
         });
         _scrollToBottom();
       } else {
-        print('Unexpected response structure');
         setState(() {
-          _messages.removeWhere((msg) => msg['content'] == 'loading...');
+          _messages.removeWhere((msg) => msg['content'] == 'Loading...');
           _messages.add({
             'role': 'system',
-            'content': 'Error: Unexpected response structure'
+            'content': 'Error: Unexpected response structure.'
           });
         });
         _scrollToBottom();
@@ -223,8 +228,64 @@ class _MenuOCRPageState extends State<MenuOCRPage> {
     } else {
       print('LLM error: ${response.statusCode}');
       setState(() {
-        _messages.removeWhere((msg) => msg['content'] == 'loading...');
+        _messages.removeWhere((msg) => msg['content'] == 'Loading...');
         _messages.add({'role': 'system', 'content': 'Error occurred.'});
+      });
+      _scrollToBottom();
+    }
+  }
+
+  Future<void> _callTranslation(String textToTranslate) async {
+    setState(() {
+      _messages.add({'role': 'system', 'content': 'Translating...'});
+    });
+
+    final url = Uri.parse('https://api.upstage.ai/v1/solar/chat/completions');
+    String apiKey = dotenv.env['UPSTAGE_API_KEY'] ?? '';
+    final headers = {
+      'Authorization': 'Bearer $apiKey',
+      'Content-Type': 'application/json',
+    };
+
+    final body = json.encode({
+      'model': 'solar-1-mini-translate-koen',
+      'messages': [
+        {'role': 'user', 'content': textToTranslate}
+      ],
+      'stream': false,
+    });
+
+    final response = await http.post(url, headers: headers, body: body);
+
+    if (response.statusCode == 200) {
+      final responseData = utf8.decode(response.bodyBytes);
+      final responseBody = json.decode(responseData);
+
+      if (responseBody is Map<String, dynamic> &&
+          responseBody.containsKey('choices')) {
+        final translatedText = responseBody['choices'][0]['message']['content'];
+        setState(() {
+          _ocrText = translatedText;
+          _messages.removeWhere((msg) => msg['content'] == 'Translating...');
+          _messages.add({'role': 'system', 'content': translatedText});
+        });
+        _scrollToBottom();
+      } else {
+        setState(() {
+          _messages.removeWhere((msg) => msg['content'] == 'Translating...');
+          _messages.add(
+              {'role': 'system', 'content': 'Error: Unexpected response.'});
+        });
+        _scrollToBottom();
+      }
+    } else {
+      print('Translation failed: ${response.statusCode}');
+      setState(() {
+        _messages.removeWhere((msg) => msg['content'] == 'Translating...');
+        _messages.add({
+          'role': 'system',
+          'content': 'Error occurred during translation.'
+        });
       });
       _scrollToBottom();
     }
@@ -253,12 +314,12 @@ class _MenuOCRPageState extends State<MenuOCRPage> {
     _scrollToBottom();
   }
 
-  // TODO: Implement the allergy check
-
   void _handleOrder() {
     if (_ocrText != null) {
-      _callLLM(
-          'Generate 3 sentences to teach foreigners how to order food from the menu. Each sentence should be in the following format: Korean (Romanized) - English. For example, 아이스 아메리카노 한 잔 주세요 (Aiseu Amerikano han jan juseyo) - One iced Americano, please.');
+      _callLLM('''
+Generate 3 sentences to teach foreigners how to order food from the menu. Each sentence should be in the following format: Korean (Romanized) - English. 
+For example, 아이스 아메리카노 한 잔 주세요 (Aiseu Amerikano han jan juseyo) - One iced Americano, please.
+''');
     } else {
       setState(() {
         _messages
@@ -266,6 +327,64 @@ class _MenuOCRPageState extends State<MenuOCRPage> {
       });
       _scrollToBottom();
     }
+  }
+
+  void _handleAllergyCheck() async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    await userProvider.fetchUser(userProvider.user?.userId ?? "defaultUserId");
+
+    final user = userProvider.user;
+
+    if (user != null) {
+      if (user.allergies.isEmpty || user.dietary.isEmpty) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MealPreferences(onPreferencesUpdated: () {
+              _continueAllergyCheck();
+            }),
+          ),
+        );
+      } else {
+        _continueAllergyCheck();
+      }
+    } else {
+      setState(() {
+        _messages.add(
+            {'role': 'system', 'content': 'Error: Unable to fetch user data.'});
+      });
+      _scrollToBottom();
+    }
+  }
+
+  void _continueAllergyCheck() {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final user = userProvider.user;
+
+    if (user != null) {
+      String allergyList = user.allergies.join(', ');
+      String dietaryPreference = user.dietary;
+
+      String prompt = '''
+      Here is the list of allergies: $allergyList and the dietary preference: $dietaryPreference. 
+      Your task is to identify which food items in the menu are not suitable for the user's dietary preference.
+      After that, you need to identify which food items in the menu may contain the allergens listed. 
+      The menu might contain the ingredients of each dish, you need to think step by step to identify the ingredients in each dish that may contain the allergens listed.
+      Respond in the following format: 
+      Food item that suits the dietary preference:
+      [Food item] - Reason
+      Food item with allergens: 
+      [Food item] - Reason 
+      ''';
+
+      _callLLM(prompt);
+    } else {
+      setState(() {
+        _messages.add(
+            {'role': 'system', 'content': 'Error: Unable to fetch user data.'});
+      });
+    }
+    _scrollToBottom();
   }
 
   @override
@@ -335,11 +454,22 @@ class _MenuOCRPageState extends State<MenuOCRPage> {
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     children: [
-                      ActionChip(
-                        label: Text('Order'),
-                        onPressed: _handleOrder,
-                        backgroundColor: Color(0xFFA6E84E),
-                        labelStyle: TextStyle(color: Colors.black),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          ActionChip(
+                            label: Text('Order'),
+                            onPressed: _handleOrder,
+                            backgroundColor: Color(0xFFA6E84E),
+                            labelStyle: TextStyle(color: Colors.black),
+                          ),
+                          ActionChip(
+                            label: Text('Allergy check'),
+                            onPressed: _handleAllergyCheck,
+                            backgroundColor: Color(0xFFA6E84E),
+                            labelStyle: TextStyle(color: Colors.black),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 10),
                       Row(
@@ -390,7 +520,7 @@ class _MenuOCRPageState extends State<MenuOCRPage> {
                     color: Colors.black.withOpacity(0.7),
                     borderRadius: BorderRadius.circular(12.0),
                   ),
-                  child: const Text(
+                  child: Text(
                     "Take a picture of the menu",
                     style: TextStyle(
                       color: Colors.white,
