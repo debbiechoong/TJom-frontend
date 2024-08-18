@@ -13,15 +13,7 @@ class TripProvider extends ChangeNotifier {
       startDate: DateTime.now(),
       endDate: DateTime.now().add(const Duration(days: 5)),
       flights: [
-        Flight(
-          id: "1",
-          departureTms: DateTime.now(),
-          arrivalTms: DateTime.now().add(const Duration(hours: 12)),
-          origin: "Singapore",
-          destination: "Paris",
-          price: 500,
-          flightCarrier: 'DEF Airlines',
-        ),
+        
       ],
       destinations: [
         Destination(
