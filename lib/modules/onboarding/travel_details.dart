@@ -70,7 +70,7 @@ class _TravelDetailsState extends State<TravelDetails> {
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 32),
             ]),
           );
   }

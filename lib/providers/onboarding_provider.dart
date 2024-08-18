@@ -29,7 +29,7 @@ class OnboardingProvider extends ChangeNotifier {
     if (_page == 0) {
       return;
     }
-    ;
+
     _page--;
     _mainPageController.animateToPage(_page,
         duration: const Duration(milliseconds: 600),

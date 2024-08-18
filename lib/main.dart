@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jejom/modules/home/home.dart';
+import 'package:jejom/providers/accomodation_provider.dart';
 import 'package:jejom/providers/interest_provider.dart';
 import 'package:jejom/providers/onboarding_provider.dart';
 import 'package:jejom/providers/script_game_provider.dart';
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => TripProvider()),
         ChangeNotifierProvider(create: (context) => InterestProvider()),
         ChangeNotifierProvider(create: (context) => ScriptGameProvider()),
+        ChangeNotifierProvider(create: (context) => AccommodationProvider()),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',

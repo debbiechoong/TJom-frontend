@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jejom/modules/onboarding/accom_page.dart';
 import 'package:jejom/modules/onboarding/flights.dart';
 import 'package:jejom/modules/onboarding/itinerary.dart';
 import 'package:jejom/modules/onboarding/landing.dart';
@@ -52,7 +53,8 @@ class _OnBoardingState extends State<OnBoarding> {
                       TravelDetails(
                         isOnboarding: true,
                       ),
-                      Flights(),
+                      // Flights(),
+                      AccomPage(),
                       Itinerary(),
                       OnboardingSuccess(),
                     ],
@@ -62,7 +64,8 @@ class _OnBoardingState extends State<OnBoarding> {
                     physics: const NeverScrollableScrollPhysics(),
                     children: const [
                       TravelDetails(isOnboarding: false),
-                      Flights(),
+                      // Flights(),
+                      AccomPage(),
                       Itinerary(),
                       OnboardingSuccess(),
                     ],
