@@ -4,6 +4,7 @@ import 'package:jejom/models/script_game.dart';
 
 class ScriptGameProvider extends ChangeNotifier {
   List<ScriptGame>? games;
+  ScriptGame? selectedGame;
   Language lang = Language.english;
 
   ScriptGameProvider() {

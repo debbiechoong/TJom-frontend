@@ -6,7 +6,8 @@ import 'package:provider/provider.dart';
 enum Interest { Adventure, Relax, Culture, Food, Shopping, Nature }
 
 class TravelDetails extends StatefulWidget {
-  const TravelDetails({super.key});
+  final bool isOnboarding;
+  const TravelDetails({super.key, required this.isOnboarding});
 
   @override
   State<TravelDetails> createState() => _TravelDetailsState();
@@ -19,14 +20,16 @@ class _TravelDetailsState extends State<TravelDetails> {
         Provider.of<OnboardingProvider>(context);
 
     return onBoardingProvider.isLoading
-        ? const LoadingWidget()
+        ? const Center(child: LoadingWidget())
         : SingleChildScrollView(
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               const SizedBox(height: 80),
               IconButton(
                   visualDensity: VisualDensity.adaptivePlatformDensity,
-                  onPressed: () => onBoardingProvider.previousPage(),
+                  onPressed: () => widget.isOnboarding
+                      ? onBoardingProvider.previousPage()
+                      : Navigator.of(context).pop(),
                   icon: const Icon(
                     Icons.arrow_back,
                     // size: 24,
@@ -166,7 +169,6 @@ class _TravelDetailsState extends State<TravelDetails> {
             ),
           ),
           onChanged: (value) => onBoardingProvider.updateBudget(value),
-          
         ),
         const SizedBox(height: 40),
       ],

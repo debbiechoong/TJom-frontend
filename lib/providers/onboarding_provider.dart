@@ -26,6 +26,10 @@ class OnboardingProvider extends ChangeNotifier {
   Set<Interest> selectedInterests = {};
 
   void previousPage() {
+    if (_page == 0) {
+      return;
+    }
+    ;
     _page--;
     _mainPageController.animateToPage(_page,
         duration: const Duration(milliseconds: 600),
@@ -67,13 +71,19 @@ class OnboardingProvider extends ChangeNotifier {
     this.prompt = prompt;
   }
 
+  void goToLoading() {
+    _mainPageController.animateToPage(6,
+        duration: const Duration(milliseconds: 600),
+        curve: Curves.easeInOutCubicEmphasized);
+  }
+
   void sendPrompt() {
     isLoading = true;
     notifyListeners();
 
     //set Timeout for 2 seconds to stimulate loading
     Future.delayed(const Duration(seconds: 2), () {
-      print(prompt);
+      // print(prompt);
 
       //call API, route if success
       isDestination = true;
@@ -83,7 +93,6 @@ class OnboardingProvider extends ChangeNotifier {
 
       isLoading = false;
       notifyListeners();
-      nextPage();
     });
   }
 

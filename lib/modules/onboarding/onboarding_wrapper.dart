@@ -6,11 +6,13 @@ import 'package:jejom/modules/onboarding/onboarding_success.dart';
 import 'package:jejom/modules/onboarding/prompt.dart';
 import 'package:jejom/modules/onboarding/travel_details.dart';
 import 'package:jejom/providers/onboarding_provider.dart';
+import 'package:jejom/utils/loading_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:widget_circular_animator/widget_circular_animator.dart';
 
 class OnBoarding extends StatefulWidget {
-  const OnBoarding({super.key});
+  final bool isOnboarding;
+  const OnBoarding({super.key, required this.isOnboarding});
 
   @override
   State<OnBoarding> createState() => _OnBoardingState();
@@ -40,18 +42,31 @@ class _OnBoardingState extends State<OnBoarding> {
                 ),
               )),
             ),
-            PageView(
-              controller: onboardingProvider.mainPageController,
-              physics: const NeverScrollableScrollPhysics(),
-              children: const [
-                Landing(),
-                Prompt(),
-                TravelDetails(),
-                Flights(),
-                Itinerary(),
-                OnboardingSuccess()
-              ],
-            )
+            widget.isOnboarding
+                ? PageView(
+                    controller: onboardingProvider.mainPageController,
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: const [
+                      Landing(),
+                      Prompt(),
+                      TravelDetails(
+                        isOnboarding: true,
+                      ),
+                      Flights(),
+                      Itinerary(),
+                      OnboardingSuccess(),
+                    ],
+                  )
+                : PageView(
+                    controller: onboardingProvider.mainPageController,
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: const [
+                      TravelDetails(isOnboarding: false),
+                      Flights(),
+                      Itinerary(),
+                      OnboardingSuccess(),
+                    ],
+                  )
           ],
         ),
       ),
