@@ -47,9 +47,9 @@ class _MapPageState extends State<MapPage> {
 
   @override
   void dispose() {
-    _locationController.onLocationChanged
-        .listen((_) {})
-        .cancel(); // Cancel the subscription
+    // _locationController.onLocationChanged
+    //     .listen((_) {})
+    //     .cancel(); 
     super.dispose();
   }
 

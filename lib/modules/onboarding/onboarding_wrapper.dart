@@ -7,7 +7,6 @@ import 'package:jejom/modules/onboarding/onboarding_success.dart';
 import 'package:jejom/modules/onboarding/prompt.dart';
 import 'package:jejom/modules/onboarding/travel_details.dart';
 import 'package:jejom/providers/onboarding_provider.dart';
-import 'package:jejom/utils/loading_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:widget_circular_animator/widget_circular_animator.dart';
 
