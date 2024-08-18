@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jejom/modules/dashboard/dashboard.dart';
+import 'package:jejom/modules/home/home.dart';
 import 'package:jejom/providers/onboarding_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -41,7 +41,7 @@ class OnboardingSuccess extends StatelessWidget {
           onPressed: () {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => const Dashboard(),
+                builder: (context) => const Home(),
               ),
             );
           },

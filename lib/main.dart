@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:jejom/modules/dashboard/dashboard.dart';
+import 'package:jejom/modules/home/home.dart';
 import 'package:jejom/providers/interest_provider.dart';
 import 'package:jejom/providers/onboarding_provider.dart';
+import 'package:jejom/providers/script_game_provider.dart';
 import 'package:jejom/providers/trip_provider.dart';
 import 'package:jejom/utils/theme.dart';
 import 'package:jejom/utils/typography.dart';
@@ -37,13 +38,14 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => OnboardingProvider()),
         ChangeNotifierProvider(create: (context) => TripProvider()),
         ChangeNotifierProvider(create: (context) => InterestProvider()),
+        ChangeNotifierProvider(create: (context) => ScriptGameProvider()),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
         debugShowCheckedModeBanner: false,
         // theme: brightness == Brightness.light ? theme.light() : theme.dark(),
         theme: theme.dark(),
-        home: const Dashboard(),
+        home: const Home(),
       ),
     );
   }
