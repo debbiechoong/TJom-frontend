@@ -13,7 +13,7 @@ Future<List<ScriptGame>> fetchAllScriptFromFirestore(Language lang) async {
 
     if (scriptDocs.docs.isNotEmpty) {
       for (var scriptDoc in scriptDocs.docs) {
-        print(scriptDoc.data());
+        // print(scriptDoc.data());
         final nestedCollection = lang == Language.english ? 'eng' : 'kor';
         final nestedDocs =
             await scriptDoc.reference.collection(nestedCollection).get();
@@ -23,7 +23,6 @@ Future<List<ScriptGame>> fetchAllScriptFromFirestore(Language lang) async {
             ...scriptDoc.data(),
             ...nestedDocs.docs[0].data(),
           };
-          print(fullData);
           scripts.add(ScriptGame.fromJson(fullData));
         }
       }
@@ -33,6 +32,11 @@ Future<List<ScriptGame>> fetchAllScriptFromFirestore(Language lang) async {
     debugPrint("Error running fetchAllScriptFromFirestore : $e");
     return [];
   }
+}
+
+String cleanJsonString(String jsonString) {
+  // Replace problematic control characters
+  return jsonString.replaceAll('\n', '\\n').replaceAll('\t', '\\t');
 }
 
 // Fetch restaurant details based on its ID

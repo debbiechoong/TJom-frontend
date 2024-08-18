@@ -26,12 +26,12 @@ class M3Carousel extends StatefulWidget {
     required this.children,
     this.borderRadius = 16,
     this.childClick,
-    this.trailingChildWidth = 50,
+    this.trailingChildWidth = 48,
     this.spacing = 8.0,
-    this.autoSlide = false,
+    this.autoSlide = true,
     this.autoPlayDelay = 5000,
-    this.slideAnimationDuration = 400,
-    this.titleFadeAnimationDuration = 250,
+    this.slideAnimationDuration = 200,
+    this.titleFadeAnimationDuration = 100,
     this.titleTextSize = 16,
   });
 

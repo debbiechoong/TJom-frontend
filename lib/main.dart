@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:jejom/api/user_api.dart';
 import 'package:jejom/models/language_enum.dart';
 import 'package:jejom/modules/home/home.dart';
+import 'package:jejom/modules/onboarding/onboarding_wrapper.dart';
 import 'package:jejom/providers/accomodation_provider.dart';
 import 'package:jejom/providers/interest_provider.dart';
 import 'package:jejom/providers/onboarding_provider.dart';

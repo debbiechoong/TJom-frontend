@@ -271,7 +271,8 @@ class _ScriptGamePageState extends State<ScriptGamePage> {
             ),
             const SizedBox(height: 16),
             Text(
-              scriptGameProvider.games.first.scriptPlanner,
+              scriptGameProvider.games.first.scriptPlanner
+                  .replaceAll(r'\n', '\n'),
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: 120),
@@ -295,7 +296,8 @@ class _ScriptGamePageState extends State<ScriptGamePage> {
             ),
             const SizedBox(height: 16),
             Text(
-              scriptGameProvider.games.first.characterDesigner,
+              scriptGameProvider.games.first.characterDesigner
+                  .replaceAll(r'\n', '\n'),
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: 120),
@@ -319,7 +321,8 @@ class _ScriptGamePageState extends State<ScriptGamePage> {
             ),
             const SizedBox(height: 16),
             Text(
-              scriptGameProvider.games.first.scriptWriter,
+              scriptGameProvider.games.first.scriptWriter
+                  .replaceAll(r'\n', '\n'),
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: 120),
@@ -343,7 +346,8 @@ class _ScriptGamePageState extends State<ScriptGamePage> {
             ),
             const SizedBox(height: 16),
             Text(
-              scriptGameProvider.games.first.clueGenerator,
+              scriptGameProvider.games.first.clueGenerator
+                  .replaceAll(r'\n', '\n'),
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: 120),
@@ -367,7 +371,8 @@ class _ScriptGamePageState extends State<ScriptGamePage> {
             ),
             const SizedBox(height: 16),
             Text(
-              scriptGameProvider.games.first.playerInstructionWriter,
+              scriptGameProvider.games.first.playerInstructionWriter
+                  .replaceAll(r'\n', '\n'),
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: 120),

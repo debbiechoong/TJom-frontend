@@ -92,6 +92,7 @@ class OnboardingProvider extends ChangeNotifier {
       isInterest = true;
 
       isLoading = false;
+      nextPage();
       notifyListeners();
     });
   }
