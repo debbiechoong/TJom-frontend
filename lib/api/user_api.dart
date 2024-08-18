@@ -23,23 +23,18 @@ Future<void> createUserInFirestore(String userId) async {
   });
 }
 
-//update allergies
-Future<void> updateUserAllergies(String userId, List<String> allergies) async {
-  await FirebaseFirestore.instance.collection('users').doc(userId).update({
-    'allergies': allergies,
-  });
-}
-
-//update interests
-Future<void> updateUserInterests(String userId, List<String> interests) async {
-  await FirebaseFirestore.instance.collection('users').doc(userId).update({
-    'interests': interests,
-  });
-}
-
-//update dietary
-Future<void> updateUserDietary(String userId, String dietary) async {
-  await FirebaseFirestore.instance.collection('users').doc(userId).update({
-    'dietary': dietary,
-  });
+//update User
+Future<void> updateUserInFirestore(String userId,
+    {String? dietary, List<String>? allergies, List<String>? interests}) async {
+  final Map<String, dynamic> data = {};
+  if (dietary != null) {
+    data['dietary'] = dietary;
+  }
+  if (allergies != null) {
+    data['allergies'] = allergies;
+  }
+  if (interests != null) {
+    data['interests'] = interests;
+  }
+  await FirebaseFirestore.instance.collection('users').doc(userId).update(data);
 }

@@ -34,4 +34,34 @@ class UserProvider extends ChangeNotifier {
       await createUserInFirestore(userId);
     }
   }
+
+  // update allergies
+  Future<void> updateUserAllergies(List<String> allergies) async {
+    try {
+      await updateUserInFirestore(user!.userId, allergies: allergies);
+      setUser(user!.copyWith(allergies: allergies));
+    } catch (e) {
+      // Handle errors (e.g., connection issues)
+    }
+  }
+
+  // update dietary
+  Future<void> updateUserDietary(String dietary) async {
+    try {
+      await updateUserInFirestore(user!.userId, dietary: dietary);
+      setUser(user!.copyWith(dietary: dietary));
+    } catch (e) {
+      // Handle errors (e.g., connection issues)
+    }
+  }
+
+  // update interests
+  Future<void> updateUserInterests(List<String> interests) async {
+    try {
+      await updateUserInFirestore(user!.userId, interests: interests);
+      setUser(user!.copyWith(interests: interests));
+    } catch (e) {
+      // Handle errors (e.g., connection issues)
+    }
+  }
 }
