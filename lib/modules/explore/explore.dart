@@ -42,6 +42,9 @@ class _ExploreState extends State<Explore> {
                       ?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
+                Text("See what other travelers are interested in",
+                    style: Theme.of(context).textTheme.bodyLarge),
+                const SizedBox(height: 16),
                 Consumer<InterestProvider>(
                   builder: (context, interestProvider, child) {
                     if (interestProvider.interests == null) {
@@ -119,7 +122,7 @@ class _ExploreState extends State<Explore> {
       ),
       padding: const EdgeInsets.all(16),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(16),
