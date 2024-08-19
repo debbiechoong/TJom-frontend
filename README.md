@@ -25,3 +25,15 @@ JeJom is a AI-powered app that rejuvenates tourism in Jeju Island by turning ord
 
    ```bash
    flutter run
+
+ 4. **Clone the Backend Server**
+    - [Jejom Backend](https://github.com/PIEthonista/Jejom)
+    - Follow the instruction in the backend to set up the server
+
+ 5. **Clone the Murder Mystery Game Script Generator Model**
+    - This model is trained solely for generating the game script that is presented in the app.
+    - Go to [Jejom Backend](https://github.com/PIEthonista/Jejom) and switch to *jubensha8 branch.
+    - Follow the instruction to set up the server
+
+
+## Project Setup Guide
