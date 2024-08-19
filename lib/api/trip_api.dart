@@ -64,4 +64,16 @@ class TripApi {
       print('Error adding trip to Firebase: $e');
     }
   }
+
+  Future fetchTripFromFirebase(String userId) async {
+    try {
+      var trip = await FirebaseFirestore.instance
+          .collection('trips')
+          .where('userId', isEqualTo: userId)
+          .get();
+      return trip.docs.first;
+    } catch (e) {
+      print('Error fetching trip from Firebase: $e');
+    }
+  }
 }
