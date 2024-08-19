@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:jejom/api/trip_api.dart';
 import 'package:jejom/models/flight.dart';
+import 'package:jejom/models/interest_destination.dart';
 import 'package:jejom/modules/onboarding/travel_details.dart';
 import 'package:jejom/providers/trip_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:jejom/providers/interest_provider.dart';
 
 class OnboardingProvider extends ChangeNotifier {
   final PageController _mainPageController = PageController();
@@ -141,6 +144,59 @@ class OnboardingProvider extends ChangeNotifier {
 
     print(additionalPrompt);
 
+    // Update user
+    final interestProvider =
+        Provider.of<InterestProvider>(context, listen: false);
+    await interestProvider.fetchTrendingInterests();
+    await interestProvider.recommendBestDestinations();
+
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+    final userDoc = firestore.collection('users').doc(interestProvider.userId);
+
+    DocumentSnapshot userSnapshot = await userDoc.get();
+    List<String> existingInterests =
+        List<String>.from(userSnapshot['interests'] ?? []);
+    List<InterestDestination> existingInterestDestinations = [];
+
+    if (userSnapshot.exists) {
+      QuerySnapshot destinationsSnapshot =
+          await userDoc.collection('interestDestinations').get();
+      existingInterestDestinations = destinationsSnapshot.docs
+          .map((doc) =>
+              InterestDestination.fromJson(doc.data() as Map<String, dynamic>))
+          .toList();
+    }
+
+    Set<String> updatedInterests = {
+      ...existingInterests,
+      ...selectedInterests.map((e) => e.name)
+    };
+
+    await userDoc.update({
+      'interests': updatedInterests.toList(),
+      'destination': destination,
+      'startDate': startDate,
+      'endDate': endDate,
+      'budget': budget,
+    });
+
+    final newInterestDestinations = interestProvider.getInterests();
+    final updatedInterestDestinations = {
+      ...existingInterestDestinations,
+      ...newInterestDestinations
+    };
+
+    final interestsCollection = userDoc.collection('interestDestinations');
+    final batch = firestore.batch();
+
+    for (final interest in updatedInterestDestinations) {
+      final docRef = interestsCollection.doc(interest.id);
+      batch.set(docRef, interest.toJson());
+    }
+
+    await batch.commit();
+
+    // Update trip
     final tripProvider = Provider.of<TripProvider>(context, listen: false);
     final response = await tripApi.generateTrip(additionalPrompt, userInterest);
     tripProvider.addTripFromJson(response);
