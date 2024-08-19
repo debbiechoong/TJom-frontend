@@ -1,3 +1,7 @@
+# Project Introduction
+
+JeJom is a AI-powered app that rejuvenates tourism in Jeju Island by turning ordinary cafes into immersive murder mystery game venues (剧本杀). It also acts as a travel co-pilot, providing personalized itineraries, cultural experiences, and essential travel support, aiming to attract domestic and foreign tourist.
+
 # Project Setup Guide
 
 ## Setting Up the Environment
