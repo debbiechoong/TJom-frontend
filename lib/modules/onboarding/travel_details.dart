@@ -60,7 +60,8 @@ class _TravelDetailsState extends State<TravelDetails> {
                             horizontal: 32, vertical: 16),
                       ),
                     ),
-                    onPressed: () => onBoardingProvider.sendTravelDetails(),
+                    onPressed: () =>
+                        onBoardingProvider.sendTravelDetails(context),
                     child: Text("I'm in!",
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                               color: Theme.of(context)

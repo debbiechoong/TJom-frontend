@@ -31,7 +31,7 @@ class Prompt extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         Text(
-            "Type in your destinations, budget, duration, interest and number of traveller",
+            "Type in your destinations, budget, interests, start and end date",
             style: Theme.of(context).textTheme.bodyLarge),
         const SizedBox(height: 32),
         TextField(

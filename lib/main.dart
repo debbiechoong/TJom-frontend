@@ -1,8 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:jejom/api/user_api.dart';
 import 'package:jejom/models/language_enum.dart';
-import 'package:jejom/modules/home/home.dart';
 import 'package:jejom/modules/onboarding/onboarding_wrapper.dart';
 import 'package:jejom/providers/accomodation_provider.dart';
 import 'package:jejom/providers/interest_provider.dart';
@@ -57,11 +55,11 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => UserProvider(userId)),
       ],
       child: MaterialApp(
-        title: 'Flutter Demo',
+        title: 'Jejom',
         debugShowCheckedModeBanner: false,
         // theme: brightness == Brightness.light ? theme.light() : theme.dark(),
         theme: theme.dark(),
-        home: const Home(),
+        home: const OnBoarding(isOnboarding: true),
       ),
     );
   }

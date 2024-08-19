@@ -88,7 +88,6 @@ class _HomeState extends State<Home> {
                     onSubmitted: (value) {
                       onboardingProvider.updatePrompt(value);
                       onboardingProvider.sendPrompt();
-
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) =>
@@ -199,45 +198,50 @@ class _HomeState extends State<Home> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  GlassContainer(
-                    padding: 0,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ClipRRect(
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(16.0),
-                            bottomLeft: Radius.circular(16.0),
-                          ),
-                          child: Image.network(
-                            tripProvider
-                                .trips.first.destinations.first.imageUrl.first,
-                            width: 160,
-                            height: 120,
-                            fit: BoxFit.cover,
+                  tripProvider.trips.isEmpty
+                      ? const SizedBox()
+                      : GlassContainer(
+                          padding: 0,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // ClipRRect(
+                              //   borderRadius: const BorderRadius.only(
+                              //     topLeft: Radius.circular(16.0),
+                              //     bottomLeft: Radius.circular(16.0),
+                              //   ),
+                              //   child: Image.network(
+                              //     tripProvider
+                              //         .trips.first.destinations.first.imageUrl.first,
+                              //     width: 160,
+                              //     height: 120,
+                              //     fit: BoxFit.cover,
+                              //   ),
+                              // ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text("Current Trip",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .labelLarge),
+                                      const SizedBox(height: 8),
+                                      Text(tripProvider.trips.first.title,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleLarge),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text("Current Trip",
-                                    style:
-                                        Theme.of(context).textTheme.labelLarge),
-                                const SizedBox(height: 8),
-                                Text(tripProvider.trips.first.title,
-                                    style:
-                                        Theme.of(context).textTheme.titleLarge),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                 ],
               ),
             )

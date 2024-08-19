@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:jejom/api/trip_api.dart';
 import 'package:jejom/models/flight.dart';
 import 'package:jejom/modules/onboarding/travel_details.dart';
+import 'package:jejom/providers/trip_provider.dart';
+import 'package:provider/provider.dart';
 
 class OnboardingProvider extends ChangeNotifier {
   final PageController _mainPageController = PageController();
   int _page = 0;
+  TripApi tripApi = TripApi();
 
   int get page => _page;
   PageController get mainPageController => _mainPageController;
 
-  String prompt = "";
+  String prompt = "I want to go jeju, from 13 sep to 15 sep";
   bool isLoading = false;
   List<Flight> selectedFlights = [];
 
@@ -77,24 +81,23 @@ class OnboardingProvider extends ChangeNotifier {
         curve: Curves.easeInOutCubicEmphasized);
   }
 
-  void sendPrompt() {
+  Future<void> sendPrompt() async {
     isLoading = true;
+    nextPage();
     notifyListeners();
+    print("prompt: $prompt");
 
-    //set Timeout for 2 seconds to stimulate loading
-    Future.delayed(const Duration(seconds: 2), () {
-      // print(prompt);
+    final response = await tripApi.checkInitInput(prompt);
+    // print(response);
 
-      //call API, route if success
-      isDestination = true;
-      isDuration = true;
-      isBudget = true;
-      isInterest = true;
+    //call API, route if success
+    isDestination = !response['isDestination'];
+    isDuration = !response['isDuration'];
+    isBudget = !response['isBudget'];
+    isInterest = !response['isInterest'];
 
-      isLoading = false;
-      nextPage();
-      notifyListeners();
-    });
+    isLoading = false;
+    notifyListeners();
   }
 
   //Future details
@@ -115,32 +118,35 @@ class OnboardingProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void sendTravelDetails() {
+  Future<void> sendTravelDetails(BuildContext context) async {
     isLoading = true;
     notifyListeners();
 
     //set Timeout for 2 seconds to stimulate loading
-    Future.delayed(const Duration(seconds: 2), () {
-      String additionalPrompt = "";
-      if (isDestination) {
-        additionalPrompt += "Destination: $destination\n";
-      }
-      if (isDuration) {
-        additionalPrompt += "Start Date: $startDate\n";
-        additionalPrompt += "End Date: $endDate\n";
-      }
-      if (isBudget) {
-        additionalPrompt += "Budget: $budget\n";
-      }
-      if (isInterest) {
-        additionalPrompt += "Interest: $selectedInterests\n";
-      }
+    String additionalPrompt = "$prompt\n";
+    String userInterest = "";
+    if (isDestination) {
+      additionalPrompt += "Destination: $destination\n";
+    }
+    if (isDuration) {
+      additionalPrompt += "Start Date: $startDate\n";
+      additionalPrompt += "End Date: $endDate\n";
+    }
+    if (isBudget) {
+      additionalPrompt += "Budget: $budget\n";
+    }
+    if (isInterest) {
+      userInterest = "Interest: ${selectedInterests.join(", ")}\n";
+    }
 
-      print(additionalPrompt);
+    print(additionalPrompt);
 
-      isLoading = false;
-      notifyListeners();
-      nextPage();
-    });
+    final tripProvider = Provider.of<TripProvider>(context, listen: false);
+    final response = await tripApi.generateTrip(additionalPrompt, userInterest);
+    tripProvider.addTripFromJson(response);
+
+    isLoading = false;
+    notifyListeners();
+    nextPage();
   }
 }

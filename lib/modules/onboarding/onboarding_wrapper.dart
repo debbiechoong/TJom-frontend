@@ -53,7 +53,7 @@ class _OnBoardingState extends State<OnBoarding> {
                         isOnboarding: true,
                       ),
                       // Flights(),
-                      AccomPage(),
+                      // AccomPage(),
                       Itinerary(),
                       OnboardingSuccess(),
                     ],
@@ -64,7 +64,7 @@ class _OnBoardingState extends State<OnBoarding> {
                     children: const [
                       TravelDetails(isOnboarding: false),
                       // Flights(),
-                      AccomPage(),
+                      // AccomPage(),
                       Itinerary(),
                       OnboardingSuccess(),
                     ],

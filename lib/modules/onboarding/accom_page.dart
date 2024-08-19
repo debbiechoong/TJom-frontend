@@ -141,7 +141,7 @@ class _AccomPageState extends State<AccomPage> {
                   '${accom.name}',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
-                const SizedBox(height: 8),
+                // const SizedBox(height: 8),
                 Text(
                   '${accom.address}',
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
@@ -151,7 +151,7 @@ class _AccomPageState extends State<AccomPage> {
                             .withOpacity(0.8),
                       ),
                 ),
-                const SizedBox(height: 8),
+                // const SizedBox(height: 8),
                 Text(
                   '${accom.price}',
                   style: Theme.of(context).textTheme.titleSmall,

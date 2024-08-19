@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:jejom/models/destination.dart';
 import 'package:jejom/providers/onboarding_provider.dart';
 import 'package:jejom/providers/trip_provider.dart';
 import 'package:jejom/utils/constants/curve.dart';
-import 'package:jejom/utils/m3_carousel.dart';
+import 'package:jejom/utils/glass_container.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Itinerary extends StatefulWidget {
   const Itinerary({super.key});
@@ -55,8 +55,6 @@ class _ItineraryState extends State<Itinerary> {
               itemBuilder: (context, index) {
                 final trip = tripProvider.trips[index];
 
-                //Sort the destination according to days and time
-                //Build a new array is it is the next day
                 List<List<Destination>> destinations = [[]];
 
                 for (int i = 0; i < trip.destinations.length; i++) {
@@ -64,34 +62,21 @@ class _ItineraryState extends State<Itinerary> {
                     destinations[destinations.length - 1]
                         .add(trip.destinations[i]);
                   } else {
-                    if (trip.destinations[i].startDate.day !=
-                        trip.destinations[i - 1].startDate.day) {
+                    if (trip.destinations[i].startDate !=
+                        trip.destinations[i - 1].startDate) {
                       destinations.add([]);
                     }
                     destinations[destinations.length - 1]
                         .add(trip.destinations[i]);
                   }
                 }
+
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(trip.title,
                         style: Theme.of(context).textTheme.titleLarge),
                     const SizedBox(height: 16),
-                    SizedBox(
-                      height: 200,
-                      width: double.infinity,
-                      child: M3Carousel(
-                        slideAnimationDuration: 300, // milliseconds
-                        titleFadeAnimationDuration: 200, // milliseconds
-                        children: [
-                          ...destinations.map((dayDestination) {
-                            return dayDestination.map((des) =>
-                                {"image": des.imageUrl[0], "title": des.name});
-                          }).expand((i) => i),
-                        ],
-                      ),
-                    ),
                     MediaQuery.removePadding(
                       context: context,
                       removeTop: true,
@@ -105,8 +90,7 @@ class _ItineraryState extends State<Itinerary> {
                               const SizedBox(height: 8),
                               Row(
                                 children: [
-                                  Text(
-                                      "Day ${index + 1}  •  ${DateFormat('dd MMM yyyy').format(trip.startDate.add(Duration(days: index)))}",
+                                  Text("Day ${index + 1}  •  ${trip.startDate}",
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleMedium
@@ -114,39 +98,107 @@ class _ItineraryState extends State<Itinerary> {
                                               fontWeight: FontWeight.bold)),
                                   const SizedBox(width: 16),
                                   const Spacer(),
-                                  IconButton(
-                                      onPressed: () {
-                                        showAnimatedDialog(context,
-                                            icon: Icons.edit_rounded,
-                                            title:
-                                                "Edit Day ${index + 1} Itinerary",
-                                            desc:
-                                                "How would you like to change it?",
-                                            buttonText: "Submit",
-                                            onPressed: () {
-                                          tripProvider.sendNewPrompt(
-                                              prompt, trip.id);
-                                        }, prompt: prompt);
-                                      },
-                                      icon: const Icon(Icons.edit_rounded)),
+                                  // IconButton(
+                                  //     onPressed: () {
+                                  //       showAnimatedDialog(context,
+                                  //           icon: Icons.edit_rounded,
+                                  //           title:
+                                  //               "Edit Day ${index + 1} Itinerary",
+                                  //           desc:
+                                  //               "How would you like to change it?",
+                                  //           buttonText: "Submit",
+                                  //           onPressed: () {
+                                  //         // tripProvider.sendNewPrompt(
+                                  //         //     prompt, trip.id);
+                                  //       }, prompt: prompt);
+                                  //     },
+                                  //     icon: const Icon(Icons.edit_rounded)),
                                 ],
                               ),
-                              const SizedBox(height: 16),
+                              const SizedBox(height: 32),
                               destinations[index].isNotEmpty
                                   ? _buildDestinationCard(destinations, index)
                                   : const SizedBox(),
+                              const Divider(),
+                              const SizedBox(height: 32),
                             ],
                           );
                         },
                       ),
                     ),
-                    const SizedBox(height: 80),
+                    // const SizedBox(height: 80),
+                    const SizedBox(height: 16),
+                    Text("Accomodations",
+                        style: Theme.of(context).textTheme.titleLarge),
+                    Text(
+                        "There would be ${trip.accommodations.length} accommodations recommended for this trip",
+                        style: Theme.of(context).textTheme.bodyMedium),
+                    const SizedBox(height: 16),
+                    ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: trip.accommodations.length,
+                        itemBuilder: (context, index) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    trip.accommodations[index].name,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium!
+                                        .copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                        ),
+                                  ),
+                                  const Spacer(),
+                                  Text(
+                                    trip.accommodations[index].rating
+                                        .toString(),
+                                    style:
+                                        Theme.of(context).textTheme.labelSmall,
+                                  )
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                trip.accommodations[index].address,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .labelMedium!
+                                    .copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onBackground
+                                            .withOpacity(0.8)),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
+                              ),
+                              const SizedBox(height: 8),
+                              Text("Price: ${trip.accommodations[index].price}",
+                                  style:
+                                      Theme.of(context).textTheme.labelSmall),
+                              const SizedBox(height: 16),
+                              GlassContainer(
+                                padding: 8,
+                                child: Text(
+                                    "${trip.accommodations[index].startDate}  until  ${trip.accommodations[index].endDate}",
+                                    style:
+                                        Theme.of(context).textTheme.labelSmall),
+                              ),
+                              const SizedBox(height: 64),
+                            ],
+                          );
+                        }),
                   ],
                 );
               },
             ),
           ),
-          const SizedBox(height: 16),
           Row(
             children: [
               const Spacer(),
@@ -159,7 +211,11 @@ class _ItineraryState extends State<Itinerary> {
                     const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                   ),
                 ),
-                onPressed: () {
+                onPressed: () async {
+                  final prefs = await SharedPreferences.getInstance();
+                  String? userId = prefs.getString('userId');
+
+                  tripProvider.addTripsToFirebase(userId!);
                   onboardingProvider.nextPage();
                 },
                 child: Text("Next",
@@ -170,6 +226,7 @@ class _ItineraryState extends State<Itinerary> {
               ),
             ],
           ),
+          const SizedBox(height: 32),
         ],
       ),
     );
@@ -184,24 +241,25 @@ class _ItineraryState extends State<Itinerary> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image.network(
-                          destination.imageUrl[0],
-                          width: 64,
-                          height: 64,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
+                      // ClipRRect(
+                      //   borderRadius: BorderRadius.circular(8),
+                      //   child: Image.network(
+                      //     destination.imageUrl[0],
+                      //     width: 64,
+                      //     height: 64,
+                      //     fit: BoxFit.cover,
+                      //   ),
+                      // ),
+                      // const SizedBox(width: 16),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               destination.name,
-                              style: Theme.of(context).textTheme.labelLarge,
+                              style: Theme.of(context).textTheme.titleMedium,
                             ),
+                            const SizedBox(height: 12),
                             Text(
                               destination.description,
                               style: Theme.of(context)
@@ -215,25 +273,18 @@ class _ItineraryState extends State<Itinerary> {
                               overflow: TextOverflow.ellipsis,
                               maxLines: 2,
                             ),
-                            Row(
-                              children: [
-                                Chip(
-                                    label: Text(
-                                  '${DateFormat('kk:mm a').format(destination.startDate.toLocal())} - ${DateFormat('kk:mm a').format(destination.endDate.toLocal())}',
-                                  style: Theme.of(context).textTheme.labelSmall,
-                                )),
-                                Text("  •  KRW${destination.price}",
-                                    style:
-                                        Theme.of(context).textTheme.labelSmall),
-                              ],
-                            )
+                            const SizedBox(height: 8),
+                            Text(
+                                "Entry Fee: ${destination.price == "None" ? "Free" : destination.price}",
+                                style: Theme.of(context).textTheme.labelSmall),
                           ],
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
-                  const Divider(),
+                  // const SizedBox(height: 8),
+                  // const Divider(),
+                  const SizedBox(height: 32),
                 ],
               ))
           .toList(),
