@@ -19,6 +19,8 @@ class _TravelDetailsState extends State<TravelDetails> {
     final OnboardingProvider onBoardingProvider =
         Provider.of<OnboardingProvider>(context);
 
+    FocusManager.instance.primaryFocus?.unfocus();
+
     return onBoardingProvider.isLoading
         ? const Center(child: LoadingWidget())
         : SingleChildScrollView(

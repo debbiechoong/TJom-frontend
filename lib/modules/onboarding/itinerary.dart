@@ -76,6 +76,9 @@ class _ItineraryState extends State<Itinerary> {
                   children: [
                     Text(trip.title,
                         style: Theme.of(context).textTheme.titleLarge),
+                    const SizedBox(height: 8),
+                    Text("${trip.startDate}  -  ${trip.endDate}",
+                        style: Theme.of(context).textTheme.bodyLarge),
                     const SizedBox(height: 16),
                     MediaQuery.removePadding(
                       context: context,
@@ -86,11 +89,12 @@ class _ItineraryState extends State<Itinerary> {
                         itemCount: destinations.length,
                         itemBuilder: (BuildContext context, int index) {
                           return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const SizedBox(height: 8),
                               Row(
                                 children: [
-                                  Text("Day ${index + 1}  •  ${trip.startDate}",
+                                  Text("Day ${index + 1}",
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleMedium

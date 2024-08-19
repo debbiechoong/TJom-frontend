@@ -90,10 +90,10 @@ class _ScriptGamePageState extends State<ScriptGamePage> {
               children: [
                 _buildRestaurantTab(scriptGameProvider),
                 _buildScriptTab(scriptGameProvider),
-                _buildCharacterTab(scriptGameProvider),
-                _buildAddTab(scriptGameProvider),
-                _buildClueTab(scriptGameProvider),
-                _buildPlayerTab(scriptGameProvider),
+                // _buildCharacterTab(scriptGameProvider),
+                // _buildAddTab(scriptGameProvider),
+                // _buildClueTab(scriptGameProvider),
+                // _buildPlayerTab(scriptGameProvider),
               ],
             ),
           ),
@@ -103,7 +103,7 @@ class _ScriptGamePageState extends State<ScriptGamePage> {
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.only(bottom: 10),
         child: CrystalNavigationBar(
-          marginR: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+          marginR: const EdgeInsets.symmetric(horizontal: 120, vertical: 16),
           currentIndex: _SelectedTab.values.indexOf(selectedTab),
           unselectedItemColor: Colors.white70,
           selectedItemColor: Theme.of(context).colorScheme.primaryContainer,
@@ -119,22 +119,22 @@ class _ScriptGamePageState extends State<ScriptGamePage> {
               icon: Icons.home,
               unselectedIcon: Icons.home_outlined,
             ),
-            CrystalNavigationBarItem(
-              icon: Icons.child_care_rounded,
-              unselectedIcon: Icons.child_care_outlined,
-            ),
-            CrystalNavigationBarItem(
-              icon: Icons.book_rounded,
-              unselectedIcon: Icons.book_outlined,
-            ),
-            CrystalNavigationBarItem(
-              icon: Icons.follow_the_signs_rounded,
-              unselectedIcon: Icons.follow_the_signs_outlined,
-            ),
-            CrystalNavigationBarItem(
-              icon: Icons.person_rounded,
-              unselectedIcon: Icons.person_outline_rounded,
-            ),
+            // CrystalNavigationBarItem(
+            //   icon: Icons.child_care_rounded,
+            //   unselectedIcon: Icons.child_care_outlined,
+            // ),
+            // CrystalNavigationBarItem(
+            //   icon: Icons.book_rounded,
+            //   unselectedIcon: Icons.book_outlined,
+            // ),
+            // CrystalNavigationBarItem(
+            //   icon: Icons.follow_the_signs_rounded,
+            //   unselectedIcon: Icons.follow_the_signs_outlined,
+            // ),
+            // CrystalNavigationBarItem(
+            //   icon: Icons.person_rounded,
+            //   unselectedIcon: Icons.person_outline_rounded,
+            // ),
           ],
         ),
       ),
@@ -274,7 +274,12 @@ class _ScriptGamePageState extends State<ScriptGamePage> {
               scriptGameProvider.games.first.scriptPlanner
                   .replaceAll(r'\n', '\n'),
               style: Theme.of(context).textTheme.bodyLarge,
+              maxLines: 9,
+              overflow: TextOverflow.ellipsis,
             ),
+            const SizedBox(height: 24),
+            Text("Visit the restaurant to know about the full story!",
+                style: Theme.of(context).textTheme.bodyMedium),
             const SizedBox(height: 120),
           ],
         ),
@@ -383,4 +388,4 @@ class _ScriptGamePageState extends State<ScriptGamePage> {
   }
 }
 
-enum _SelectedTab { restaurant, script, character, add, clue, player }
+enum _SelectedTab { restaurant, storyline }
