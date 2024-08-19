@@ -13,7 +13,7 @@ class MapPage extends StatefulWidget {
 class _MapPageState extends State<MapPage> {
   GoogleMapController? mapController;
   Set<Marker> markers = {};
-  LatLng? initialPosition;
+  LatLng initialPosition = const LatLng(33.499621, 126.531188);
 
   @override
   void initState() {
@@ -57,7 +57,7 @@ class _MapPageState extends State<MapPage> {
     showModalBottomSheet(
       context: context,
       builder: (context) => Container(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Row(
           children: [
             ClipRRect(
@@ -79,7 +79,7 @@ class _MapPageState extends State<MapPage> {
                 },
               ),
             ),
-            SizedBox(width: 16),
+            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,11 +87,11 @@ class _MapPageState extends State<MapPage> {
                 children: [
                   Text(
                     interest.name,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: Theme.of(context).textTheme.titleLarge,
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(interest.address),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   if (interest.llmDescription != null)
                     Text(interest.llmDescription!),
                 ],
@@ -103,91 +103,28 @@ class _MapPageState extends State<MapPage> {
     );
   }
 
-  void _handleMapTap(LatLng position) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        TextEditingController descriptionController = TextEditingController();
-        return AlertDialog(
-          title: Text('Add a new location'),
-          content: TextField(
-            controller: descriptionController,
-            decoration: InputDecoration(hintText: 'Enter a description'),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                _addNewInterest(position, descriptionController.text);
-                Navigator.of(context).pop();
-              },
-              child: Text('Add'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _addNewInterest(LatLng position, String description) async {
-    final interestProvider =
-        Provider.of<InterestProvider>(context, listen: false);
-    final newInterest = InterestDestination(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      name: 'New Location',
-      description: description,
-      imageUrl: [],
-      address: '',
-      lat: position.latitude,
-      long: position.longitude,
-    );
-
-    setState(() {
-      interestProvider.interests!.add(newInterest);
-      markers.add(
-        Marker(
-          markerId: MarkerId(newInterest.id),
-          position: LatLng(newInterest.lat, newInterest.long),
-          infoWindow: InfoWindow(
-            title: newInterest.name,
-            onTap: () => _showInterestDetails(newInterest),
-          ),
-        ),
-      );
-    });
-
-    await interestProvider.saveInterestsToFirebase();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          initialPosition == null
-              ? Center(child: CircularProgressIndicator())
-              : GoogleMap(
-                  onMapCreated: (controller) => mapController = controller,
-                  initialCameraPosition: CameraPosition(
-                    target: initialPosition!,
-                    zoom: 14.0,
-                  ),
-                  markers: markers,
-                  onTap: _handleMapTap,
-                ),
+          GoogleMap(
+            onMapCreated: (controller) => mapController = controller,
+            initialCameraPosition: CameraPosition(
+              target: initialPosition,
+              zoom: 14.0,
+            ),
+            markers: markers,
+            // onTap: _handleMapTap,
+          ),
           Positioned(
             top: 40,
             left: 20,
             child: GestureDetector(
               onTap: () => Navigator.of(context).pop(),
               child: Container(
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
+                padding: const EdgeInsets.all(10),
+                decoration: const BoxDecoration(
                   color: Colors.white,
                   shape: BoxShape.circle,
                   boxShadow: [
@@ -198,7 +135,7 @@ class _MapPageState extends State<MapPage> {
                     ),
                   ],
                 ),
-                child: Icon(Icons.arrow_back, color: Colors.black),
+                child: const Icon(Icons.arrow_back, color: Colors.black),
               ),
             ),
           ),
@@ -207,3 +144,65 @@ class _MapPageState extends State<MapPage> {
     );
   }
 }
+
+
+  // void _handleMapTap(LatLng position) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) {
+  //       TextEditingController descriptionController = TextEditingController();
+  //       return AlertDialog(
+  //         title: const Text('Add a new location'),
+  //         content: TextField(
+  //           controller: descriptionController,
+  //           decoration: const InputDecoration(hintText: 'Enter a description'),
+  //         ),
+  //         actions: [
+  //           TextButton(
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //             child: const Text('Cancel'),
+  //           ),
+  //           TextButton(
+  //             onPressed: () {
+  //               _addNewInterest(position, descriptionController.text);
+  //               Navigator.of(context).pop();
+  //             },
+  //             child: Text('Add'),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
+
+  // void _addNewInterest(LatLng position, String description) async {
+  //   final interestProvider =
+  //       Provider.of<InterestProvider>(context, listen: false);
+  //   final newInterest = InterestDestination(
+  //     id: DateTime.now().millisecondsSinceEpoch.toString(),
+  //     name: 'New Location',
+  //     description: description,
+  //     imageUrl: [],
+  //     address: '',
+  //     lat: position.latitude,
+  //     long: position.longitude,
+  //   );
+
+  //   setState(() {
+  //     interestProvider.interests!.add(newInterest);
+  //     markers.add(
+  //       Marker(
+  //         markerId: MarkerId(newInterest.id),
+  //         position: LatLng(newInterest.lat, newInterest.long),
+  //         infoWindow: InfoWindow(
+  //           title: newInterest.name,
+  //           onTap: () => _showInterestDetails(newInterest),
+  //         ),
+  //       ),
+  //     );
+  //   });
+
+  //   await interestProvider.saveInterestsToFirebase();
+  // }

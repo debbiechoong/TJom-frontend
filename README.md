@@ -22,10 +22,20 @@
    flutter run
    ```
 
-### 4. Upstage API Utilization
+ ### 4. Clone the Backend Server
+   - [Jejom Backend](https://github.com/PIEthonista/Jejom)
+   - Follow the instruction in the backend to set up the server
+
+ ### 5. Clone the Murder Mystery Game Script Generator Model
+   - This model is trained solely for generating the game script that is presented in the app.
+   - Go to [Jejom Backend](https://github.com/PIEthonista/Jejom) and switch to *jubensha8 branch.
+   - Follow the instruction to set up the server
+
+
+## Upstage API Utilization
 Our application leverages several APIs provided by Upstage to enhance user experience across different modules. Below is a detailed breakdown of how each API is utilized:
 
-#### 4.1. Chat API
+### 1. Chat API
 - **Purpose:** Central to the menu chat and allergen detector functionalities within the food module.
 - **Model Used:** `solar-1-mini-chat`
 - **Functionality:**
@@ -33,13 +43,13 @@ Our application leverages several APIs provided by Upstage to enhance user exper
   - **Allergen Detector:** Analyzes menu items to identify ingredients that may trigger allergies, ensuring a safer dining experience for users.
   - **Explore Module:** This model is also used to filter tourist destinations based on the user's interests, ensuring personalized and relevant recommendations.
 
-#### 4.2. Document OCR API
+### 2. Document OCR API
 - **Purpose:** Converts Korean menu images into text, enabling subsequent translation and allergen detection, which enhances accessibility and interaction with foreign language content.
 - **Model Used:** `ocr-2.2.1`
 - **Functionality:**
   - **Food Module:** Extracts text from Korean menu images, allowing the application to process and translate the content into English. This step is crucial for users who may not understand Korean, ensuring they can navigate menus with ease.
 
-#### 4.3. Translation API
+### 3. Translation API
 - **Purpose:** Translates Korean text into English, ensuring that users can understand menus and other relevant content.
 - **Model Used:** `solar-1-mini-translate-koen`
 - **Functionality:**
