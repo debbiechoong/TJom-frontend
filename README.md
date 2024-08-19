@@ -36,4 +36,4 @@ JeJom is a AI-powered app that rejuvenates tourism in Jeju Island by turning ord
     - Follow the instruction to set up the server
 
 
-## Project Setup Guide
+## Upstage API Utilization
