@@ -21,7 +21,7 @@ class _ItineraryState extends State<Itinerary> {
   Widget build(BuildContext context) {
     final tripProvider = Provider.of<TripProvider>(context);
     final onboardingProvider = Provider.of<OnboardingProvider>(context);
-    String prompt = "";
+    // String prompt = "";
 
     return SingleChildScrollView(
       child: Column(

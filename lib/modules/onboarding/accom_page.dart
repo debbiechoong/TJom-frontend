@@ -1,9 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:intl/intl.dart';
 import 'package:jejom/models/acccomodation.dart';
-import 'package:jejom/models/flight.dart';
 import 'package:jejom/providers/accomodation_provider.dart';
 import 'package:jejom/providers/onboarding_provider.dart';
 import 'package:jejom/utils/constants/curve.dart';

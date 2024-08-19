@@ -34,7 +34,6 @@ class TripApi {
     var body = {
       'query': query,
       "user_props": userProps,
-      "mode": "test",
     };
 
     var response = await http.post(

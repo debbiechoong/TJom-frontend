@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:jejom/modules/onboarding/accom_page.dart';
-import 'package:jejom/modules/onboarding/flights.dart';
 import 'package:jejom/modules/onboarding/itinerary.dart';
 import 'package:jejom/modules/onboarding/landing.dart';
 import 'package:jejom/modules/onboarding/onboarding_success.dart';

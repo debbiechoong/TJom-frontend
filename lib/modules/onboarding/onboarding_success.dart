@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:jejom/modules/home/home.dart';
-import 'package:jejom/providers/onboarding_provider.dart';
-import 'package:provider/provider.dart';
 
 class OnboardingSuccess extends StatelessWidget {
   const OnboardingSuccess({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final OnboardingProvider onboardingProvider =
-        Provider.of<OnboardingProvider>(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,

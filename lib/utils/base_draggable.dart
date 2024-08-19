@@ -27,8 +27,8 @@ class _BaseDraggableSheetState extends State<BaseDraggableSheet>
     with SingleTickerProviderStateMixin {
   // final sheetKey = GlobalKey();
   late AnimationController _animationController;
-  late Animation<double> _animation;
-  double _dragExtent = 0.0;
+  // late Animation<double> _animation;
+  // double _dragExtent = 0.0;
   // late DraggableScrollableController controller;
 
   @override

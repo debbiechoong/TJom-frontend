@@ -13,7 +13,7 @@ class OnboardingProvider extends ChangeNotifier {
   int get page => _page;
   PageController get mainPageController => _mainPageController;
 
-  String prompt = "I want to go jeju, from 13 sep to 15 sep";
+  String prompt = "";
   bool isLoading = false;
   List<Flight> selectedFlights = [];
 
