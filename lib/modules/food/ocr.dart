@@ -376,6 +376,7 @@ For example, 아이스 아메리카노 한 잔 주세요 (Aiseu Amerikano han ja
       [Food item] - Reason
       Food item with allergens (the name of the allergens): 
       [Food item] - Reason 
+      Generate fully in english
       ''';
 
       _callLLM(prompt);

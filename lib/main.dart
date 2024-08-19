@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jejom/api/user_api.dart';
 import 'package:jejom/models/language_enum.dart';
+import 'package:jejom/modules/home/home.dart';
 import 'package:jejom/modules/onboarding/onboarding_wrapper.dart';
 import 'package:jejom/providers/accomodation_provider.dart';
 import 'package:jejom/providers/interest_provider.dart';
@@ -46,7 +47,8 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => OnboardingProvider()),
-        ChangeNotifierProvider(create: (context) => TripProvider()),
+        ChangeNotifierProvider(
+            create: (context) => TripProvider()..fetchTripFromFirebase(userId)),
         ChangeNotifierProvider(create: (context) => InterestProvider(userId)),
         ChangeNotifierProvider(
             create: (context) =>
