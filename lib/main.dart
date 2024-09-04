@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     TextTheme textTheme = createTextTheme(context, "DM Sans", "DM Sans");
 
-    print("isOnBoarded: $isOnBoarded");
+    // print("isOnBoarded: $isOnBoarded");
     MaterialTheme theme = MaterialTheme(textTheme);
     return MultiProvider(
       providers: [
@@ -81,8 +81,6 @@ Future<String> _fetchOrCreateUserId() async {
     userId = const Uuid().v4(); // Generate a new userId
     await prefs.setString('userId', userId);
     await createUserInFirestore(userId);
-  } else {
-    await fetchUserFromFirestore(userId);
   }
 
   return userId;

@@ -2,12 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:jejom/api/user_api.dart';
 import 'package:jejom/models/user.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserProvider extends ChangeNotifier {
   User? _user;
 
   UserProvider(String userId) {
-    fetchUser(userId);
+    fetchUser();
   }
 
   User? get user => _user;
@@ -17,18 +18,20 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> fetchUser(String userId) async {
+  Future<void> fetchUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? userId = prefs.getString('userId');
+
+    if (userId == null) {
+      print('User ID not found in SharedPreferences');
+      return;
+    }
+
     // Fetch user from Firestore
     try {
-      final userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .get();
-      if (userDoc.exists) {
-        setUser(User.fromJson(userDoc.data() as Map<String, dynamic>));
-      } else {
-        await createUserInFirestore(userId);
-      }
+      final user = await fetchUserFromFirestore(userId);
+      setUser(user);
+      print("User set");
     } catch (e) {
       // Handle errors (e.g., connection issues)
       await createUserInFirestore(userId);
@@ -36,7 +39,9 @@ class UserProvider extends ChangeNotifier {
   }
 
   Future<void> updateUser(String userId,
-      {String? dietary, List<String>? allergies, List<String>? interests}) async {
+      {String? dietary,
+      List<String>? allergies,
+      List<String>? interests}) async {
     final Map<String, dynamic> data = {};
     if (dietary != null) {
       data['dietary'] = dietary;
@@ -47,7 +52,10 @@ class UserProvider extends ChangeNotifier {
     if (interests != null) {
       data['interests'] = interests;
     }
-    await FirebaseFirestore.instance.collection('users').doc(userId).update(data);
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .update(data);
   }
 
   // update allergies

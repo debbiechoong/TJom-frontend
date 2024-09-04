@@ -1,16 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:jejom/models/interest_destination.dart';
+import 'package:jejom/models/user.dart';
 
-Future<void> fetchUserFromFirestore(String userId) async {
+Future<User?> fetchUserFromFirestore(String userId) async {
   try {
     final userDoc =
         await FirebaseFirestore.instance.collection('users').doc(userId).get();
-    if (!userDoc.exists) {
-      await createUserInFirestore(userId);
-    }
+    if (!userDoc.exists) {}
+
+    print('User data: ${userDoc.data()}');
+
+    return User.fromJson(userDoc.data() as Map<String, dynamic>);
   } catch (e) {
-    // Handle errors (e.g., connection issues)
-    await createUserInFirestore(userId);
+    print('Error fetching user: $e');
+    return null;
   }
 }
 
@@ -18,9 +21,6 @@ Future<void> createUserInFirestore(String userId) async {
   await FirebaseFirestore.instance.collection('users').doc(userId).set({
     'user_id': userId,
     'created_at': FieldValue.serverTimestamp(),
-    "dietary": "",
-    "allergies": [],
-    "interests": [],
   });
 }
 

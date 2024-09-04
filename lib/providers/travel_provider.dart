@@ -83,8 +83,8 @@ class TravelProvider extends ChangeNotifier {
 
   Future<void> sendPrompt() async {
     isLoading = true;
-    nextPage();
     notifyListeners();
+    
     print("prompt: $prompt");
 
     final response = await tripApi.checkInitInput(prompt);

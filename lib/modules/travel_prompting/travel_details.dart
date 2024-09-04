@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:jejom/providers/onboarding_provider.dart';
 import 'package:jejom/providers/travel_provider.dart';
 import 'package:jejom/utils/loading_screen.dart';
 import 'package:provider/provider.dart';

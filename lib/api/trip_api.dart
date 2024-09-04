@@ -76,4 +76,22 @@ class TripApi {
       print('Error fetching trip from Firebase: $e');
     }
   }
+
+  Future<void> updateTripInFirebase(
+      String userId, Map<String, dynamic> trip) async {
+    try {
+      var tripDoc = await fetchTripFromFirebase(userId);
+      await tripDoc.reference.update(trip);
+    } catch (e) {
+      print('Error updating trip in Firebase: $e');
+    }
+  }
+
+  Future<void> deleteTripFromFirebase(String tripId) async {
+    try {
+      await FirebaseFirestore.instance.collection('trips').doc(tripId).delete();
+    } catch (e) {
+      print('Error deleting trip from Firebase: $e');
+    }
+  }
 }
