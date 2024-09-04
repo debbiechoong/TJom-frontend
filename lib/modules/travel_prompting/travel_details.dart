@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:jejom/providers/onboarding_provider.dart';
+import 'package:jejom/providers/travel_provider.dart';
 import 'package:jejom/utils/loading_screen.dart';
 import 'package:provider/provider.dart';
 
-enum Interest { Adventure, Relax, Culture, Food, Shopping, Nature }
-
 class TravelDetails extends StatefulWidget {
-  final bool isOnboarding;
-  const TravelDetails({super.key, required this.isOnboarding});
+  const TravelDetails({super.key});
 
   @override
   State<TravelDetails> createState() => _TravelDetailsState();
@@ -16,12 +14,11 @@ class TravelDetails extends StatefulWidget {
 class _TravelDetailsState extends State<TravelDetails> {
   @override
   Widget build(BuildContext context) {
-    final OnboardingProvider onBoardingProvider =
-        Provider.of<OnboardingProvider>(context);
+    final travelProvider = Provider.of<TravelProvider>(context);
 
     FocusManager.instance.primaryFocus?.unfocus();
 
-    return onBoardingProvider.isLoading
+    return travelProvider.isLoading
         ? const Center(child: LoadingWidget())
         : SingleChildScrollView(
             child:
@@ -29,25 +26,20 @@ class _TravelDetailsState extends State<TravelDetails> {
               const SizedBox(height: 80),
               IconButton(
                   visualDensity: VisualDensity.adaptivePlatformDensity,
-                  onPressed: () => widget.isOnboarding
-                      ? onBoardingProvider.previousPage()
-                      : Navigator.of(context).pop(),
+                  onPressed: () => Navigator.of(context).pop(),
                   icon: const Icon(
                     Icons.arrow_back,
                     // size: 24,
                   )),
               const SizedBox(height: 16),
-              onBoardingProvider.isDestination
-                  ? _buildDestination(onBoardingProvider)
+              travelProvider.isDestination
+                  ? _buildDestination(travelProvider)
                   : const SizedBox(),
-              onBoardingProvider.isDuration
-                  ? _buildDuration(onBoardingProvider)
+              travelProvider.isDuration
+                  ? _buildDuration(travelProvider)
                   : const SizedBox(),
-              onBoardingProvider.isBudget
-                  ? _buildBudget(onBoardingProvider)
-                  : const SizedBox(),
-              onBoardingProvider.isInterest
-                  ? _buildInterest(onBoardingProvider)
+              travelProvider.isBudget
+                  ? _buildBudget(travelProvider)
                   : const SizedBox(),
               Row(
                 children: [
@@ -62,8 +54,7 @@ class _TravelDetailsState extends State<TravelDetails> {
                             horizontal: 32, vertical: 16),
                       ),
                     ),
-                    onPressed: () =>
-                        onBoardingProvider.sendTravelDetails(context),
+                    onPressed: () => travelProvider.sendTravelDetails(context),
                     child: Text("I'm in!",
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                               color: Theme.of(context)
@@ -78,7 +69,7 @@ class _TravelDetailsState extends State<TravelDetails> {
           );
   }
 
-  Widget _buildDestination(OnboardingProvider onBoardingProvider) {
+  Widget _buildDestination(TravelProvider travelProvider) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -103,14 +94,14 @@ class _TravelDetailsState extends State<TravelDetails> {
               borderRadius: BorderRadius.circular(16),
             ),
           ),
-          onChanged: (value) => onBoardingProvider.updateDestination(value),
+          onChanged: (value) => travelProvider.updateDestination(value),
         ),
         const SizedBox(height: 40),
       ],
     );
   }
 
-  Widget _buildDuration(OnboardingProvider onBoardingProvider) {
+  Widget _buildDuration(TravelProvider travelProvider) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -124,7 +115,7 @@ class _TravelDetailsState extends State<TravelDetails> {
         Row(
           children: [
             Text(
-                "${onBoardingProvider.startDate.toIso8601String().substring(0, 10)} - ${onBoardingProvider.endDate.toIso8601String().substring(0, 10)}"),
+                "${travelProvider.startDate.toIso8601String().substring(0, 10)} - ${travelProvider.endDate.toIso8601String().substring(0, 10)}"),
             const Spacer(),
             IconButton(
               onPressed: () async {
@@ -135,8 +126,8 @@ class _TravelDetailsState extends State<TravelDetails> {
                 );
                 if (picked != null) {
                   setState(() {
-                    onBoardingProvider.startDate = picked.start;
-                    onBoardingProvider.endDate = picked.end;
+                    travelProvider.startDate = picked.start;
+                    travelProvider.endDate = picked.end;
                     //below have methods that runs once a date range is picked
                   });
                 }
@@ -150,7 +141,7 @@ class _TravelDetailsState extends State<TravelDetails> {
     );
   }
 
-  Widget _buildBudget(OnboardingProvider onBoardingProvider) {
+  Widget _buildBudget(TravelProvider travelProvider) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -171,70 +162,7 @@ class _TravelDetailsState extends State<TravelDetails> {
               borderRadius: BorderRadius.circular(16),
             ),
           ),
-          onChanged: (value) => onBoardingProvider.updateBudget(value),
-        ),
-        const SizedBox(height: 40),
-      ],
-    );
-  }
-
-  Widget _buildInterest(OnboardingProvider onBoardingProvider) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Interest",
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge
-              ?.copyWith(fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          children: Interest.values.map((interest) {
-            IconData icon;
-            String label;
-
-            switch (interest) {
-              case Interest.Adventure:
-                icon = Icons.directions_walk;
-                label = "Adventure";
-                break;
-              case Interest.Relax:
-                icon = Icons.spa;
-                label = "Relax";
-                break;
-              case Interest.Culture:
-                icon = Icons.museum;
-                label = "Culture";
-                break;
-              case Interest.Food:
-                icon = Icons.restaurant;
-                label = "Food";
-                break;
-              case Interest.Shopping:
-                icon = Icons.shopping_bag;
-                label = "Shopping";
-                break;
-              case Interest.Nature:
-                icon = Icons.park;
-                label = "Nature";
-                break;
-            }
-
-            return ChoiceChip(
-              avatar: Icon(icon),
-              label: Text(label),
-              showCheckmark: false,
-              selected: onBoardingProvider.selectedInterests.contains(interest),
-              onSelected: (selected) {
-                onBoardingProvider.toggleInterest(interest);
-              },
-              // selectedColor: Colors.lightGreenAccent,
-              // backgroundColor: Colors.grey.shade200,
-            );
-          }).toList(),
+          onChanged: (value) => travelProvider.updateBudget(value),
         ),
         const SizedBox(height: 40),
       ],

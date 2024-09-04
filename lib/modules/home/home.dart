@@ -5,6 +5,7 @@ import 'package:jejom/modules/maps/map.dart';
 import 'package:jejom/modules/onboarding/onboarding_wrapper.dart';
 import 'package:jejom/modules/script_game/game_list.dart';
 import 'package:jejom/providers/onboarding_provider.dart';
+import 'package:jejom/providers/travel_provider.dart';
 import 'package:jejom/providers/trip_provider.dart';
 import 'package:jejom/utils/glass_container.dart';
 import 'package:o3d/o3d.dart';
@@ -23,7 +24,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     final TripProvider tripProvider = Provider.of<TripProvider>(context);
-    final onboardingProvider = Provider.of<OnboardingProvider>(context);
+    final travelProvider = Provider.of<TravelProvider>(context);
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -86,12 +87,11 @@ class _HomeState extends State<Home> {
                     ),
                     textInputAction: TextInputAction.send,
                     onSubmitted: (value) {
-                      onboardingProvider.updatePrompt(value);
-                      onboardingProvider.sendPrompt();
+                      travelProvider.updatePrompt(value);
+                      travelProvider.sendPrompt();
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) =>
-                              const OnBoarding(isOnboarding: false),
+                          builder: (context) => const OnBoarding(),
                         ),
                       );
                     },

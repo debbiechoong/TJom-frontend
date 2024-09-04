@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:jejom/modules/onboarding/dietary_preference.dart';
-import 'package:jejom/modules/onboarding/landing.dart';
+import 'package:jejom/modules/travel_prompting/itinerary.dart';
 import 'package:jejom/modules/onboarding/onboarding_success.dart';
-import 'package:jejom/modules/onboarding/personal_interest.dart';
+import 'package:jejom/modules/travel_prompting/travel_details.dart';
 import 'package:jejom/providers/onboarding_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:widget_circular_animator/widget_circular_animator.dart';
 
-class OnBoarding extends StatefulWidget {
-  const OnBoarding({super.key});
+class TravelWrapper extends StatefulWidget {
+  const TravelWrapper({super.key});
 
   @override
-  State<OnBoarding> createState() => _OnBoardingState();
+  State<TravelWrapper> createState() => _TravelWrapperState();
 }
 
-class _OnBoardingState extends State<OnBoarding> {
+class _TravelWrapperState extends State<TravelWrapper> {
+
   @override
   Widget build(BuildContext context) {
     final onboardingProvider = Provider.of<OnboardingProvider>(context);
-
+    
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -42,9 +42,8 @@ class _OnBoardingState extends State<OnBoarding> {
               controller: onboardingProvider.mainPageController,
               physics: const NeverScrollableScrollPhysics(),
               children: const [
-                Landing(),
-                PersonalInterest(),
-                DietaryPreferences(),
+                TravelDetails(),
+                Itinerary(),
                 OnboardingSuccess(),
               ],
             )

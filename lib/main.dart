@@ -7,6 +7,7 @@ import 'package:jejom/providers/accomodation_provider.dart';
 import 'package:jejom/providers/interest_provider.dart';
 import 'package:jejom/providers/onboarding_provider.dart';
 import 'package:jejom/providers/script_game_provider.dart';
+import 'package:jejom/providers/travel_provider.dart';
 import 'package:jejom/providers/trip_provider.dart';
 import 'package:jejom/providers/user_provider.dart';
 import 'package:jejom/utils/theme.dart';
@@ -31,18 +32,22 @@ void main() async {
 
   // Fetch or create userId and store it in SharedPreferences
   final String userId = await _fetchOrCreateUserId();
+  final bool isOnBoarded = await isUserOnBoarded();
 
-  runApp(MyApp(userId: userId));
+  runApp(MyApp(userId: userId, isOnBoarded: isOnBoarded));
 }
 
 class MyApp extends StatelessWidget {
   final String userId;
-  const MyApp({super.key, required this.userId});
+  final bool isOnBoarded;
+
+  const MyApp({super.key, required this.userId, required this.isOnBoarded});
 
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = createTextTheme(context, "DM Sans", "DM Sans");
 
+    print("isOnBoarded: $isOnBoarded");
     MaterialTheme theme = MaterialTheme(textTheme);
     return MultiProvider(
       providers: [
@@ -55,13 +60,14 @@ class MyApp extends StatelessWidget {
                 ScriptGameProvider()..fetchGames(Language.english)),
         ChangeNotifierProvider(create: (context) => AccommodationProvider()),
         ChangeNotifierProvider(create: (context) => UserProvider(userId)),
+        ChangeNotifierProvider(create: (context) => TravelProvider()),
       ],
       child: MaterialApp(
         title: 'Jejom',
         debugShowCheckedModeBanner: false,
         // theme: brightness == Brightness.light ? theme.light() : theme.dark(),
         theme: theme.dark(),
-        home: const OnBoarding(isOnboarding: true),
+        home: isOnBoarded ? const Home() : const OnBoarding(),
       ),
     );
   }
@@ -80,4 +86,9 @@ Future<String> _fetchOrCreateUserId() async {
   }
 
   return userId;
+}
+
+Future<bool> isUserOnBoarded() async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getBool('onboarded') ?? false;
 }

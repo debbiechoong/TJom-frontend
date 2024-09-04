@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_swipe_button/flutter_swipe_button.dart';
 import 'package:jejom/providers/onboarding_provider.dart';
 import 'package:jejom/utils/glass_container.dart';
@@ -31,7 +30,7 @@ class _LandingState extends State<Landing> {
         Text("New Trip", style: Theme.of(context).textTheme.headlineLarge),
         const SizedBox(height: 16),
         Text(
-            "Let's plan your next trip with AI Powered Jejom. Where would you like to go?",
+            "Let's plan your next trip with AI Powered Jejom. Let's register an account first!",
             style: Theme.of(context).textTheme.bodyLarge),
         const SizedBox(height: 32),
         GlassContainer(
@@ -82,10 +81,6 @@ class _LandingState extends State<Landing> {
                 ],
               ),
               borderRadius: BorderRadius.circular(64.0),
-              // border: Border.all(
-              //   width: 2,
-              //   color: Colors.white.withOpacity(0.3),
-              // ),
             ),
             child: SwipeButton(
                 width: double.infinity,

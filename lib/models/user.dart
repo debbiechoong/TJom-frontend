@@ -6,6 +6,8 @@ class User {
   final String dietary;
   final List<String> allergies;
   final List<String> interests;
+  final String name;
+  final String desc;
 
   User({
     required this.userId,
@@ -13,6 +15,8 @@ class User {
     required this.dietary,
     required this.allergies,
     required this.interests,
+    required this.name,
+    required this.desc,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -22,6 +26,8 @@ class User {
       dietary: json['dietary'] as String,
       allergies: List<String>.from(json['allergies']),
       interests: List<String>.from(json['interests']),
+      name: json['name'] as String,
+      desc: json['desc'] as String,
     );
   }
 
@@ -32,6 +38,8 @@ class User {
       'dietary': dietary,
       'allergies': allergies,
       'interests': interests,
+      'name': name,
+      'desc': desc,
     };
   }
 
@@ -41,6 +49,8 @@ class User {
     String? dietary,
     List<String>? allergies,
     List<String>? interests,
+    String? name,
+    String? desc,
   }) {
     return User(
       userId: userId ?? this.userId,
@@ -48,6 +58,8 @@ class User {
       dietary: dietary ?? this.dietary,
       allergies: allergies ?? this.allergies,
       interests: interests ?? this.interests,
+      name: name ?? this.name,
+      desc: desc ?? this.desc,
     );
   }
 }

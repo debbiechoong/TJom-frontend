@@ -3,6 +3,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:intl/intl.dart';
 import 'package:jejom/models/flight.dart';
 import 'package:jejom/providers/onboarding_provider.dart';
+import 'package:jejom/providers/travel_provider.dart';
 import 'package:jejom/utils/constants/curve.dart';
 import 'package:jejom/utils/glass_container.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +18,7 @@ class Flights extends StatefulWidget {
 class _FlightsState extends State<Flights> {
   @override
   Widget build(BuildContext context) {
-    final onboardingProvider = Provider.of<OnboardingProvider>(context);
+    final travelProvider = Provider.of<TravelProvider>(context);
 
     List<Flight> flightsDummy = [
       Flight(
@@ -57,7 +58,7 @@ class _FlightsState extends State<Flights> {
           IconButton(
               visualDensity: VisualDensity.adaptivePlatformDensity,
               onPressed: () {
-                onboardingProvider.previousPage();
+                travelProvider.previousPage();
               },
               icon: const Icon(
                 Icons.arrow_back,
@@ -108,7 +109,7 @@ class _FlightsState extends State<Flights> {
                           width: double.infinity,
                           child: flightCard(
                               flight: flight,
-                              isSelected: onboardingProvider.selectedFlights
+                              isSelected: travelProvider.selectedFlights
                                   .any((element) => element.id == flight.id)),
                         ),
                       ),
@@ -132,7 +133,7 @@ class _FlightsState extends State<Flights> {
                   ),
                 ),
                 onPressed: () {
-                  onboardingProvider.nextPage();
+                  travelProvider.nextPage();
                 },
                 child: Text("Next",
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -148,7 +149,7 @@ class _FlightsState extends State<Flights> {
   }
 
   Widget flightCard({required Flight flight, required bool isSelected}) {
-    final onboardingProvider = Provider.of<OnboardingProvider>(context);
+    final travelProvider = Provider.of<TravelProvider>(context);
 
     return Container(
       decoration: BoxDecoration(
@@ -190,7 +191,7 @@ class _FlightsState extends State<Flights> {
             children: [
               InkWell(
                 onTap: () {
-                  onboardingProvider.toggleSelectedFlight(flight);
+                  travelProvider.toggleSelectedFlight(flight);
                 },
                 child: Container(
                     width: 64,

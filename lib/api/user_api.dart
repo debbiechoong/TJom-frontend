@@ -26,18 +26,39 @@ Future<void> createUserInFirestore(String userId) async {
 
 //update User
 Future<void> updateUserInFirestore(String userId,
-    {String? dietary, List<String>? allergies, List<String>? interests}) async {
-  final Map<String, dynamic> data = {};
-  if (dietary != null) {
-    data['dietary'] = dietary;
+    {String? dietary,
+    List<String>? allergies,
+    List<String>? interests,
+    String? name,
+    String? desc}) async {
+  try {
+    final Map<String, dynamic> data = {};
+
+    if (dietary != null) {
+      data['dietary'] = dietary;
+    }
+    if (allergies != null) {
+      data['allergies'] = allergies;
+    }
+    if (interests != null) {
+      data['interests'] = interests;
+    }
+    if (name != null) {
+      data['name'] = name;
+    }
+    if (desc != null) {
+      data['desc'] = desc;
+    }
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .update(data);
+  } catch (e) {
+    // Handle the error appropriately
+    print("Failed to update user in Firestore: $e");
+    rethrow; // Optionally rethrow the error to handle it further up the chain
   }
-  if (allergies != null) {
-    data['allergies'] = allergies;
-  }
-  if (interests != null) {
-    data['interests'] = interests;
-  }
-  await FirebaseFirestore.instance.collection('users').doc(userId).update(data);
 }
 
 Future<void> addOrUpdateInterestDestination(

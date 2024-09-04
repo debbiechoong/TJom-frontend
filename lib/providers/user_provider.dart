@@ -35,6 +35,21 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> updateUser(String userId,
+      {String? dietary, List<String>? allergies, List<String>? interests}) async {
+    final Map<String, dynamic> data = {};
+    if (dietary != null) {
+      data['dietary'] = dietary;
+    }
+    if (allergies != null) {
+      data['allergies'] = allergies;
+    }
+    if (interests != null) {
+      data['interests'] = interests;
+    }
+    await FirebaseFirestore.instance.collection('users').doc(userId).update(data);
+  }
+
   // update allergies
   Future<void> updateUserAllergies(List<String> allergies) async {
     try {

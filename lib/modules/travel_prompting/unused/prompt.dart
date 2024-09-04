@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jejom/providers/onboarding_provider.dart';
+import 'package:jejom/providers/travel_provider.dart';
 import 'package:provider/provider.dart';
 
 class Prompt extends StatelessWidget {
@@ -7,7 +7,7 @@ class Prompt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final onBoardingProvider = Provider.of<OnboardingProvider>(context);
+    final travelProvider = Provider.of<TravelProvider>(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -16,7 +16,7 @@ class Prompt extends StatelessWidget {
         IconButton(
             visualDensity: VisualDensity.adaptivePlatformDensity,
             iconSize: 80,
-            onPressed: () => onBoardingProvider.previousPage(),
+            onPressed: () => travelProvider.previousPage(),
             icon: const Icon(
               Icons.arrow_back,
               size: 24,
@@ -44,7 +44,7 @@ class Prompt extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
             ),
           ),
-          onChanged: (value) => onBoardingProvider.updatePrompt(value),
+          onChanged: (value) => travelProvider.updatePrompt(value),
         ),
         const Spacer(),
         Row(
@@ -59,7 +59,7 @@ class Prompt extends StatelessWidget {
                   const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                 ),
               ),
-              onPressed: () => onBoardingProvider.sendPrompt(),
+              onPressed: () => travelProvider.sendPrompt(),
               child: Text("Let's Go!",
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: Theme.of(context).colorScheme.onPrimaryContainer,

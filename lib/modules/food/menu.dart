@@ -33,41 +33,7 @@ class _MealPreferencesState extends State<MealPreferences> {
                   Icons.arrow_back,
                 ),
               ),
-              const SizedBox(height: 16),
-              const Text(
-                "Food Preferences & Allergies",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                "Type of food",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-              ..._buildFoodTypeRadioButtons(),
-              const SizedBox(height: 20),
-              const Text(
-                "Allergens",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: _allergyController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Enter your allergens (separated by commas)',
-                ),
-              ),
-              const SizedBox(height: 20),
-              Center(
-                child: ElevatedButton(
-                  onPressed: _submitPreferences,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF65558F),
-                  ),
-                  child: const Text("Submit"),
-                ),
-              ),
+              
             ],
           ),
         ),
