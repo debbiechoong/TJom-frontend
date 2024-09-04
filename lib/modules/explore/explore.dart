@@ -17,88 +17,77 @@ class Explore extends StatefulWidget {
 class _ExploreState extends State<Explore> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                IconButton(
-                  visualDensity: VisualDensity.adaptivePlatformDensity,
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: const Icon(Icons.arrow_back),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  "Explore Top Destinations",
-                  style: Theme.of(context)
-                      .textTheme
-                      .headlineLarge
-                      ?.copyWith(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
-                Text("See what other travelers are interested in",
-                    style: Theme.of(context).textTheme.bodyLarge),
-                const SizedBox(height: 16),
-                Consumer<InterestProvider>(
-                  builder: (context, interestProvider, child) {
-                    if (interestProvider.interests == null) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-
-                    final filteredInterests = interestProvider.interests!
-                        .where((destination) =>
-                            destination.llmDescription != null &&
-                            destination.llmDescription!.isNotEmpty)
-                        .toList();
-
-                    if (filteredInterests.isEmpty) {
-                      return const Center(
-                          child: Text(
-                              "No destinations with recommendations found"));
-                    }
-
-                    return AnimationLimiter(
-                      child: MediaQuery.removePadding(
-                        context: context,
-                        removeTop: true,
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: filteredInterests.length,
-                          itemBuilder: (context, index) {
-                            final destination = filteredInterests[index];
-                            return AnimationConfiguration.staggeredList(
-                              position: index,
-                              duration: const Duration(milliseconds: 375),
-                              child: SlideAnimation(
-                                curve: EMPHASIZED_DECELERATE,
-                                child: FadeInAnimation(
-                                  curve: EMPHASIZED_DECELERATE,
-                                  child: GlassContainer(
-                                    padding: 0,
-                                    marginBottom: 16,
-                                    width: double.infinity,
-                                    child: destinationCard(
-                                        destination: destination,
-                                        isSelected: false),
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 16),
+            Text(
+              "Explore Top Destinations",
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineLarge
+                  ?.copyWith(fontWeight: FontWeight.bold),
             ),
-          ),
+            const SizedBox(height: 16),
+            Text("See what other travelers are interested in",
+                style: Theme.of(context).textTheme.bodyLarge),
+            const SizedBox(height: 16),
+            Consumer<InterestProvider>(
+              builder: (context, interestProvider, child) {
+                if (interestProvider.interests == null) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                final filteredInterests = interestProvider.interests!
+                    .where((destination) =>
+                        destination.llmDescription != null &&
+                        destination.llmDescription!.isNotEmpty)
+                    .toList();
+
+                if (filteredInterests.isEmpty) {
+                  return const Center(
+                      child:
+                          Text("No destinations with recommendations found"));
+                }
+
+                return AnimationLimiter(
+                  child: MediaQuery.removePadding(
+                    context: context,
+                    removeTop: true,
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: filteredInterests.length,
+                      itemBuilder: (context, index) {
+                        final destination = filteredInterests[index];
+                        return AnimationConfiguration.staggeredList(
+                          position: index,
+                          duration: const Duration(milliseconds: 375),
+                          child: SlideAnimation(
+                            curve: EMPHASIZED_DECELERATE,
+                            child: FadeInAnimation(
+                              curve: EMPHASIZED_DECELERATE,
+                              child: GlassContainer(
+                                padding: 0,
+                                marginBottom: 16,
+                                width: double.infinity,
+                                child: destinationCard(
+                                    destination: destination,
+                                    isSelected: false),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );
