@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:jejom/models/destination.dart';
 import 'package:jejom/models/trip.dart';
-import 'package:jejom/providers/onboarding_provider.dart';
-import 'package:jejom/providers/trip_provider.dart';
 import 'package:jejom/utils/constants/curve.dart';
 import 'package:jejom/utils/glass_container.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class TripDetails extends StatefulWidget {
   final Trip trip;

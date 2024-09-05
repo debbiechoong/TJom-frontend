@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:jejom/modules/home/home.dart';
-import 'package:jejom/modules/travel_prompting/travel_wrapper.dart';
 
 class OnboardingSuccess extends StatelessWidget {
   const OnboardingSuccess({super.key});

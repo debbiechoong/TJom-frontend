@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:jejom/providers/user_provider.dart';
-import 'package:jejom/models/user.dart';
 
 class MealPreferences extends StatefulWidget {
   final VoidCallback onPreferencesUpdated;
   const MealPreferences({required this.onPreferencesUpdated, super.key});
 
   @override
-  _MealPreferencesState createState() => _MealPreferencesState();
+  State<MealPreferences> createState() => _MealPreferencesState();
 }
 
 class _MealPreferencesState extends State<MealPreferences> {
@@ -33,7 +32,6 @@ class _MealPreferencesState extends State<MealPreferences> {
                   Icons.arrow_back,
                 ),
               ),
-              
             ],
           ),
         ),

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:jejom/modules/explore/explore.dart';
 import 'package:jejom/modules/explore/explore_wrapper.dart';
 import 'package:jejom/modules/food/ocr.dart';
-import 'package:jejom/modules/explore/map.dart';
 import 'package:jejom/modules/script_game/game_list.dart';
 import 'package:jejom/modules/travel_prompting/travel_wrapper.dart';
 import 'package:jejom/modules/trip/trip_details.dart';

@@ -4,17 +4,15 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:jejom/models/user.dart';
 import 'package:jejom/modules/food/menu.dart';
 import 'package:jejom/providers/user_provider.dart';
-import 'package:jejom/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 class MenuOCRPage extends StatefulWidget {
-  const MenuOCRPage({Key? key}) : super(key: key);
+  const MenuOCRPage({super.key});
 
   @override
-  _MenuOCRPageState createState() => _MenuOCRPageState();
+  State<MenuOCRPage> createState() => _MenuOCRPageState();
 }
 
 class _MenuOCRPageState extends State<MenuOCRPage> {
