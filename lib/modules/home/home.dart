@@ -5,6 +5,7 @@ import 'package:jejom/modules/food/ocr.dart';
 import 'package:jejom/modules/explore/map.dart';
 import 'package:jejom/modules/script_game/game_list.dart';
 import 'package:jejom/modules/travel_prompting/travel_wrapper.dart';
+import 'package:jejom/modules/trip/trip_details.dart';
 import 'package:jejom/modules/trip/trip_list.dart';
 import 'package:jejom/providers/travel_provider.dart';
 import 'package:jejom/providers/trip_provider.dart';
@@ -112,7 +113,7 @@ class _HomeState extends State<Home> {
                       : GlassContainer(
                           padding: 0,
                           child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Expanded(
                                 child: Padding(
@@ -133,6 +134,38 @@ class _HomeState extends State<Home> {
                                               .titleLarge),
                                     ],
                                   ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(right: 16.0),
+                                child: InkWell(
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => TripDetails(
+                                          trip: tripProvider.trips.first,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                      width: 64,
+                                      height: 64,
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primaryContainer,
+                                          width: 2,
+                                        ),
+                                        borderRadius: BorderRadius.circular(32),
+                                      ),
+                                      child: Transform.rotate(
+                                        angle: 1.5708 / 2,
+                                        child: const Icon(
+                                            Icons.arrow_upward_rounded),
+                                      )),
                                 ),
                               ),
                             ],
