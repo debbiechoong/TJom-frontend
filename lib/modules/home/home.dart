@@ -5,6 +5,7 @@ import 'package:jejom/modules/food/ocr.dart';
 import 'package:jejom/modules/explore/map.dart';
 import 'package:jejom/modules/script_game/game_list.dart';
 import 'package:jejom/modules/travel_prompting/travel_wrapper.dart';
+import 'package:jejom/modules/trip/trip_list.dart';
 import 'package:jejom/providers/travel_provider.dart';
 import 'package:jejom/providers/trip_provider.dart';
 import 'package:jejom/providers/user_provider.dart';
@@ -153,7 +154,7 @@ class _HomeState extends State<Home> {
           onTap: () {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => const MapPage(),
+                builder: (context) => const TripList(),
               ),
             );
           },
@@ -166,7 +167,7 @@ class _HomeState extends State<Home> {
                 borderRadius: BorderRadius.circular(32),
               ),
               child: Icon(
-                Icons.map_rounded,
+                Icons.travel_explore_rounded,
                 color: Theme.of(context).colorScheme.background,
               )),
         ),
