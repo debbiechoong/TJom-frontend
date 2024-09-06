@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_swipe_button/flutter_swipe_button.dart';
+import 'package:jejom/modules/admin/admin_onboarding.dart';
 import 'package:jejom/providers/onboarding_provider.dart';
 import 'package:jejom/utils/glass_container.dart';
 import 'package:provider/provider.dart';
@@ -66,6 +67,22 @@ class _LandingState extends State<Landing> {
               ],
             )),
         const Spacer(),
+        Center(
+          child: FilledButton.tonalIcon(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const AdminOnboarding(),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.person_pin),
+              label: Text(
+                "Continue as Admin",
+                style: Theme.of(context).textTheme.labelLarge,
+              )),
+        ),
+        const SizedBox(height: 16),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 80.0),
           child: Container(

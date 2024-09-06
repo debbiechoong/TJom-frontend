@@ -11,6 +11,7 @@ class TripProvider extends ChangeNotifier {
   void addTripFromJson(dynamic response) {
     trips.clear();
     Trip trip = Trip.fromJson(response);
+
     trips.add(trip);
     notifyListeners();
   }
@@ -19,10 +20,9 @@ class TripProvider extends ChangeNotifier {
     await tripApi.addTripToFirebase(userId, trips[0].toJson());
   }
 
-  fetchTripFromFirebase(String userId) async {
+  void fetchTrip(String userId) async {
     var response = await tripApi.fetchTripFromFirebase(userId);
-    print("The resposne is ${response.data()}");
-    addTripFromJson(response.data());
+    trips = response;
   }
 
   void addTrip(Trip trip) {

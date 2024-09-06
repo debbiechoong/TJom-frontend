@@ -20,57 +20,59 @@ class _TripListState extends State<TripList> {
     final tripProvider = Provider.of<TripProvider>(context);
 
     return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          const SizedBox(height: 80),
-          Padding(
-            padding: const EdgeInsets.only(left: 16.0),
-            child: IconButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              icon: const Icon(Icons.arrow_back),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            const SizedBox(height: 80),
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0),
+              child: IconButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                icon: const Icon(Icons.arrow_back),
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text('Trip List',
-                style: Theme.of(context).textTheme.headlineLarge),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: AnimationLimiter(
-              child: MediaQuery.removePadding(
-                context: context,
-                removeTop: true,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: tripProvider.trips.length,
-                  itemBuilder: (context, index) {
-                    return AnimationConfiguration.staggeredList(
-                      position: index,
-                      duration: const Duration(milliseconds: 375),
-                      child: SlideAnimation(
-                        curve: EMPHASIZED_DECELERATE,
-                        child: FadeInAnimation(
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text('Trip List',
+                  style: Theme.of(context).textTheme.headlineLarge),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: AnimationLimiter(
+                child: MediaQuery.removePadding(
+                  context: context,
+                  removeTop: true,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: tripProvider.trips.length,
+                    itemBuilder: (context, index) {
+                      return AnimationConfiguration.staggeredList(
+                        position: index,
+                        duration: const Duration(milliseconds: 375),
+                        child: SlideAnimation(
                           curve: EMPHASIZED_DECELERATE,
-                          child: GlassContainer(
-                            padding: 0,
-                            marginBottom: 16,
-                            width: double.infinity,
-                            child: tripCard(tripProvider.trips[index]),
+                          child: FadeInAnimation(
+                            curve: EMPHASIZED_DECELERATE,
+                            child: GlassContainer(
+                              padding: 0,
+                              marginBottom: 16,
+                              width: double.infinity,
+                              child: tripCard(tripProvider.trips[index]),
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

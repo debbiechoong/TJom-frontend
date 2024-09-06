@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:jejom/models/trip.dart';
 import 'package:jejom/utils/constants/constants.dart';
 import 'package:http/http.dart' as http;
 
@@ -65,27 +66,30 @@ class TripApi {
     }
   }
 
-  Future fetchTripFromFirebase(String userId) async {
+  Future<List<Trip>> fetchTripFromFirebase(String userId) async {
     try {
       var trip = await FirebaseFirestore.instance
           .collection('trips')
           .where('userId', isEqualTo: userId)
           .get();
-      return trip.docs.first;
+
+      final trips = trip.docs.map((doc) => Trip.fromJson(doc.data())).toList();
+      return trips;
     } catch (e) {
       print('Error fetching trip from Firebase: $e');
+      return [];
     }
   }
 
-  Future<void> updateTripInFirebase(
-      String userId, Map<String, dynamic> trip) async {
-    try {
-      var tripDoc = await fetchTripFromFirebase(userId);
-      await tripDoc.reference.update(trip);
-    } catch (e) {
-      print('Error updating trip in Firebase: $e');
-    }
-  }
+  // Future<void> updateTripInFirebase(
+  //     String userId, Map<String, dynamic> trip) async {
+  //   try {
+  //     var tripDoc = await fetchTripFromFirebase(userId);
+  //     await tripDoc.reference.update(trip);
+  //   } catch (e) {
+  //     print('Error updating trip in Firebase: $e');
+  //   }
+  // }
 
   Future<void> deleteTripFromFirebase(String tripId) async {
     try {

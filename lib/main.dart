@@ -53,7 +53,8 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => OnboardingProvider()),
         ChangeNotifierProvider(
-            create: (context) => TripProvider()..fetchTripFromFirebase(userId)),
+            create: (context) => TripProvider()..fetchTrip("5ca0ff7a-6548-469b-8efe-e1e161911ea6"
+)),
         ChangeNotifierProvider(create: (context) => InterestProvider(userId)),
         ChangeNotifierProvider(
             create: (context) =>
