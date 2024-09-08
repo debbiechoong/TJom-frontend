@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_swipe_button/flutter_swipe_button.dart';
-import 'package:jejom/modules/admin/admin_onboarding.dart';
+import 'package:jejom/modules/restaurant/onboarding/restaurant_details.dart';
 import 'package:jejom/providers/onboarding_provider.dart';
 import 'package:jejom/utils/glass_container.dart';
 import 'package:provider/provider.dart';
@@ -72,13 +72,13 @@ class _LandingState extends State<Landing> {
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => const AdminOnboarding(),
+                    builder: (context) => const RestaurantDetails(),
                   ),
                 );
               },
               icon: const Icon(Icons.person_pin),
               label: Text(
-                "Continue as Admin",
+                "Continue as Restaurant Owner",
                 style: Theme.of(context).textTheme.labelLarge,
               )),
         ),

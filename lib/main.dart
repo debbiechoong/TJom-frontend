@@ -6,6 +6,7 @@ import 'package:jejom/modules/onboarding/onboarding_wrapper.dart';
 import 'package:jejom/providers/accomodation_provider.dart';
 import 'package:jejom/providers/interest_provider.dart';
 import 'package:jejom/providers/onboarding_provider.dart';
+import 'package:jejom/providers/restaurant_onboarding_provider.dart';
 import 'package:jejom/providers/script_game_provider.dart';
 import 'package:jejom/providers/travel_provider.dart';
 import 'package:jejom/providers/trip_provider.dart';
@@ -62,6 +63,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => AccommodationProvider()),
         ChangeNotifierProvider(create: (context) => UserProvider(userId)),
         ChangeNotifierProvider(create: (context) => TravelProvider()),
+        ChangeNotifierProvider(create: (context) => RestaurantOnboardingProvider()),
       ],
       child: MaterialApp(
         title: 'Jejom',
