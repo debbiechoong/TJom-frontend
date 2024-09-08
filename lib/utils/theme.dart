@@ -231,7 +231,7 @@ class MaterialTheme {
       // surfaceContainer: Color(0xff212014),
       // surfaceContainerHigh: Color(0xff2c2a1e),
       // surfaceContainerHighest: Color(0xff363528),
-      background: Color.fromARGB(255, 25, 25, 25),
+      background: Color(0xff040100),
       onBackground: Color.fromARGB(255, 231, 231, 231),
     );
   }
