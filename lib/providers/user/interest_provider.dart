@@ -4,17 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:jejom/models/interest_destination.dart';
 import 'package:http/http.dart' as http;
+import 'package:geolocator/geolocator.dart';
 
 class InterestProvider extends ChangeNotifier {
   List<InterestDestination>? interests;
   final String userId;
 
   final String _googleApiKey = dotenv.env['GOOGLE_API_KEY'] ?? '';
-  final List<Map<String, String>> _locations = [
-    {'name': 'Jeju', 'lat': '33.489011', 'long': '126.498302'},
-    {'name': 'Seoul', 'lat': '37.5665', 'long': '126.9780'},
-    {'name': 'Busan', 'lat': '35.1796', 'long': '129.0756'}
-  ];
 
   InterestProvider(this.userId) {
     fetchUserInterests();
@@ -36,11 +32,21 @@ class InterestProvider extends ChangeNotifier {
           interests = querySnapshot.docs
               .map((doc) => InterestDestination.fromJson(doc.data()))
               .toList();
+
+          if (interests!.isEmpty) {
+            // No interests found
+            await fetchTrendingInterests();
+            await saveInterestsToFirebase();
+          } else {
+            await recommendBestDestinations();
+          }
         } else {
+          // No interests found
           await fetchTrendingInterests();
           await saveInterestsToFirebase();
         }
       } else {
+        // User doc doesn't exist
         await _createUserInFirestore();
         await fetchTrendingInterests();
         await saveInterestsToFirebase();
@@ -52,44 +58,102 @@ class InterestProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> fetchTrendingInterests() async {
+  Future<Position> _getUserLocation() async {
+    LocationPermission permission;
+
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    return await Geolocator.getCurrentPosition();
+  }
+
+  Future<Map<String, double>?> getPlaceCoordinates(String placeName) async {
+    final url = Uri.parse(
+      'https://maps.googleapis.com/maps/api/geocode/json?address=$placeName&key=$_googleApiKey',
+    );
+
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      final jsonResponse = jsonDecode(response.body);
+      if (jsonResponse['results'] != null &&
+          jsonResponse['results'].isNotEmpty) {
+        final location = jsonResponse['results'][0]['geometry']['location'];
+        return {
+          'lat': location['lat'],
+          'lng': location['lng'],
+        };
+      }
+    }
+    return null;
+  }
+
+  String formatType(String type) {
+    return type
+        .split('_')
+        .map((word) => word[0].toUpperCase() + word.substring(1))
+        .join(' ');
+  }
+
+  Future<void> fetchTrendingInterests({
+    double? latitude,
+    double? longitude,
+  }) async {
     List<InterestDestination> allInterests = [];
 
-    for (final location in _locations) {
-      try {
-        final url = Uri.parse(
-          'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${location['lat']},${location['long']}&radius=10000&type=tourist_attraction&key=$_googleApiKey',
-        );
-        final response = await http.get(url);
-        if (response.statusCode == 200) {
-          final jsonResponse = jsonDecode(response.body);
-          final List<dynamic> results = jsonResponse['results'];
+    // If no coordinates provided, use current location
+    final userPosition = await _getUserLocation();
+    final lat = latitude ?? userPosition.latitude;
+    final long = longitude ?? userPosition.longitude;
 
-          final locationInterests = results.map<InterestDestination>((place) {
-            return InterestDestination(
-              id: place['place_id'],
-              name: place['name'],
-              description: place['types'] != null && place['types'].isNotEmpty
-                  ? place['types'].join(', ')
-                  : 'Tourist Attraction',
-              imageUrl: (place['photos'] != null && place['photos'].isNotEmpty)
-                  ? [
-                      'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${place['photos'][0]['photo_reference']}&key=$_googleApiKey'
-                    ]
-                  : [],
-              address: place['vicinity'] ?? '',
-              lat: place['geometry']['location']['lat'],
-              long: place['geometry']['location']['lng'],
-            );
-          }).toList();
-          allInterests.addAll(locationInterests);
-        } else {
-          debugPrint(
-              "Trending error for ${location['name']}: ${response.statusCode}");
-        }
-      } catch (e) {
-        debugPrint("Fetching error for ${location['name']}: $e");
+    try {
+      final url = Uri.parse(
+        'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$lat,$long&radius=10000&types=amusement_park|aquarium|art_gallery|bakery|bar|cafe|casino|church|clothing_store|museum|night_club|park|restaurant|shopping_mall|stadium|tourist_attraction|university|zoo&key=$_googleApiKey',
+      );
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        final List<dynamic> results = jsonResponse['results'];
+
+        final locationInterests = results.map<InterestDestination>((place) {
+          return InterestDestination(
+            id: place['place_id'],
+            name: place['name'],
+            description: place['types'] != null && place['types'].isNotEmpty
+                ? place['types'].map((type) => formatType(type)).join(', ')
+                : 'Place of Interest',
+            imageUrl: (place['photos'] != null && place['photos'].isNotEmpty)
+                ? [
+                    'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${place['photos'][0]['photo_reference']}&key=$_googleApiKey'
+                  ]
+                : [],
+            address: place['vicinity'] ?? '',
+            lat: place['geometry']['location']['lat'],
+            long: place['geometry']['location']['lng'],
+          );
+        }).toList();
+
+        allInterests.addAll(locationInterests);
+      } else {
+        debugPrint(
+            'Fetching error for trending interests: ${response.statusCode}');
       }
+    } catch (e) {
+      debugPrint('Error fetching trending interests: $e');
     }
 
     interests = allInterests.isNotEmpty ? allInterests : [];
@@ -144,7 +208,7 @@ class InterestProvider extends ChangeNotifier {
       };
 
       final body = json.encode({
-        'model': 'solar-1-mini-chat',
+        'model': 'solar-pro',
         'messages': [
           {'role': 'user', 'content': userPrompt},
         ],
@@ -181,6 +245,11 @@ class InterestProvider extends ChangeNotifier {
     } catch (e) {
       debugPrint('LLM Fetching error: $e');
     }
+  }
+
+  void clearInterests() {
+    interests = null;
+    notifyListeners();
   }
 
   Future<void> saveInterestsToFirebase() async {

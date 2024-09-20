@@ -14,81 +14,86 @@ class _PersonalInterestState extends State<PersonalInterest> {
   Widget build(BuildContext context) {
     final onBoardingProvider = Provider.of<OnboardingProvider>(context);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 80),
-        IconButton(
-            visualDensity: VisualDensity.adaptivePlatformDensity,
-            iconSize: 80,
-            onPressed: () => onBoardingProvider.previousPage(),
-            icon: const Icon(
-              Icons.arrow_back,
-              size: 24,
-            )),
-        const SizedBox(height: 16),
-        Text(
-          "Help us personalize your experience!",
-          style: Theme.of(context)
-              .textTheme
-              .headlineLarge
-              ?.copyWith(fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 32),
-        Text("Your Nickname?", style: Theme.of(context).textTheme.bodyLarge),
-        const SizedBox(height: 16),
-        TextField(
-          keyboardType: TextInputType.multiline,
-          maxLines: null,
-          decoration: InputDecoration(
-            hintText: "You can call me...",
-            prefixIcon: const Icon(Icons.search),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 80),
+          IconButton(
+              visualDensity: VisualDensity.adaptivePlatformDensity,
+              iconSize: 80,
+              onPressed: () => onBoardingProvider.previousPage(),
+              icon: const Icon(
+                Icons.arrow_back,
+                size: 24,
+              )),
+          const SizedBox(height: 16),
+          Text(
+            "Help us personalize your experience!",
+            style: Theme.of(context)
+                .textTheme
+                .headlineLarge
+                ?.copyWith(fontWeight: FontWeight.bold),
           ),
-          onChanged: (value) => onBoardingProvider.setName(value),
-        ),
-        const SizedBox(height: 32),
-        Text("A Short Desc About yourself!", style: Theme.of(context).textTheme.bodyLarge),
-        const SizedBox(height: 16),
-        TextField(
-          keyboardType: TextInputType.multiline,
-          maxLines: null,
-          decoration: InputDecoration(
-            hintText: "I am an INFJ, loves fishing...",
-            prefixIcon: const Icon(Icons.search),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-          ),
-          onChanged: (value) => onBoardingProvider.setDesc(value),
-        ),
-        const SizedBox(height: 32),
-        _buildInterest(onBoardingProvider),
-        const Spacer(),
-        Row(
-          children: [
-            const Spacer(),
-            FilledButton(
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(
-                    Theme.of(context).colorScheme.primaryContainer),
-                visualDensity: VisualDensity.adaptivePlatformDensity,
-                padding: MaterialStateProperty.all(
-                  const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                ),
+          const SizedBox(height: 32),
+          Text("Your Nickname?", style: Theme.of(context).textTheme.bodyLarge),
+          const SizedBox(height: 16),
+          TextField(
+            keyboardType: TextInputType.multiline,
+            maxLines: null,
+            decoration: InputDecoration(
+              hintText: "You can call me...",
+              prefixIcon: const Icon(Icons.search),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
               ),
-              onPressed: () => onBoardingProvider.nextPage(),
-              child: Text("Let's Go!",
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Theme.of(context).colorScheme.onPrimaryContainer,
-                      )),
             ),
-          ],
-        ),
-        const SizedBox(height: 8),
-      ],
+            onChanged: (value) => onBoardingProvider.setName(value),
+          ),
+          const SizedBox(height: 32),
+          Text("A Short Desc About yourself!",
+              style: Theme.of(context).textTheme.bodyLarge),
+          const SizedBox(height: 16),
+          TextField(
+            keyboardType: TextInputType.multiline,
+            maxLines: null,
+            decoration: InputDecoration(
+              hintText: "I am an INFJ, loves fishing...",
+              prefixIcon: const Icon(Icons.search),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+            onChanged: (value) => onBoardingProvider.setDesc(value),
+          ),
+          const SizedBox(height: 32),
+          _buildInterest(onBoardingProvider),
+          // Removed Spacer and added SizedBox for spacing at the end
+          const SizedBox(height: 40),
+          Row(
+            children: [
+              const Spacer(),
+              FilledButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(
+                      Theme.of(context).colorScheme.primaryContainer),
+                  visualDensity: VisualDensity.adaptivePlatformDensity,
+                  padding: MaterialStateProperty.all(
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  ),
+                ),
+                onPressed: () => onBoardingProvider.nextPage(),
+                child: Text("Let's Go!",
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color:
+                              Theme.of(context).colorScheme.onPrimaryContainer,
+                        )),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+        ],
+      ),
     );
   }
 

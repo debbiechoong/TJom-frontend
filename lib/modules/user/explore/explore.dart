@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:jejom/models/interest_destination.dart';
@@ -6,6 +8,8 @@ import 'package:jejom/utils/glass_container.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:jejom/providers/user/interest_provider.dart';
+import 'package:http/http.dart' as http;
+import 'package:jejom/utils/loading_screen.dart';
 
 class Explore extends StatefulWidget {
   const Explore({super.key});
@@ -15,82 +19,169 @@ class Explore extends StatefulWidget {
 }
 
 class _ExploreState extends State<Explore> {
+  final TextEditingController _searchController = TextEditingController();
+  final String _googleApiKey = dotenv.env['GOOGLE_API_KEY'] ?? '';
+  bool _isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 16),
-            Text(
-              "Explore Top Destinations",
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineLarge
-                  ?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            Text("See what other travelers are interested in",
-                style: Theme.of(context).textTheme.bodyLarge),
-            const SizedBox(height: 16),
-            Consumer<InterestProvider>(
-              builder: (context, interestProvider, child) {
-                if (interestProvider.interests == null) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                final filteredInterests = interestProvider.interests!
-                    .where((destination) =>
-                        destination.llmDescription != null &&
-                        destination.llmDescription!.isNotEmpty)
-                    .toList();
-
-                if (filteredInterests.isEmpty) {
-                  return const Center(
-                      child:
-                          Text("No destinations with recommendations found"));
-                }
-
-                return AnimationLimiter(
-                  child: MediaQuery.removePadding(
-                    context: context,
-                    removeTop: true,
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: filteredInterests.length,
-                      itemBuilder: (context, index) {
-                        final destination = filteredInterests[index];
-                        return AnimationConfiguration.staggeredList(
-                          position: index,
-                          duration: const Duration(milliseconds: 375),
-                          child: SlideAnimation(
-                            curve: EMPHASIZED_DECELERATE,
-                            child: FadeInAnimation(
-                              curve: EMPHASIZED_DECELERATE,
-                              child: GlassContainer(
-                                padding: 0,
-                                marginBottom: 16,
-                                width: double.infinity,
-                                child: destinationCard(
-                                    destination: destination,
-                                    isSelected: false),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
+      child: Column(
+        children: [
+          const SizedBox(height: 16),
+          Text(
+            "Explore Top Destinations",
+            style: Theme.of(context)
+                .textTheme
+                .headlineLarge
+                ?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: "Search for a place (e.g., Korea)",
+                    filled: true,
+                    fillColor: Theme.of(context).colorScheme.background,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none,
                     ),
                   ),
-                );
-              },
-            ),
-          ],
-        ),
+                  textInputAction: TextInputAction.search,
+                  onSubmitted: (value) async {
+                    if (value.isNotEmpty) {
+                      setState(() {
+                        _isLoading = true;
+                        Provider.of<InterestProvider>(context, listen: false)
+                            .clearInterests();
+                      });
+                      // Get place coordinates searched by user
+                      final coordinates = await getPlaceCoordinates(value);
+                      if (coordinates != null) {
+                        Provider.of<InterestProvider>(context, listen: false)
+                            .fetchTrendingInterests(
+                          latitude: coordinates['lat'],
+                          longitude: coordinates['lng'],
+                        );
+                      }
+                      setState(() {
+                        _isLoading = false;
+                      });
+                    }
+                  },
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.search),
+                onPressed: () async {
+                  if (_searchController.text.isNotEmpty) {
+                    setState(() {
+                      _isLoading = true;
+                      Provider.of<InterestProvider>(context, listen: false)
+                          .clearInterests();
+                    });
+                    final coordinates =
+                        await getPlaceCoordinates(_searchController.text);
+                    if (coordinates != null) {
+                      Provider.of<InterestProvider>(context, listen: false)
+                          .fetchTrendingInterests(
+                        latitude: coordinates['lat'],
+                        longitude: coordinates['lng'],
+                      );
+                    }
+                    setState(() {
+                      _isLoading = false;
+                    });
+                  }
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Expanded(
+            child: _isLoading
+                ? const LoadingWidget()
+                : Consumer<InterestProvider>(
+                    builder: (context, interestProvider, child) {
+                      if (interestProvider.interests == null) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+
+                      final filteredInterests = interestProvider.interests!
+                          .where((destination) =>
+                              destination.llmDescription != null &&
+                              destination.llmDescription!.isNotEmpty)
+                          .toList();
+
+                      if (filteredInterests.isEmpty) {
+                        return const Center(
+                            child: Text(
+                                "No destinations with recommendations found"));
+                      }
+
+                      return AnimationLimiter(
+                        child: MediaQuery.removePadding(
+                          context: context,
+                          removeTop: true,
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            itemCount: filteredInterests.length,
+                            itemBuilder: (context, index) {
+                              final destination = filteredInterests[index];
+                              return AnimationConfiguration.staggeredList(
+                                position: index,
+                                duration: const Duration(milliseconds: 375),
+                                child: SlideAnimation(
+                                  curve: EMPHASIZED_DECELERATE,
+                                  child: FadeInAnimation(
+                                    curve: EMPHASIZED_DECELERATE,
+                                    child: GlassContainer(
+                                      padding: 0,
+                                      marginBottom: 16,
+                                      width: double.infinity,
+                                      child: destinationCard(
+                                          destination: destination,
+                                          isSelected: false),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+          ),
+        ],
       ),
     );
+  }
+
+  Future<Map<String, double>?> getPlaceCoordinates(String placeName) async {
+    final url = Uri.parse(
+      'https://maps.googleapis.com/maps/api/geocode/json?address=$placeName&key=$_googleApiKey',
+    );
+
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      final jsonResponse = jsonDecode(response.body);
+      if (jsonResponse['results'] != null &&
+          jsonResponse['results'].isNotEmpty) {
+        final location = jsonResponse['results'][0]['geometry']['location'];
+        return {
+          'lat': location['lat'],
+          'lng': location['lng'],
+        };
+      }
+    }
+    return null;
   }
 
   Future<void> launchGoogleMaps(
