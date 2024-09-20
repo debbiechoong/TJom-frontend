@@ -202,7 +202,7 @@ class _MenuOCRPageState extends State<MenuOCRPage> {
     ''';
 
     final body = json.encode({
-      'model': 'solar-1-mini-chat',
+      'model': 'solar-pro',
       'messages': [
         {'role': 'system', 'content': systemPrompt},
         {'role': 'user', 'content': userPrompt},
@@ -273,10 +273,25 @@ class _MenuOCRPageState extends State<MenuOCRPage> {
       if (responseBody is Map<String, dynamic> &&
           responseBody.containsKey('choices')) {
         final translatedText = responseBody['choices'][0]['message']['content'];
+
+        // Call the LLM API to format the translated text
+        final formatMenuPrompt = '''
+      You are given a food menu. Your task is to format the menu in the following format:
+      [Food item] - [Price]
+      [Food item] - [Price]
+
+      ===
+
+      Here is the unformatted food menu:
+      $translatedText
+      ''';
+
+        // Call the LLM to format the menu
+        await _callLLM(formatMenuPrompt);
+
         setState(() {
           _ocrText = translatedText;
           _messages.removeWhere((msg) => msg['content'] == 'Translating...');
-          _messages.add({'role': 'system', 'content': translatedText});
         });
         _scrollToBottom();
       } else {
@@ -385,7 +400,7 @@ class _MenuOCRPageState extends State<MenuOCRPage> {
       [Food item] - Reason
       Food item with allergens (the name of the allergens): 
       [Food item] - Reason 
-      Generate fully in english
+      Generate fully in english.
       ''';
 
       _callLLM(prompt);
