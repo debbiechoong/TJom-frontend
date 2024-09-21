@@ -1,5 +1,6 @@
 import 'package:jejom/models/acccomodation.dart';
 import 'package:jejom/models/destination.dart';
+import 'package:jejom/models/flight.dart';
 
 class Trip {
   // final String id;
@@ -10,6 +11,7 @@ class Trip {
   // final List<Flight> flights;
   final List<Destination> destinations;
   final List<Accommodation> accommodations;
+  final List<Flight> flights;
 
   Trip({
     required this.title,
@@ -18,6 +20,7 @@ class Trip {
     required this.endDate,
     required this.destinations,
     required this.accommodations,
+    required this.flights,
   });
 
   factory Trip.fromJson(Map<String, dynamic> json) {
@@ -34,6 +37,9 @@ class Trip {
           ? List<Accommodation>.from(
               json['accomodations'].map((x) => Accommodation.fromJson(x)))
           : [],
+      flights: json['flights'] != null
+          ? List<Flight>.from(json['flights'].map((x) => Flight.fromJson(x)))
+          : [],
     );
   }
 
@@ -45,6 +51,7 @@ class Trip {
       'endDate': endDate,
       'destinations': destinations.map((x) => x.toJson()).toList(),
       'accomodations': accommodations.map((x) => x.toJson()).toList(),
+      'flights': flights.map((x) => x.toJson()).toList(),
     };
   }
 
@@ -55,6 +62,7 @@ class Trip {
     String? endDate,
     List<Destination>? destinations,
     List<Accommodation>? accommodations,
+    List<Flight>? flights,
   }) {
     return Trip(
       title: title ?? this.title,
@@ -63,6 +71,7 @@ class Trip {
       endDate: endDate ?? this.endDate,
       destinations: destinations ?? this.destinations,
       accommodations: accommodations ?? this.accommodations,
+      flights: flights ?? this.flights,
     );
   }
 }
