@@ -4,6 +4,7 @@ import 'package:jejom/models/language_enum.dart';
 import 'package:jejom/modules/user/home/home.dart';
 import 'package:jejom/modules/user/onboarding/onboarding_wrapper.dart';
 import 'package:jejom/modules/restaurant/home/restaurant_home.dart';
+import 'package:jejom/providers/restaurant/script_restaurant_provider.dart';
 import 'package:jejom/providers/user/accomodation_provider.dart';
 import 'package:jejom/providers/user/interest_provider.dart';
 import 'package:jejom/providers/user/onboarding_provider.dart';
@@ -64,8 +65,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => OnboardingProvider()),
         ChangeNotifierProvider(
-            create: (context) => TripProvider()
-              ..fetchTrip("5ca0ff7a-6548-469b-8efe-e1e161911ea6")),
+            create: (context) => TripProvider()..fetchTrip(userId)),
         ChangeNotifierProvider(create: (context) => InterestProvider(userId)),
         ChangeNotifierProvider(
             create: (context) =>
@@ -75,7 +75,11 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => TravelProvider()),
         ChangeNotifierProvider(
             create: (context) => RestaurantOnboardingProvider()),
-        ChangeNotifierProvider(create: (context) => RestaurantScriptGeneratorProvider()),
+        ChangeNotifierProvider(
+            create: (context) => RestaurantScriptGeneratorProvider()),
+        ChangeNotifierProvider(
+            create: (context) => ScriptRestaurantProvider()
+              ..fetchGames(Language.english, userId)),
         ChangeNotifierProvider(create: (context) => RestaurantProvider()),
       ],
       child: MaterialApp(

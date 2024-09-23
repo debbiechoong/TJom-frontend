@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:jejom/modules/restaurant/script_generator/character_details.dart';
-import 'package:jejom/modules/user/travel_prompting/travel_wrapper.dart';
+import 'package:jejom/modules/restaurant/all_scripts/res_scripts.dart';
+import 'package:jejom/modules/restaurant/script_generator/prompt_details.dart';
 import 'package:jejom/providers/restaurant/restaurant_provider.dart';
 import 'package:jejom/providers/restaurant/script_generator_provider.dart';
 import 'package:provider/provider.dart';
@@ -25,7 +25,8 @@ class _RestaurantHomeState extends State<RestaurantHome> {
 
   @override
   Widget build(BuildContext context) {
-    final scriptProvider = Provider.of<RestaurantScriptGeneratorProvider>(context);
+    final scriptProvider =
+        Provider.of<RestaurantScriptGeneratorProvider>(context);
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -74,10 +75,9 @@ class _RestaurantHomeState extends State<RestaurantHome> {
                           onChanged: (value) =>
                               scriptProvider.updatePrompt(value),
                           onSubmitted: (value) {
-                            scriptProvider.sendPrompt();
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) => const TravelWrapper(),
+                                builder: (context) => const PromptDetails(),
                               ),
                             );
                           },
@@ -85,10 +85,9 @@ class _RestaurantHomeState extends State<RestaurantHome> {
                       ),
                       IconButton(
                         onPressed: () {
-                          scriptProvider.sendPrompt();
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => const CharacterDetails(),
+                              builder: (context) => const PromptDetails(),
                             ),
                           );
                         },
@@ -98,6 +97,37 @@ class _RestaurantHomeState extends State<RestaurantHome> {
                   ),
                   const SizedBox(height: 16),
                   const Spacer(),
+                  Row(children: [
+                    const Spacer(),
+                    InkWell(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const ResScripts(),
+                          ),
+                        );
+                      },
+                      child: Container(
+                          width: 64,
+                          height: 64,
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .primaryContainer,
+                              width: 2,
+                            ),
+                            color:
+                                Theme.of(context).colorScheme.primaryContainer,
+                            borderRadius: BorderRadius.circular(32),
+                          ),
+                          child: Icon(
+                            Icons.explore_rounded,
+                            color: Theme.of(context).colorScheme.background,
+                          )),
+                    ),
+                  ]),
                 ],
               ),
             )
