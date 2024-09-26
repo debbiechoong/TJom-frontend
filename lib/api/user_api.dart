@@ -29,6 +29,7 @@ Future<void> updateUserInFirestore(String userId,
     {String? dietary,
     List<String>? allergies,
     List<String>? interests,
+    String? residingCity,
     String? name,
     String? desc}) async {
   try {
@@ -42,6 +43,9 @@ Future<void> updateUserInFirestore(String userId,
     }
     if (interests != null) {
       data['interests'] = interests;
+    }
+    if (residingCity != null) {
+      data['residingCity'] = residingCity;
     }
     if (name != null) {
       data['name'] = name;

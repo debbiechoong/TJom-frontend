@@ -14,6 +14,7 @@ class OnboardingProvider extends ChangeNotifier {
   String name = "";
   String desc = "";
   Set<Interest> selectedInterests = {};
+  String residingCity = "";
   String allergies = "";
   String dietary = "";
 
@@ -34,6 +35,11 @@ class OnboardingProvider extends ChangeNotifier {
     } else {
       selectedInterests.add(interest);
     }
+    notifyListeners();
+  }
+
+  void setResidingCity(String value) {
+    residingCity = value;
     notifyListeners();
   }
 
@@ -71,6 +77,7 @@ class OnboardingProvider extends ChangeNotifier {
           dietary: dietary,
           allergies: allergiesSplited,
           interests: interests,
+          residingCity: residingCity,
           name: name,
           desc: desc);
 
