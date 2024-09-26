@@ -43,7 +43,7 @@ class _PersonalInterestState extends State<PersonalInterest> {
             maxLines: null,
             decoration: InputDecoration(
               hintText: "You can call me...",
-              prefixIcon: const Icon(Icons.search),
+              prefixIcon: const Icon(Icons.person),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
@@ -59,7 +59,7 @@ class _PersonalInterestState extends State<PersonalInterest> {
             maxLines: null,
             decoration: InputDecoration(
               hintText: "I am an INFJ, loves fishing...",
-              prefixIcon: const Icon(Icons.search),
+              prefixIcon: const Icon(Icons.interests),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
@@ -68,6 +68,20 @@ class _PersonalInterestState extends State<PersonalInterest> {
           ),
           const SizedBox(height: 32),
           _buildInterest(onBoardingProvider),
+          Text("Residing City", style: Theme.of(context).textTheme.bodyLarge),
+          const SizedBox(height: 16),
+          TextField(
+            keyboardType: TextInputType.multiline,
+            maxLines: null,
+            decoration: InputDecoration(
+              hintText: "New York",
+              prefixIcon: const Icon(Icons.location_city),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+            onChanged: (value) => onBoardingProvider.setResidingCity(value),
+          ),
           // Removed Spacer and added SizedBox for spacing at the end
           const SizedBox(height: 40),
           Row(
