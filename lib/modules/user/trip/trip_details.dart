@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_rating/flutter_rating.dart';
+import 'package:intl/intl.dart';
 import 'package:jejom/models/destination.dart';
 import 'package:jejom/models/trip.dart';
 import 'package:jejom/models/flight.dart';
 import 'package:jejom/utils/constants/curve.dart';
-import 'package:jejom/utils/glass_container.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:jejom/utils/m3_carousel.dart';
 
 class TripDetails extends StatefulWidget {
   final Trip trip;
@@ -19,10 +21,23 @@ class _TripDetailsState extends State<TripDetails> {
   List<List<Destination>> destinations = [[]];
   final String googleApiKey = dotenv.env['GOOGLE_API_KEY'] ?? '';
 
+// Function to get today's opening hours
+  String getTodayOpeningHours(List<String> openingHours) {
+    DateTime now = DateTime.now();
+    String today = DateFormat('EEEE')
+        .format(now); // Get current day in full format (e.g., "Monday")
+
+    for (String hours in openingHours) {
+      if (hours.startsWith(today)) {
+        return hours.split(": ")[1]; // Split and return only the time part
+      }
+    }
+    return "Closed"; // Default value if today's hours are not found
+  }
+
   @override
   Widget build(BuildContext context) {
     final Trip trip = widget.trip;
-
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -59,6 +74,11 @@ class _TripDetailsState extends State<TripDetails> {
                   const SizedBox(height: 16),
                   _buildDestinationsSection(trip),
                   const SizedBox(height: 16),
+                  Text(
+                    "Accommodations",
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 8),
                   _buildAccommodationsSection(trip),
                   const SizedBox(height: 16),
                   _buildFlightsSection(),
@@ -185,56 +205,69 @@ class _TripDetailsState extends State<TripDetails> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            _buildImageCarousel(accommodation.photos),
+            const SizedBox(height: 16),
             Text(
               accommodation.name,
-              style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
-            _buildImageCarousel(accommodation.photos),
-            const SizedBox(height: 12),
+            Text(
+              accommodation.description,
+              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onBackground
+                      .withOpacity(0.8)),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
+            ),
+            const SizedBox(height: 16),
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        accommodation.name,
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        accommodation.description,
-                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onBackground
-                                .withOpacity(0.8)),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 2,
-                      ),
-                      const SizedBox(height: 8),
-                      Text("Price: \$${accommodation.price}",
-                          style: Theme.of(context).textTheme.labelSmall),
-                      Text("Start Date: ${accommodation.startDate}",
-                          style: Theme.of(context).textTheme.labelSmall),
-                      Text("End Date: ${accommodation.endDate}",
-                          style: Theme.of(context).textTheme.labelSmall),
-                      const SizedBox(height: 8),
-                      Text("Rating: ${accommodation.numRating}",
-                          style: Theme.of(context).textTheme.labelSmall),
-                      const SizedBox(height: 8),
-                      Text("Opening Hours: ${accommodation.openingHours}",
-                          style: Theme.of(context).textTheme.labelSmall),
-                    ],
-                  ),
+                Text(accommodation.rating,
+                    style: Theme.of(context).textTheme.labelLarge),
+                const SizedBox(width: 8),
+                StarRating(
+                  rating: double.tryParse(accommodation.rating) ?? 0,
+                  allowHalfRating: true,
+                ),
+                const SizedBox(width: 8),
+                Text("(${accommodation.numRating})",
+                    style: Theme.of(context).textTheme.labelLarge),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Icon(
+                  Icons.calendar_month_rounded,
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 16,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  "Date: ${accommodation.startDate} - ${accommodation.endDate} ",
+                  style: Theme.of(context).textTheme.labelMedium,
                 ),
               ],
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Icon(
+                  Icons.timer_rounded,
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 16,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  "Opening Hours: ${getTodayOpeningHours(accommodation.openingHours)}",
+                  style: Theme.of(context).textTheme.labelMedium,
+                ),
+              ],
+            ),
+            const SizedBox(height: 48),
           ],
         );
       }).toList(),
@@ -242,27 +275,19 @@ class _TripDetailsState extends State<TripDetails> {
   }
 
   Widget _buildImageCarousel(List<String> photos) {
-    return CarouselSlider(
-      options: CarouselOptions(
-        height: 200.0,
-        enlargeCenterPage: true,
-        autoPlay: true,
+    return SizedBox(
+      height: 200,
+      width: double.infinity,
+      child: M3Carousel(
+        visible: 3,
+        slideAnimationDuration: 300, // milliseconds
+        titleFadeAnimationDuration: 200, // milliseconds
+        children: [
+          ...photos.map((url) {
+            return {"image": _getPhotoUrl(url), "title": ""};
+          }),
+        ],
       ),
-      items: photos.map((photoReference) {
-        return Builder(
-          builder: (BuildContext context) {
-            final photoUrl = _getPhotoUrl(photoReference);
-            return ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                photoUrl,
-                fit: BoxFit.cover,
-                width: double.infinity,
-              ),
-            );
-          },
-        );
-      }).toList(),
     );
   }
 
@@ -273,48 +298,54 @@ class _TripDetailsState extends State<TripDetails> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            _buildImageCarousel(destination.photos),
+            const SizedBox(height: 16),
             Text(
               destination.name,
-              style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
-            _buildImageCarousel(destination.photos),
+            Text(
+              destination.description,
+              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onBackground
+                      .withOpacity(0.8)),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
+            ),
+            const SizedBox(height: 8),
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        destination.name,
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        destination.description,
-                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onBackground
-                                .withOpacity(0.8)),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 2,
-                      ),
-                      const SizedBox(height: 8),
-                      Text("Rating: ${destination.numRating}",
-                          style: Theme.of(context).textTheme.labelSmall),
-                      const SizedBox(height: 8),
-                      Text("Opening Hours: ${destination.openingHours}",
-                          style: Theme.of(context).textTheme.labelSmall),
-                    ],
-                  ),
+                Text(destination.rating,
+                    style: Theme.of(context).textTheme.labelLarge),
+                const SizedBox(width: 8),
+                StarRating(
+                  rating: double.tryParse(destination.rating) ?? 0,
+                  allowHalfRating: true,
+                ),
+                const SizedBox(width: 8),
+                Text("(${destination.numRating})",
+                    style: Theme.of(context).textTheme.labelLarge),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Icon(
+                  Icons.timer_rounded,
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 16,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  "Opening Hours: ${getTodayOpeningHours(destination.openingHours)}",
+                  style: Theme.of(context).textTheme.labelMedium,
                 ),
               ],
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 48),
           ],
         );
       }).toList(),
