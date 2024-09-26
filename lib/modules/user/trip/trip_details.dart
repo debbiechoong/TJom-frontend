@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:jejom/models/acccomodation.dart';
 import 'package:jejom/models/destination.dart';
 import 'package:jejom/models/trip.dart';
 import 'package:jejom/models/flight.dart';
 import 'package:jejom/utils/constants/curve.dart';
 import 'package:jejom/utils/glass_container.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class TripDetails extends StatefulWidget {
@@ -19,22 +17,11 @@ class TripDetails extends StatefulWidget {
 
 class _TripDetailsState extends State<TripDetails> {
   List<List<Destination>> destinations = [[]];
-  final String _googleApiKey = dotenv.env['GOOGLE_API_KEY'] ?? '';
+  final String googleApiKey = dotenv.env['GOOGLE_API_KEY'] ?? '';
 
   @override
   Widget build(BuildContext context) {
     final Trip trip = widget.trip;
-    for (int i = 0; i < trip.destinations.length; i++) {
-      if (i == 0) {
-        destinations[destinations.length - 1].add(trip.destinations[i]);
-      } else {
-        if (trip.destinations[i].startDate !=
-            trip.destinations[i - 1].startDate) {
-          destinations.add([]);
-        }
-        destinations[destinations.length - 1].add(trip.destinations[i]);
-      }
-    }
 
     return Scaffold(
       body: Padding(
@@ -70,9 +57,9 @@ class _TripDetailsState extends State<TripDetails> {
                   Text("${trip.startDate} until ${trip.endDate}",
                       style: Theme.of(context).textTheme.bodyLarge),
                   const SizedBox(height: 16),
-                  _buildDestinationsSection(),
+                  _buildDestinationsSection(trip),
                   const SizedBox(height: 16),
-                  _buildAccommodationsSection(),
+                  _buildAccommodationsSection(trip),
                   const SizedBox(height: 16),
                   _buildFlightsSection(),
                   const SizedBox(height: 32),
@@ -83,6 +70,10 @@ class _TripDetailsState extends State<TripDetails> {
         ),
       ),
     );
+  }
+
+  String _getPhotoUrl(String photoReference) {
+    return 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=$photoReference&key=$googleApiKey';
   }
 
   // Method to build the entire Flights section
@@ -121,7 +112,6 @@ class _TripDetailsState extends State<TripDetails> {
     );
   }
 
-// Method to build individual flight cards
   Widget _buildFlightCard(Flight flight, int index) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -188,220 +178,146 @@ class _TripDetailsState extends State<TripDetails> {
     );
   }
 
-  Widget _buildAccommodationsSection() {
-    final Trip trip = widget.trip;
+  Widget _buildAccommodationsSection(Trip trip) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text("Accommodations", style: Theme.of(context).textTheme.titleLarge),
-        const SizedBox(height: 8),
-        Text(
-          "There would be ${trip.accommodations.length} accommodations recommended for this trip",
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
-        const SizedBox(height: 16),
-        MediaQuery.removePadding(
-          context: context,
-          removeTop: true,
-          child: ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: trip.accommodations.length,
-            itemBuilder: (context, index) {
-              final accommodation = trip.accommodations[index];
-              return _buildAccommodationCard(accommodation);
-            },
-          ),
-        ),
-      ],
+      children: trip.accommodations.map((accommodation) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              accommodation.name,
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+            ),
+            const SizedBox(height: 8),
+            _buildImageCarousel(accommodation.photos),
+            const SizedBox(height: 12),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        accommodation.name,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        accommodation.description,
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onBackground
+                                .withOpacity(0.8)),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                      ),
+                      const SizedBox(height: 8),
+                      Text("Price: \$${accommodation.price}",
+                          style: Theme.of(context).textTheme.labelSmall),
+                      Text("Start Date: ${accommodation.startDate}",
+                          style: Theme.of(context).textTheme.labelSmall),
+                      Text("End Date: ${accommodation.endDate}",
+                          style: Theme.of(context).textTheme.labelSmall),
+                      const SizedBox(height: 8),
+                      Text("Rating: ${accommodation.numRating}",
+                          style: Theme.of(context).textTheme.labelSmall),
+                      const SizedBox(height: 8),
+                      Text("Opening Hours: ${accommodation.openingHours}",
+                          style: Theme.of(context).textTheme.labelSmall),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 32),
+          ],
+        );
+      }).toList(),
     );
   }
 
-  Widget _buildAccommodationCard(Accommodation accommodation) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        FutureBuilder<String?>(
-          future: getPlacePhoto(accommodation.name),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
-            }
-            if (snapshot.hasError || !snapshot.hasData) {
-              return Image.asset(
-                'assets/images/image1.jpg',
-                width: 64,
-                height: 64,
-                fit: BoxFit.cover,
-              );
-            }
-            final photoUrl =
-                'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${snapshot.data}&key=$_googleApiKey';
+  Widget _buildImageCarousel(List<String> photos) {
+    return CarouselSlider(
+      options: CarouselOptions(
+        height: 200.0,
+        enlargeCenterPage: true,
+        autoPlay: true,
+      ),
+      items: photos.map((photoReference) {
+        return Builder(
+          builder: (BuildContext context) {
+            final photoUrl = _getPhotoUrl(photoReference);
             return ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Image.network(
                 photoUrl,
-                width: 64,
-                height: 64,
                 fit: BoxFit.cover,
+                width: double.infinity,
               ),
             );
           },
-        ),
-        const SizedBox(height: 12),
-        Text(
-          accommodation.name,
-          style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                color: Theme.of(context).colorScheme.primary,
-              ),
-        ),
-        const SizedBox(height: 12),
-        Text(
-          accommodation.address,
-          style: Theme.of(context).textTheme.labelMedium!.copyWith(
-              color:
-                  Theme.of(context).colorScheme.onBackground.withOpacity(0.8)),
-          overflow: TextOverflow.ellipsis,
-          maxLines: 2,
-        ),
-        const SizedBox(height: 8),
-        Text("Price: ${accommodation.price}",
-            style: Theme.of(context).textTheme.labelSmall),
-        const SizedBox(height: 16),
-        const Divider(),
-      ],
+        );
+      }).toList(),
     );
   }
 
-  Widget _buildDestinationsSection() {
-    return MediaQuery.removePadding(
-      context: context,
-      removeTop: true,
-      child: ListView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        itemCount: destinations.length,
-        itemBuilder: (BuildContext context, int index) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Text("Day ${index + 1}",
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium
-                          ?.copyWith(fontWeight: FontWeight.bold)),
-                  const SizedBox(width: 16),
-                ],
-              ),
-              const SizedBox(height: 32),
-              destinations[index].isNotEmpty
-                  ? _buildDestinationCard(destinations, index)
-                  : const SizedBox(),
-              const Divider(),
-              const SizedBox(height: 32),
-            ],
-          );
-        },
-      ),
-    );
-  }
-
-  Future<String?> getPlacePhoto(String placeName) async {
-    final url = Uri.parse(
-      'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=$placeName&inputtype=textquery&fields=photos&key=$_googleApiKey',
-    );
-
-    final response = await http.get(url);
-
-    if (response.statusCode == 200) {
-      final jsonResponse = jsonDecode(response.body);
-      if (jsonResponse['candidates'] != null &&
-          jsonResponse['candidates'].isNotEmpty &&
-          jsonResponse['candidates'][0]['photos'] != null &&
-          jsonResponse['candidates'][0]['photos'].isNotEmpty) {
-        return jsonResponse['candidates'][0]['photos'][0]['photo_reference'];
-      }
-    }
-    return null;
-  }
-
-  Widget _buildDestinationCard(
-      List<List<Destination>> destinations, int index) {
+  Widget _buildDestinationsSection(Trip trip) {
     return Column(
-      children: destinations[index]
-          .map((destination) => Column(
-                children: [
-                  Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: trip.destinations.map((destination) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              destination.name,
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+            ),
+            const SizedBox(height: 8),
+            _buildImageCarousel(destination.photos),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      FutureBuilder<String?>(
-                        future: getPlacePhoto(destination.name),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const CircularProgressIndicator();
-                          }
-                          if (snapshot.hasError || !snapshot.hasData) {
-                            return Image.asset(
-                              'assets/images/image1.jpg',
-                              width: 64,
-                              height: 64,
-                              fit: BoxFit.cover,
-                            );
-                          }
-                          final photoUrl =
-                              'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${snapshot.data}&key=$_googleApiKey';
-
-                          return ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.network(
-                              photoUrl,
-                              width: 64,
-                              height: 64,
-                              fit: BoxFit.cover,
-                            ),
-                          );
-                        },
+                      Text(
+                        destination.name,
+                        style: Theme.of(context).textTheme.titleMedium,
                       ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              destination.name,
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              destination.description,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium!
-                                  .copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onBackground
-                                          .withOpacity(0.8)),
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 2,
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                                "Entry Fee: ${destination.price == "None" ? "Free" : destination.price}",
-                                style: Theme.of(context).textTheme.labelSmall),
-                          ],
-                        ),
+                      const SizedBox(height: 12),
+                      Text(
+                        destination.description,
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onBackground
+                                .withOpacity(0.8)),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
                       ),
+                      const SizedBox(height: 8),
+                      Text("Rating: ${destination.numRating}",
+                          style: Theme.of(context).textTheme.labelSmall),
+                      const SizedBox(height: 8),
+                      Text("Opening Hours: ${destination.openingHours}",
+                          style: Theme.of(context).textTheme.labelSmall),
                     ],
                   ),
-                  const SizedBox(height: 32),
-                ],
-              ))
-          .toList(),
+                ),
+              ],
+            ),
+            const SizedBox(height: 32),
+          ],
+        );
+      }).toList(),
     );
   }
 
