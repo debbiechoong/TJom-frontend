@@ -34,6 +34,40 @@ Future<List<ScriptGame>> fetchAllScriptFromFirestore(Language lang) async {
   }
 }
 
+Future<List<ScriptGame>> fetchResScriptFromFirestore(
+    Language lang, String resId) async {
+  try {
+    final scriptDocs =
+        await FirebaseFirestore.instance.collection('script').get();
+    List<ScriptGame> scripts = [];
+
+    if (scriptDocs.docs.isNotEmpty) {
+      for (var scriptDoc in scriptDocs.docs) {
+        List<dynamic> restaurants = scriptDoc.data()['restaurants'] ?? [];
+
+        // Check if the restaurants array contains the given resId
+        if (restaurants.contains(resId)) {
+          final nestedCollection = lang == Language.english ? 'eng' : 'kor';
+          final nestedDocs =
+              await scriptDoc.reference.collection(nestedCollection).get();
+
+          if (nestedDocs.docs.isNotEmpty) {
+            Map<String, dynamic> fullData = {
+              ...scriptDoc.data(),
+              ...nestedDocs.docs[0].data(),
+            };
+            scripts.add(ScriptGame.fromJson(fullData));
+          }
+        }
+      }
+    }
+    return scripts;
+  } catch (e) {
+    debugPrint("Error running fetchResScriptFromFirestore: $e");
+    return [];
+  }
+}
+
 String cleanJsonString(String jsonString) {
   // Replace problematic control characters
   return jsonString.replaceAll('\n', '\\n').replaceAll('\t', '\\t');
