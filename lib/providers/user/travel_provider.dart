@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:jejom/api/trip_api.dart';
 import 'package:jejom/models/flight.dart';
 import 'package:jejom/models/interest_destination.dart';
+import 'package:jejom/models/user.dart';
 import 'package:jejom/providers/user/trip_provider.dart';
+import 'package:jejom/providers/user/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:jejom/providers/user/interest_provider.dart';
@@ -117,7 +119,6 @@ class TravelProvider extends ChangeNotifier {
     notifyListeners();
 
     String additionalPrompt = "$prompt\n";
-    String userInterest = "";
     if (isDestination) {
       additionalPrompt += "Destination: $destination\n";
     }
@@ -185,7 +186,24 @@ class TravelProvider extends ChangeNotifier {
 
     // Update trip
     final tripProvider = Provider.of<TripProvider>(context, listen: false);
-    final response = await tripApi.generateTrip(additionalPrompt, userInterest);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final User user =
+        await userProvider.fetchFirestoreUser(interestProvider.userId) as User;
+
+    var userProps = {
+      'interests': user.interests.join(','),
+      'dietary': user.dietary,
+      'allergies': user.allergies.join(','),
+      'desc': user.desc,
+    };
+
+    String userPropsString = "";
+    userProps.forEach((key, value) {
+      userPropsString += "$key: $value; ";
+    });
+
+    final response =
+        await tripApi.generateTrip(additionalPrompt, userPropsString);
     tripProvider.addTripFromJson(response);
 
     isLoading = false;
