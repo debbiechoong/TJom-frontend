@@ -5,7 +5,6 @@ import 'package:jejom/models/destination.dart';
 import 'package:jejom/models/trip.dart';
 import 'package:jejom/models/flight.dart';
 import 'package:jejom/utils/constants/curve.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:jejom/utils/m3_carousel.dart';
 
