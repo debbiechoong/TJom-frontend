@@ -42,11 +42,15 @@ class TravelProvider extends ChangeNotifier {
   }
 
   void nextPage() {
-    _page++;
-    _mainPageController.animateToPage(_page,
+    if (_mainPageController.hasClients) {
+      _page++;
+      _mainPageController.animateToPage(
+        _page,
         duration: const Duration(milliseconds: 600),
-        curve: Curves.easeInOutCubicEmphasized);
-    notifyListeners();
+        curve: Curves.easeInOutCubicEmphasized,
+      );
+      notifyListeners();
+    }
   }
 
   void toggleSelectedFlight(Flight flight) {
@@ -84,7 +88,7 @@ class TravelProvider extends ChangeNotifier {
   Future<void> sendPrompt() async {
     isLoading = true;
     notifyListeners();
-    
+
     print("prompt: $prompt");
 
     final response = await tripApi.checkInitInput(prompt);
@@ -94,7 +98,6 @@ class TravelProvider extends ChangeNotifier {
     isDestination = !response['isDestination'];
     isDuration = !response['isDuration'];
     isBudget = !response['isBudget'];
-    // isInterest = !response['isInterest'];
 
     isLoading = false;
     notifyListeners();
@@ -125,9 +128,6 @@ class TravelProvider extends ChangeNotifier {
     if (isBudget) {
       additionalPrompt += "Budget: $budget\n";
     }
-    // if (isInterest) {
-    //   userInterest = "Interest: ${selectedInterests.join(", ")}\n";
-    // }
 
     print(additionalPrompt);
 

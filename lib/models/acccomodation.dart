@@ -1,81 +1,102 @@
 class Accommodation {
-  final String name;
   final String address;
+  final String description;
+  final String googlePlaceID;
+  final double latitude;
+  final double longitude;
+  final String name;
+  final int numRating;
+  final List<String> openingHours;
+  final List<String> photos;
   final String price;
   final String rating;
-  final double? latitude;
-  final double? longitude;
-  final String provider;
-  final String startDate;
   final String endDate;
+  final String startDate;
 
   Accommodation({
-    required this.name,
     required this.address,
+    required this.description,
+    required this.googlePlaceID,
+    required this.latitude,
+    required this.longitude,
+    required this.name,
+    required this.numRating,
+    required this.openingHours,
+    required this.photos,
     required this.price,
     required this.rating,
-    this.latitude,
-    this.longitude,
-    required this.provider,
-    required this.startDate,
     required this.endDate,
+    required this.startDate,
   });
 
   factory Accommodation.fromJson(Map<String, dynamic> json) {
     return Accommodation(
-      name: json['Name'] ?? 'Unknown', // Provide a default value if null
       address: json['Address'] ?? 'Unknown',
+      description: json['Description'] ?? 'No description available',
+      googlePlaceID: json['GooglePlaceID'] ?? 'Unknown',
+      latitude: double.tryParse(json['Latitude']?.toString() ?? '') ?? 0.0,
+      longitude: double.tryParse(json['Longitude']?.toString() ?? '') ?? 0.0,
+      name: json['Name'] ?? 'Unknown',
+      numRating: json['NumRating'] ?? 0,
+      openingHours: json['OpeningHours'] != null
+          ? List<String>.from(json['OpeningHours'].map((x) => x))
+          : [],
+      photos: (json['Photos'] as List<dynamic>)
+          .map((photo) => photo['photo_reference'] as String)
+          .toList(),
       price: json['Price'] ?? 'Unknown',
-      rating: json['Rating'] ?? 'No Rating', // Assuming rating as 0 if null
-      latitude:
-          (json['Latitude'] != "None" && json['Latitude'] != "Not provided")
-              ? double.tryParse(json['Latitude'].toString())
-              : null,
-      longitude:
-          (json['Longitude'] != "None" && json['Longitude'] != "Not provided")
-              ? double.tryParse(json['Longitude'].toString())
-              : null,
-      provider: json['Provider'] ?? 'Unknown',
-      startDate: json['startDate'] ?? 'Unknown',
-      endDate: json['endDate'] ?? 'Unknown',
+      rating: json['Rating'] ?? 'Unknown',
+      endDate: json['EndDate'] ?? 'Unknown',
+      startDate: json['StartDate'] ?? 'Unknown',
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'Name': name,
       'Address': address,
+      'Description': description,
+      'GooglePlaceID': googlePlaceID,
+      'Latitude': latitude,
+      'Longitude': longitude,
+      'Name': name,
+      'NumRating': numRating,
+      'OpeningHours': openingHours,
+      'Photos': photos,
       'Price': price,
       'Rating': rating,
-      'Latitude': latitude?.toString() ?? "None",
-      'Longitude': longitude?.toString() ?? "None",
-      'Provider': provider,
-      'startDate': startDate,
-      'endDate': endDate,
+      'EndDate': endDate,
     };
   }
 
   Accommodation copyWith({
-    String? name,
     String? address,
-    String? price,
-    String? rating,
+    String? description,
+    String? googlePlaceID,
     double? latitude,
     double? longitude,
-    String? provider,
-    String? startDate,
+    String? name,
+    int? numRating,
+    List<String>? openingHours,
+    List<String>? photos,
+    String? price,
+    String? rating,
     String? endDate,
+    String? startDate,
   }) {
     return Accommodation(
-      name: name ?? this.name,
       address: address ?? this.address,
-      price: price ?? this.price,
-      rating: rating ?? this.rating,
+      description: description ?? this.description,
+      googlePlaceID: googlePlaceID ?? this.googlePlaceID,
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
-      provider: provider ?? this.provider,
-      startDate: startDate ?? this.startDate,
+      name: name ?? this.name,
+      numRating: numRating ?? this.numRating,
+      openingHours: openingHours ?? this.openingHours,
+      photos: photos ?? this.photos,
+      price: price ?? this.price,
+      rating: rating ?? this.rating,
       endDate: endDate ?? this.endDate,
+      startDate: startDate ?? this.startDate,
     );
   }
 }
