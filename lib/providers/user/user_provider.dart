@@ -89,8 +89,21 @@ class UserProvider extends ChangeNotifier {
   }
 
   // get user from firestore
-  Future<User?> fetchFirestoreUser(String userId) async {
+  Future<Map<String, String>> fetchUserProps(String userId) async {
     final user = await fetchUserFromFirestore(userId);
-    return user;
+    // Return user props if user is not null
+    if (user != null) {
+      var userProps = {
+        'interests': user.interests.join(','),
+        'dietary': user.dietary,
+        'allergies': user.allergies.join(','),
+        'desc': user.desc,
+        'residingCity': user.residingCity,
+      };
+      debugPrint('User props: $userProps');
+      return userProps;
+    }
+    debugPrint('User is null');
+    return {};
   }
 }

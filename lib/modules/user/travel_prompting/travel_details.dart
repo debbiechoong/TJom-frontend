@@ -31,14 +31,17 @@ class _TravelDetailsState extends State<TravelDetails> {
                     // size: 24,
                   )),
               const SizedBox(height: 16),
-              travelProvider.isDestination
-                  ? _buildDestination(travelProvider)
-                  : const SizedBox(),
+              // travelProvider.isDestination
+              //     ? _buildDestination(travelProvider)
+              //     : const SizedBox(),
               travelProvider.isDuration
                   ? _buildDuration(travelProvider)
                   : const SizedBox(),
               travelProvider.isBudget
                   ? _buildBudget(travelProvider)
+                  : const SizedBox(),
+              travelProvider.isNumberPerson
+                  ? _buildNumberPerson(travelProvider)
                   : const SizedBox(),
               Row(
                 children: [
@@ -68,37 +71,37 @@ class _TravelDetailsState extends State<TravelDetails> {
           );
   }
 
-  Widget _buildDestination(TravelProvider travelProvider) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Destination",
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge
-              ?.copyWith(fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 16),
-        Text("Seperate your destinations with comma (,)",
-            style: Theme.of(context).textTheme.bodyLarge),
-        const SizedBox(height: 16),
-        TextField(
-          keyboardType: TextInputType.multiline,
-          maxLines: null,
-          decoration: InputDecoration(
-            hintText: "Rome, Jeju, Tokyo, etc.",
-            prefixIcon: const Icon(Icons.location_on_rounded),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-          ),
-          onChanged: (value) => travelProvider.updateDestination(value),
-        ),
-        const SizedBox(height: 40),
-      ],
-    );
-  }
+  // Widget _buildDestination(TravelProvider travelProvider) {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       Text(
+  //         "Destination",
+  //         style: Theme.of(context)
+  //             .textTheme
+  //             .titleLarge
+  //             ?.copyWith(fontWeight: FontWeight.bold),
+  //       ),
+  //       const SizedBox(height: 16),
+  //       Text("Seperate your destinations with comma (,)",
+  //           style: Theme.of(context).textTheme.bodyLarge),
+  //       const SizedBox(height: 16),
+  //       TextField(
+  //         keyboardType: TextInputType.multiline,
+  //         maxLines: null,
+  //         decoration: InputDecoration(
+  //           hintText: "Rome, Jeju, Tokyo, etc.",
+  //           prefixIcon: const Icon(Icons.location_on_rounded),
+  //           border: OutlineInputBorder(
+  //             borderRadius: BorderRadius.circular(16),
+  //           ),
+  //         ),
+  //         onChanged: (value) => travelProvider.updateDestination(value),
+  //       ),
+  //       const SizedBox(height: 40),
+  //     ],
+  //   );
+  // }
 
   Widget _buildDuration(TravelProvider travelProvider) {
     return Column(
@@ -162,6 +165,35 @@ class _TravelDetailsState extends State<TravelDetails> {
             ),
           ),
           onChanged: (value) => travelProvider.updateBudget(value),
+        ),
+        const SizedBox(height: 40),
+      ],
+    );
+  }
+
+  Widget _buildNumberPerson(TravelProvider travelProvider) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Number of Persons",
+          style: Theme.of(context)
+              .textTheme
+              .titleLarge
+              ?.copyWith(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 16),
+        TextField(
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            hintText: "1, 2, 3, etc.",
+            prefixIcon: const Icon(Icons.people),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+          ),
+          onChanged: (value) =>
+              travelProvider.updateNumberPerson(int.parse(value)),
         ),
         const SizedBox(height: 40),
       ],
