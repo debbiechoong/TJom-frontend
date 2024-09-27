@@ -46,8 +46,8 @@ class Destination {
           .toList(),
       price: json['Price'] ?? 'Unknown',
       rating: json['Rating'] ?? 'Unknown',
-      endDate: json['EndDate'] ?? 'Unknown',
-      startDate: json['StartDate'] ?? 'Unknown',
+      endDate: json['endDate'] ?? 'Unknown',
+      startDate: json['startDate'] ?? 'Unknown',
     );
   }
 
