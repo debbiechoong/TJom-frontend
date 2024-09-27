@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:jejom/api/user_api.dart';
 import 'package:jejom/models/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:jejom/api/user_api.dart';
 
 class UserProvider extends ChangeNotifier {
   User? _user;
