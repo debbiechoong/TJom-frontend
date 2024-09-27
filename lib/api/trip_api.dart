@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
 import 'package:jejom/models/trip.dart';
 import 'package:jejom/utils/constants/constants.dart';
 import 'package:http/http.dart' as http;
@@ -68,12 +69,18 @@ class TripApi {
 
   Future<List<Trip>> fetchTripFromFirebase(String userId) async {
     try {
-      var trip = await FirebaseFirestore.instance
-          .collection('trips')
-          .where('userId', isEqualTo: userId)
-          .get();
+      // var trip = await FirebaseFirestore.instance
+      //     .collection('trips')
+      //     .where('userId', isEqualTo: userId)
+      //     .get();
 
-      final trips = trip.docs.map((doc) => Trip.fromJson(doc.data())).toList();
+      final String response = await rootBundle.loadString('assets/trip.json');
+      final data = await json.decode(response);
+      print("Trip json is ${data}");
+
+      // final trips = trip.docs.map((doc) => Trip.fromJson(doc.data())).toList();
+      final trips = [Trip.fromJson(data['data'])];
+      print(trips[0]);
       return trips;
     } catch (e) {
       print('Error fetching trip from Firebase: $e');

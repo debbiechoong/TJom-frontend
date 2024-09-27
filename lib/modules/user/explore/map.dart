@@ -16,6 +16,7 @@ class _MapPageState extends State<MapPage> {
   GoogleMapController? mapController;
   Set<Marker> markers = {};
   LatLng initialPosition = const LatLng(33.499621, 126.531188);
+  late InterestProvider interestProvider;
 
   @override
   void initState() {
@@ -23,17 +24,32 @@ class _MapPageState extends State<MapPage> {
     _initializeMap();
   }
 
+  @override
+  void dispose() {
+    mapController?.dispose();
+    super.dispose();
+  }
+
   void _initializeMap() {
     final interestProvider =
         Provider.of<InterestProvider>(context, listen: false);
-    interestProvider.fetchUserInterests().then((_) {
+
+    if (interestProvider.getInterests().isNotEmpty) {
       _setMarkers(interestProvider.getInterests());
       if (markers.isNotEmpty) {
         setState(() {
           initialPosition = markers.first.position;
         });
       }
-    });
+    }
+    // interestProvider.fetchUserInterests().then((_) {
+    //   _setMarkers(interestProvider.getInterests());
+    //   if (markers.isNotEmpty) {
+    //     setState(() {
+    //       initialPosition = markers.first.position;
+    //     });
+    //   }
+    // });
   }
 
   void _setMarkers(List<InterestDestination> interests) {
