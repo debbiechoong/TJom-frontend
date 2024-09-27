@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:jejom/api/trip_api.dart';
 import 'package:jejom/models/flight.dart';
 import 'package:jejom/models/interest_destination.dart';
-import 'package:jejom/models/user.dart';
 import 'package:jejom/providers/user/trip_provider.dart';
 import 'package:jejom/providers/user/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -22,14 +21,14 @@ class TravelProvider extends ChangeNotifier {
   List<Flight> selectedFlights = [];
 
   // Any missing details
-  bool isDestination = false;
   bool isDuration = false;
   bool isBudget = false;
+  bool isNumberPerson = false;
 
-  String destination = "";
   DateTime startDate = DateTime.now();
   DateTime endDate = DateTime.now();
   String budget = "";
+  int numberPerson = 1;
 
   void previousPage() {
     if (_page == 0) {
@@ -97,17 +96,16 @@ class TravelProvider extends ChangeNotifier {
     // print(response);
 
     //call API, route if success
-    isDestination = !response['isDestination'];
     isDuration = !response['isDuration'];
     isBudget = !response['isBudget'];
+    isNumberPerson = response['isNumPerson'];
 
     isLoading = false;
     notifyListeners();
   }
 
-  //Future details
-  void updateDestination(String destination) {
-    this.destination = destination;
+  void updateNumberPerson(int numberPerson) {
+    this.numberPerson = numberPerson;
   }
 
   void updateBudget(String budget) {
@@ -119,15 +117,15 @@ class TravelProvider extends ChangeNotifier {
     notifyListeners();
 
     String additionalPrompt = "$prompt\n";
-    if (isDestination) {
-      additionalPrompt += "Destination: $destination\n";
-    }
     if (isDuration) {
       additionalPrompt += "Start Date: $startDate\n";
       additionalPrompt += "End Date: $endDate\n";
     }
     if (isBudget) {
       additionalPrompt += "Budget: $budget\n";
+    }
+    if (isNumberPerson) {
+      additionalPrompt += "Number of Persons: $numberPerson\n";
     }
 
     print(additionalPrompt);
@@ -162,10 +160,10 @@ class TravelProvider extends ChangeNotifier {
 
     await userDoc.update({
       'interests': updatedInterests.toList(),
-      'destination': destination,
       'startDate': startDate,
       'endDate': endDate,
       'budget': budget,
+      'numberPerson': numberPerson,
     });
 
     final newInterestDestinations = interestProvider.getInterests();
@@ -187,15 +185,8 @@ class TravelProvider extends ChangeNotifier {
     // Update trip
     final tripProvider = Provider.of<TripProvider>(context, listen: false);
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final User user =
-        await userProvider.fetchFirestoreUser(interestProvider.userId) as User;
-
-    var userProps = {
-      'interests': user.interests.join(','),
-      'dietary': user.dietary,
-      'allergies': user.allergies.join(','),
-      'desc': user.desc,
-    };
+    final userProps =
+        await userProvider.fetchUserProps(interestProvider.userId);
 
     String userPropsString = "";
     userProps.forEach((key, value) {
