@@ -4,7 +4,6 @@ import 'package:jejom/models/language_enum.dart';
 import 'package:jejom/providers/user/script_game_provider.dart';
 import 'package:jejom/utils/glass_container.dart';
 import 'package:jejom/utils/m3_carousel.dart';
-import 'package:jejom/utils/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jejom/providers/restaurant/script_generator_provider.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:provider/provider.dart';
+import 'package:jejom/providers/restaurant/restaurant_provider.dart';
 
 class PromptDetails extends StatefulWidget {
   const PromptDetails({super.key});
@@ -11,6 +12,8 @@ class PromptDetails extends StatefulWidget {
 }
 
 class _PromptDetailsState extends State<PromptDetails> {
+  late RestaurantProvider restaurantProvider;
+
   @override
   Widget build(BuildContext context) {
     final scriptGenerator =
@@ -77,7 +80,10 @@ class _PromptDetailsState extends State<PromptDetails> {
                             horizontal: 32, vertical: 16),
                       ),
                     ),
-                    onPressed: () => scriptGenerator.sendPrompt(),
+                    onPressed: () {
+                      scriptGenerator.sendPrompt(
+                          context, scriptGenerator.numberOfCharacters);
+                    },
                     child: Text("Let's Go!",
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                               color: Theme.of(context)
@@ -94,4 +100,6 @@ class _PromptDetailsState extends State<PromptDetails> {
       ),
     );
   }
+
+  //
 }

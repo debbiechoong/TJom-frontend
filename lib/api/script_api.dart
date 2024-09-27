@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:jejom/models/language_enum.dart';
 import 'package:jejom/models/script_game.dart';
 import 'package:jejom/models/script_restaurants.dart';
+import 'package:jejom/utils/constants/constants.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 // Fetch all scripts along with their nested collections (eng and kor)
 Future<List<ScriptGame>> fetchAllScriptFromFirestore(Language lang) async {
@@ -87,5 +90,56 @@ Future<ScriptRestaurant?> fetchResFromFirestore(String restaurantId) async {
   } catch (e) {
     debugPrint("Error running fetchResFromFirestore : $e");
     return null;
+  }
+}
+
+Future<void> generateScript(String restaurantId, int charactersNum,
+    String cafeName, String cafeEnv) async {
+  var url = Uri.parse('http://${Constants.API_URL}/generate_script');
+
+  var body = {
+    'characters_num': charactersNum.toString(),
+    'cafe_name': cafeName,
+    'cafe_environment': cafeEnv,
+  };
+
+  var response = await http.post(
+    url,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: body,
+  );
+
+  if (response.statusCode == 200) {
+    var responseBody = json.decode(response.body);
+
+    var engScript = responseBody['eng_script'];
+    var korScript = responseBody['kor_script'];
+
+    await uploadScriptToFirestore(restaurantId, korScript, engScript);
+
+    print('Scripts and ScriptGame saved successfully to Firestore.');
+  } else {
+    print('Request failed with status: ${response.statusCode}.');
+  }
+}
+
+Future<void> uploadScriptToFirestore(String restaurantId,
+    Map<String, dynamic> kor_script, Map<String, dynamic> eng_script) async {
+  try {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    String collectionPath = 'script';
+    DocumentReference docRef = firestore.collection(collectionPath).doc();
+    await docRef.set({
+      'restaurant': restaurantId,
+    });
+
+    await docRef.collection('kor').doc().set(kor_script);
+    await docRef.collection('eng').doc().set(eng_script);
+
+    print('Script uploaded successfully to Firestore: $collectionPath');
+  } catch (e) {
+    print('Failed to upload script to Firestore: $e');
   }
 }

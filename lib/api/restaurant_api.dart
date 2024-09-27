@@ -24,11 +24,14 @@ Future<ScriptRestaurant?> fetchRestaurantFromFirestore(String userId) async {
         .collection('script_restaurant')
         .doc(userId)
         .get();
-    if (!restaurantDoc.exists) {}
+    if (!restaurantDoc.exists) {
+      return null;
+    }
 
     print('Restaurant data: ${restaurantDoc.data()}');
 
-    return ScriptRestaurant.fromJson(restaurantDoc.data() as Map<String, dynamic>);
+    return ScriptRestaurant.fromJson(
+        restaurantDoc.data() as Map<String, dynamic>);
   } catch (e) {
     print('Error fetching restaurant: $e');
     return null;
