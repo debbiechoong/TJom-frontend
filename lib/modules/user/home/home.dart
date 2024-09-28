@@ -8,6 +8,7 @@ import 'package:jejom/modules/user/trip/trip_list.dart';
 import 'package:jejom/providers/user/travel_provider.dart';
 import 'package:jejom/providers/user/trip_provider.dart';
 import 'package:jejom/providers/user/user_provider.dart';
+import 'package:jejom/utils/clean_text.dart';
 import 'package:jejom/utils/glass_container.dart';
 import 'package:provider/provider.dart';
 
@@ -67,6 +68,7 @@ class _HomeState extends State<Home> {
                     children: [
                       Expanded(
                         child: TextField(
+                          autofocus: false,
                           decoration: InputDecoration(
                             hintText: "Vacation",
                             filled: true,
@@ -126,7 +128,9 @@ class _HomeState extends State<Home> {
                                               .textTheme
                                               .labelLarge),
                                       const SizedBox(height: 8),
-                                      Text(tripProvider.trips.first.title,
+                                      Text(
+                                          cleanText(
+                                              tripProvider.trips.first.title),
                                           style: Theme.of(context)
                                               .textTheme
                                               .titleLarge),

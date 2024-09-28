@@ -76,7 +76,7 @@ class _ScriptGamePageState extends State<ScriptGamePage> {
           //Show divider when on scroll
           Container(
             height: 1,
-            color: Theme.of(context).colorScheme.surfaceContainerHigh,
+            color: Theme.of(context).colorScheme.surface,
           ),
           Expanded(
             child: PageView(

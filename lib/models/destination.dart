@@ -1,3 +1,5 @@
+import 'package:jejom/modules/user/trip/components/get_photo_url.dart';
+
 class Destination {
   final String address;
   final String description;
@@ -42,12 +44,13 @@ class Destination {
           ? List<String>.from(json['OpeningHours'].map((x) => x))
           : [],
       photos: (json['Photos'] as List<dynamic>)
-          .map((photo) => photo['photo_reference'] as String)
+          // .map((photo) => getPhotoUrl(photo['photo_reference'] as String))
+          .map((photo) => (photo['photo_reference'] as String))
           .toList(),
       price: json['Price'] ?? 'Unknown',
       rating: json['Rating'] ?? 'Unknown',
-      endDate: json['EndDate'] ?? 'Unknown',
-      startDate: json['StartDate'] ?? 'Unknown',
+      endDate: json['endDate'] ?? 'Unknown',
+      startDate: json['startDate'] ?? 'Unknown',
     );
   }
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jejom/api/trip_api.dart';
-import 'package:jejom/models/flight.dart';
+import 'package:jejom/models/flight_info.dart';
 import 'package:jejom/models/interest_destination.dart';
 import 'package:jejom/providers/user/trip_provider.dart';
 import 'package:jejom/providers/user/user_provider.dart';
@@ -18,7 +18,7 @@ class TravelProvider extends ChangeNotifier {
 
   String prompt = "";
   bool isLoading = false;
-  List<Flight> selectedFlights = [];
+  List<FlightInfo> selectedFlights = [];
 
   // Any missing details
   bool isDuration = false;
@@ -54,27 +54,27 @@ class TravelProvider extends ChangeNotifier {
     }
   }
 
-  void toggleSelectedFlight(Flight flight) {
-    if (selectedFlights.any((element) => element.id == flight.id)) {
-      removeSelectedFlight(flight);
-    } else {
-      //Remove duplicate origin and destination
-      selectedFlights.removeWhere((element) =>
-          element.origin == flight.origin &&
-          element.destination == flight.destination);
-      addSelectedFlight(flight);
-    }
-  }
+  // void toggleSelectedFlight(FlightInfo flight) {
+  //   if (selectedFlights.any((element) => element.id == flight.id)) {
+  //     removeSelectedFlight(flight);
+  //   } else {
+  //     //Remove duplicate origin and destination
+  //     selectedFlights.removeWhere((element) =>
+  //         element.origin == flight.origin &&
+  //         element.destination == flight.destination);
+  //     addSelectedFlight(flight);
+  //   }
+  // }
 
-  void addSelectedFlight(Flight flight) {
-    selectedFlights.add(flight);
-    notifyListeners();
-  }
+  // void addSelectedFlight(FlightInfo flight) {
+  //   selectedFlights.add(flight);
+  //   notifyListeners();
+  // }
 
-  void removeSelectedFlight(Flight flight) {
-    selectedFlights.removeWhere((element) => element.id == flight.id);
-    notifyListeners();
-  }
+  // void removeSelectedFlight(FlightInfo flight) {
+  //   selectedFlights.removeWhere((element) => element.id == flight.id);
+  //   notifyListeners();
+  // }
 
   void updatePrompt(String prompt) {
     this.prompt = prompt;
