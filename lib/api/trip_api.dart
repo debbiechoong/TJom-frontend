@@ -55,10 +55,7 @@ class TripApi {
     } else {
       print('Request failed with status: ${response.statusCode}.');
     }
-    // final String response = await rootBundle.loadString('assets/trip.json');
-    // final data = await json.decode(response);
-    // print("Trip json is ${data['data']}");
-    // return data['data'];
+    
   }
 
   Future<void> addTripToFirebase(

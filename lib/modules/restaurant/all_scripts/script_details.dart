@@ -1,6 +1,7 @@
 import 'package:crystal_navigation_bar/crystal_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:jejom/models/language_enum.dart';
+import 'package:jejom/modules/user/trip/components/get_photo_url.dart';
 import 'package:jejom/providers/restaurant/script_restaurant_provider.dart';
 import 'package:jejom/utils/glass_container.dart';
 import 'package:jejom/utils/m3_carousel.dart';
@@ -178,8 +179,8 @@ class _ScriptDetailsPageState extends State<ScriptDetailsPage> {
                             slideAnimationDuration: 300, // milliseconds
                             titleFadeAnimationDuration: 200, // milliseconds
                             children: [
-                              ...restaurant.imageUrl.map((url) {
-                                return {"image": url, "title": ""};
+                              ...restaurant.images!.map((url) {
+                                return {"image": getPhotoUrl(url), "title": ""};
                               }),
                             ],
                           ),
@@ -192,7 +193,7 @@ class _ScriptDetailsPageState extends State<ScriptDetailsPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    restaurant.name,
+                                    restaurant.name ?? "",
                                     style:
                                         Theme.of(context).textTheme.titleLarge,
                                     maxLines: 2,
@@ -200,7 +201,7 @@ class _ScriptDetailsPageState extends State<ScriptDetailsPage> {
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    restaurant.description,
+                                    restaurant.description ?? "",
                                     style:
                                         Theme.of(context).textTheme.bodyLarge,
                                     maxLines: 2,
@@ -210,30 +211,30 @@ class _ScriptDetailsPageState extends State<ScriptDetailsPage> {
                               ),
                             ),
                             const SizedBox(width: 8),
-                            InkWell(
-                              onTap: () {
-                                launchGoogleMaps(
-                                    restaurant.lat, restaurant.long);
-                              },
-                              child: Container(
-                                width: 64,
-                                height: 64,
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .primaryContainer,
-                                    width: 2,
-                                  ),
-                                  borderRadius: BorderRadius.circular(32),
-                                ),
-                                child: Transform.rotate(
-                                  angle: 1.5708 / 2,
-                                  child: const Icon(Icons.arrow_upward_rounded),
-                                ),
-                              ),
-                            ),
+                            // InkWell(
+                            //   onTap: () {
+                            //     launchGoogleMaps(
+                            //         restaurant., restaurant.long);
+                            //   },
+                            //   child: Container(
+                            //     width: 64,
+                            //     height: 64,
+                            //     padding: const EdgeInsets.all(8),
+                            //     decoration: BoxDecoration(
+                            //       border: Border.all(
+                            //         color: Theme.of(context)
+                            //             .colorScheme
+                            //             .primaryContainer,
+                            //         width: 2,
+                            //       ),
+                            //       borderRadius: BorderRadius.circular(32),
+                            //     ),
+                            //     child: Transform.rotate(
+                            //       angle: 1.5708 / 2,
+                            //       child: const Icon(Icons.arrow_upward_rounded),
+                            //     ),
+                            //   ),
+                            // ),
                           ],
                         ),
                       ],

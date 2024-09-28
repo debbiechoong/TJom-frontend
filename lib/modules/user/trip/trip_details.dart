@@ -9,7 +9,9 @@ import 'package:jejom/modules/user/trip/components/dest_section.dart';
 import 'package:jejom/modules/user/trip/components/flights_section.dart';
 import 'package:jejom/modules/user/trip/components/get_photo_url.dart';
 import 'package:jejom/modules/user/trip/story_view.dart';
+import 'package:jejom/providers/user/script_game_provider.dart';
 import 'package:jejom/utils/clean_text.dart';
+import 'package:provider/provider.dart';
 import 'package:sticky_headers/sticky_headers.dart';
 import 'package:story_view/story_view.dart';
 
@@ -35,6 +37,7 @@ class _TripDetailsState extends State<TripDetails> {
   @override
   Widget build(BuildContext context) {
     final Trip trip = widget.trip;
+    // final scriptGameProvider = Provider.of<ScriptGameProvider>(context);
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -127,7 +130,8 @@ class _TripDetailsState extends State<TripDetails> {
                           onTap: () {
                             List<StoryItem> storyItems = dest.photos
                                 .map((imgUrl) => StoryItem.pageImage(
-                                    url: getPhotoUrl(imgUrl), controller: controller))
+                                    url: getPhotoUrl(imgUrl),
+                                    controller: controller))
                                 .toList();
                             Navigator.of(context).push(
                               MaterialPageRoute(

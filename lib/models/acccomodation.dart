@@ -1,8 +1,8 @@
-import 'package:jejom/modules/user/trip/components/get_photo_url.dart';
-
 class Accommodation {
+  final String accomWebsite;
   final String address;
   final String description;
+  final String googleMapsURL;
   final String googlePlaceID;
   final double latitude;
   final double longitude;
@@ -16,8 +16,10 @@ class Accommodation {
   final String startDate;
 
   Accommodation({
+    required this.accomWebsite,
     required this.address,
     required this.description,
+    required this.googleMapsURL,
     required this.googlePlaceID,
     required this.latitude,
     required this.longitude,
@@ -33,8 +35,10 @@ class Accommodation {
 
   factory Accommodation.fromJson(Map<String, dynamic> json) {
     return Accommodation(
+      accomWebsite: json['AccomodationWebsiteURL'] ?? 'Unknown',
       address: json['Address'] ?? 'Unknown',
       description: json['Description'] ?? 'No description available',
+      googleMapsURL: json['GoogleMapsURL'] ?? 'Unknown',
       googlePlaceID: json['GooglePlaceID'] ?? 'Unknown',
       latitude: double.tryParse(json['Latitude']?.toString() ?? '') ?? 0.0,
       longitude: double.tryParse(json['Longitude']?.toString() ?? '') ?? 0.0,
@@ -55,8 +59,10 @@ class Accommodation {
 
   Map<String, dynamic> toJson() {
     return {
+      'AccomodationWebsiteURL': accomWebsite,
       'Address': address,
       'Description': description,
+      'GoogleMapsURL': googleMapsURL,
       'GooglePlaceID': googlePlaceID,
       'Latitude': latitude,
       'Longitude': longitude,
@@ -66,13 +72,16 @@ class Accommodation {
       'Photos': photos,
       'Price': price,
       'Rating': rating,
-      'EndDate': endDate,
+      'endDate': endDate,
+      'startDate': startDate,
     };
   }
 
   Accommodation copyWith({
+    String? accomWebsite,
     String? address,
     String? description,
+    String? googleMapsURL,
     String? googlePlaceID,
     double? latitude,
     double? longitude,
@@ -86,8 +95,10 @@ class Accommodation {
     String? startDate,
   }) {
     return Accommodation(
+      accomWebsite: accomWebsite ?? this.accomWebsite,
       address: address ?? this.address,
       description: description ?? this.description,
+      googleMapsURL: googleMapsURL ?? this.googleMapsURL,
       googlePlaceID: googlePlaceID ?? this.googlePlaceID,
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,

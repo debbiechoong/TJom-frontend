@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:jejom/models/script_restaurants.dart';
+import 'package:jejom/models/script_restaurant.dart';
 
 //update User
 Future<void> createRestaurantInFirestore(

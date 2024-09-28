@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jejom/api/restaurant_api.dart';
-import 'package:jejom/models/script_restaurants.dart';
+import 'package:jejom/models/script_restaurant.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RestaurantProvider extends ChangeNotifier {

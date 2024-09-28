@@ -32,7 +32,9 @@ class ScriptGame {
       title: json['Title'],
       duration: json['Duration'],
       restaurantId: json['restaurant'],
-      images: List<String>.from(json['images']),
+      images: json['images'] != null
+          ? List<String>.from(json['images'].map((x) => (x)))
+          : [],
     );
   }
 

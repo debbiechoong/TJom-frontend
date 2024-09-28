@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jejom/api/script_api.dart';
 import 'package:jejom/models/language_enum.dart';
 import 'package:jejom/models/script_game.dart';
-import 'package:jejom/models/script_restaurants.dart';
+import 'package:jejom/models/script_restaurant.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ScriptRestaurantProvider extends ChangeNotifier {

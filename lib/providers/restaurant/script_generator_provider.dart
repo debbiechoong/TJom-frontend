@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jejom/api/restaurant_api.dart';
 import 'package:jejom/api/script_api.dart';
-import 'package:jejom/models/script_restaurants.dart';
+import 'package:jejom/models/script_restaurant.dart';
 import 'package:jejom/modules/restaurant/script_generator/ScriptGenerationSuccess.dart';
 import 'package:jejom/utils/loading_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -42,8 +42,8 @@ class RestaurantScriptGeneratorProvider extends ChangeNotifier {
     );
 
     try {
-      await generateScript(
-          userId, charactersNum, restaurant.name, restaurant.description);
+      await generateScript(userId, charactersNum, restaurant.name ?? "",
+          restaurant.description ?? "");
 
       Navigator.of(context).pop();
 

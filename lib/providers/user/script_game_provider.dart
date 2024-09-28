@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:jejom/api/script_api.dart';
 import 'package:jejom/models/language_enum.dart';
 import 'package:jejom/models/script_game.dart';
-import 'package:jejom/models/script_restaurants.dart';
+import 'package:jejom/models/script_restaurant.dart';
 
 class ScriptGameProvider extends ChangeNotifier {
   List<ScriptGame> games = [];
   ScriptGame? selectedGame;
-  List<ScriptRestaurant> restaurants = [];
+  ScriptRestaurant? restaurant;
 
   Language lang = Language.english;
 
@@ -19,10 +19,9 @@ class ScriptGameProvider extends ChangeNotifier {
 
   Future<void> selectGame(ScriptGame game) async {
     selectedGame = game;
-    restaurants = [];
     final scriptRestaurant = await fetchResFromFirestore(game.restaurantId);
     if (scriptRestaurant != null) {
-      restaurants.add(scriptRestaurant);
+      restaurant = scriptRestaurant;
     }
     notifyListeners();
   }

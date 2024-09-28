@@ -1,6 +1,9 @@
 import 'package:crystal_navigation_bar/crystal_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating/flutter_rating.dart';
 import 'package:jejom/models/language_enum.dart';
+import 'package:jejom/modules/user/trip/components/build_carousel.dart';
+import 'package:jejom/modules/user/trip/components/get_photo_url.dart';
 import 'package:jejom/providers/user/script_game_provider.dart';
 import 'package:jejom/utils/glass_container.dart';
 import 'package:jejom/utils/m3_carousel.dart';
@@ -157,97 +160,121 @@ class _ScriptGamePageState extends State<ScriptGamePage> {
               "Duration: ${scriptGameProvider.selectedGame?.duration ?? ""}",
               style: Theme.of(context).textTheme.bodyLarge,
             ),
-            // const SizedBox(height: 32),
-            // Text(
-            //   "Offered Restaurants",
-            //   style: Theme.of(context).textTheme.titleLarge,
-            // ),
-            // const SizedBox(height: 16),
-            MediaQuery.removePadding(
-              context: context,
-              child: ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: scriptGameProvider.restaurants.length,
-                itemBuilder: (context, index) {
-                  final restaurant = scriptGameProvider.restaurants[index];
-                  return GlassContainer(
-                    padding: 16,
-                    marginBottom: 16,
-                    width: double.infinity,
-                    child: Column(
+            const SizedBox(height: 32),
+            Text(
+              "Offered Restaurants",
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 16),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                BuildCarousel(
+                    photos: scriptGameProvider.restaurant?.images ?? []),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 16),
+                    Row(
                       children: [
-                        SizedBox(
-                          height: 200,
-                          width: double.infinity,
-                          child: M3Carousel(
-                            visible: 2,
-                            slideAnimationDuration: 300, // milliseconds
-                            titleFadeAnimationDuration: 200, // milliseconds
-                            children: [
-                              ...restaurant.imageUrl.map((url) {
-                                return {"image": url, "title": ""};
-                              }),
-                            ],
-                          ),
+                        Text(
+                          scriptGameProvider.restaurant?.name ?? "",
+                          style: Theme.of(context).textTheme.titleMedium,
                         ),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    restaurant.name,
-                                    style:
-                                        Theme.of(context).textTheme.titleLarge,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    restaurant.description,
-                                    style:
-                                        Theme.of(context).textTheme.bodyLarge,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            InkWell(
-                              onTap: () {
-                                launchGoogleMaps(
-                                    restaurant.lat, restaurant.long);
-                              },
-                              child: Container(
-                                width: 64,
-                                height: 64,
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .primaryContainer,
-                                    width: 2,
-                                  ),
-                                  borderRadius: BorderRadius.circular(32),
-                                ),
-                                child: Transform.rotate(
-                                  angle: 1.5708 / 2,
-                                  child: const Icon(Icons.arrow_upward_rounded),
-                                ),
-                              ),
-                            ),
-                          ],
+                        const Spacer(),
+                        // scriptGameProvider.restaurant?.destinationWebsiteUrl ?? "" == ""
+                        //     ? const SizedBox()
+                        //     : IconButton(
+                        //         onPressed: () async {
+                        //           final Uri url = Uri.parse(
+                        //               destination.destinationWebsiteUrl);
+                        //           if (!await launchUrl(url)) {
+                        //             throw Exception('Could not launch $url');
+                        //           }
+                        //         },
+                        //         icon: const Icon(Icons.language)),
+                        // const SizedBox(width: 8),
+                        // destination.googleMapsUrl == ""
+                        //     ? const SizedBox()
+                        //     : IconButton(
+                        //         onPressed: () async {
+                        //           final Uri url =
+                        //               Uri.parse(destination.googleMapsUrl);
+                        //           if (!await launchUrl(url)) {
+                        //             throw Exception('Could not launch $url');
+                        //           }
+                        //         },
+                        //         icon: const Icon(Icons.directions)),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      scriptGameProvider.restaurant?.description ?? "",
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onBackground
+                              .withOpacity(0.8)),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Text(
+                            "${scriptGameProvider.restaurant?.userRatingsTotal}",
+                            style: Theme.of(context).textTheme.labelLarge),
+                        const SizedBox(width: 8),
+                        StarRating(
+                          rating: scriptGameProvider
+                                  .restaurant?.userRatingsTotal
+                                  ?.toDouble() ??
+                              0,
+                          allowHalfRating: true,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                            "(${scriptGameProvider.restaurant?.userRatingsTotal})",
+                            style: Theme.of(context).textTheme.labelLarge),
+                        const Spacer(),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.timer_rounded,
+                          color: Theme.of(context).colorScheme.primary,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          "Opening Hours: ${(scriptGameProvider.restaurant?.currentOpeningHours?.weekdayText![0])}",
+                          style: Theme.of(context).textTheme.labelMedium,
                         ),
                       ],
                     ),
-                  );
-                },
-              ),
+                    const SizedBox(height: 8),
+                    // Row(
+                    //   children: [
+                    //     Icon(
+                    //       Icons.travel_explore_rounded,
+                    //       color: Theme.of(context).colorScheme.primary,
+                    //       size: 16,
+                    //     ),
+                    //     const SizedBox(width: 8),
+                    //     Text(
+                    //       "Recommended Visiting Hours: ${destination.visitingTime.toTitleCase()}",
+                    //       style: Theme.of(context).textTheme.labelMedium,
+                    //     ),
+                    //   ],
+                    // ),
+                    const SizedBox(height: 16),
+
+                    const SizedBox(height: 56),
+                  ],
+                ),
+              ],
             ),
             const SizedBox(height: 120),
           ],

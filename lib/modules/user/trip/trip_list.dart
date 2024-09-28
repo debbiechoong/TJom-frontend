@@ -85,6 +85,19 @@ class _TripListState extends State<TripList> {
       ),
       child: Column(
         children: [
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal:  16.0),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Image.network(
+                trip.thumbnail,
+                width: double.infinity,
+                height: 200,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(

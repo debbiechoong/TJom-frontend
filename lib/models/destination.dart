@@ -1,8 +1,8 @@
-import 'package:jejom/modules/user/trip/components/get_photo_url.dart';
-
 class Destination {
   final String address;
   final String description;
+  final String destinationWebsiteUrl;
+  final String googleMapsUrl;
   final String googlePlaceID;
   final double latitude;
   final double longitude;
@@ -14,6 +14,9 @@ class Destination {
   final String rating;
   final String endDate;
   final String startDate;
+  final bool isMurderMysteryCafe;
+  final String visitingTime;
+  final String resId;
 
   Destination({
     required this.address,
@@ -29,6 +32,11 @@ class Destination {
     required this.rating,
     required this.endDate,
     required this.startDate,
+    required this.isMurderMysteryCafe,
+    required this.visitingTime,
+    required this.resId,
+    required this.destinationWebsiteUrl,
+    required this.googleMapsUrl,
   });
 
   factory Destination.fromJson(Map<String, dynamic> json) {
@@ -50,6 +58,11 @@ class Destination {
       rating: json['Rating'] ?? 'Unknown',
       endDate: json['endDate'] ?? 'Unknown',
       startDate: json['startDate'] ?? 'Unknown',
+      isMurderMysteryCafe: json['isMurderMysteryCafe'] ?? false,
+      visitingTime: json['visitingTime'] ?? '',
+      resId: json['id'] ?? '',
+      destinationWebsiteUrl: json['DestinationWebsiteURL'] ?? '',
+      googleMapsUrl: json['GoogleMapsURL'] ?? '',
     );
   }
 
@@ -66,8 +79,13 @@ class Destination {
       'Photos': photos,
       'Price': price,
       'Rating': rating,
-      'EndDate': endDate,
-      'StartDate': startDate,
+      'endDate': endDate,
+      'startDate': startDate,
+      'isMurderMysteryCafe': isMurderMysteryCafe,
+      'visitingTime': visitingTime,
+      'id': resId,
+      'DestinationWebsiteURL': destinationWebsiteUrl,
+      'GoogleMapsURL': googleMapsUrl,
     };
   }
 
@@ -85,6 +103,11 @@ class Destination {
     String? rating,
     String? endDate,
     String? startDate,
+    bool? isMurderMysteryCafe,
+    String? visitingTime,
+    String? resId,
+    String? destinationWebsiteUrl,
+    String? googleMapsUrl,
   }) {
     return Destination(
       address: address ?? this.address,
@@ -100,6 +123,12 @@ class Destination {
       rating: rating ?? this.rating,
       endDate: endDate ?? this.endDate,
       startDate: startDate ?? this.startDate,
+      isMurderMysteryCafe: isMurderMysteryCafe ?? this.isMurderMysteryCafe,
+      visitingTime: visitingTime ?? this.visitingTime,
+      resId: resId ?? this.resId,
+      destinationWebsiteUrl:
+          destinationWebsiteUrl ?? this.destinationWebsiteUrl,
+      googleMapsUrl: googleMapsUrl ?? this.googleMapsUrl,
     );
   }
 }

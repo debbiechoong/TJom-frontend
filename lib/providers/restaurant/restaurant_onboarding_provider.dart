@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jejom/api/restaurant_api.dart';
-import 'package:jejom/models/script_restaurants.dart';
+import 'package:jejom/models/script_restaurant.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RestaurantOnboardingProvider extends ChangeNotifier {
@@ -71,11 +71,11 @@ class RestaurantOnboardingProvider extends ChangeNotifier {
     ScriptRestaurant restaurant = ScriptRestaurant(
       address: address,
       description: description,
-      imageUrl: images,
-      lat: latitude,
-      long: longitude,
+      images: images,
       name: name,
-      phoneNum: phoneNum,
+      // lat: latitude,
+      // long: longitude,
+      // phoneNum: phoneNum,
     );
 
 

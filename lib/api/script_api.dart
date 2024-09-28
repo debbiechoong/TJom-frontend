@@ -1,8 +1,10 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:jejom/models/language_enum.dart';
 import 'package:jejom/models/script_game.dart';
-import 'package:jejom/models/script_restaurants.dart';
+import 'package:jejom/models/script_restaurant.dart';
 import 'package:jejom/utils/constants/constants.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -83,6 +85,7 @@ Future<ScriptRestaurant?> fetchResFromFirestore(String restaurantId) async {
         .collection('script_restaurant')
         .doc(restaurantId)
         .get();
+    printWrapped("${scriptDoc.data()}");
     if (scriptDoc.exists) {
       return ScriptRestaurant.fromJson(scriptDoc.data()!);
     }
@@ -91,6 +94,11 @@ Future<ScriptRestaurant?> fetchResFromFirestore(String restaurantId) async {
     debugPrint("Error running fetchResFromFirestore : $e");
     return null;
   }
+}
+
+void printWrapped(String text) {
+  final pattern = RegExp('.{1,800}'); // 800 is the size of each chunk
+  pattern.allMatches(text).forEach((match) => print(match.group(0)));
 }
 
 Future<void> generateScript(String restaurantId, int charactersNum,
