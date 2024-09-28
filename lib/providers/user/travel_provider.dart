@@ -1,20 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:jejom/api/trip_api.dart';
 import 'package:jejom/models/flight_info.dart';
-import 'package:jejom/models/interest_destination.dart';
+import 'package:jejom/modules/user/trip/trip_details.dart';
 import 'package:jejom/providers/user/trip_provider.dart';
 import 'package:jejom/providers/user/user_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:jejom/providers/user/interest_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TravelProvider extends ChangeNotifier {
-  final PageController _mainPageController = PageController();
-  int _page = 0;
   TripApi tripApi = TripApi();
-
-  int get page => _page;
-  PageController get mainPageController => _mainPageController;
 
   String prompt = "";
   bool isLoading = false;
@@ -30,60 +24,8 @@ class TravelProvider extends ChangeNotifier {
   String budget = "";
   int numberPerson = 1;
 
-  void previousPage() {
-    if (_page == 0) {
-      return;
-    }
-
-    _page--;
-    _mainPageController.animateToPage(_page,
-        duration: const Duration(milliseconds: 600),
-        curve: Curves.easeInOutCubicEmphasized);
-    notifyListeners();
-  }
-
-  void nextPage() {
-    if (_mainPageController.hasClients) {
-      _page++;
-      _mainPageController.animateToPage(
-        _page,
-        duration: const Duration(milliseconds: 600),
-        curve: Curves.easeInOutCubicEmphasized,
-      );
-      notifyListeners();
-    }
-  }
-
-  // void toggleSelectedFlight(FlightInfo flight) {
-  //   if (selectedFlights.any((element) => element.id == flight.id)) {
-  //     removeSelectedFlight(flight);
-  //   } else {
-  //     //Remove duplicate origin and destination
-  //     selectedFlights.removeWhere((element) =>
-  //         element.origin == flight.origin &&
-  //         element.destination == flight.destination);
-  //     addSelectedFlight(flight);
-  //   }
-  // }
-
-  // void addSelectedFlight(FlightInfo flight) {
-  //   selectedFlights.add(flight);
-  //   notifyListeners();
-  // }
-
-  // void removeSelectedFlight(FlightInfo flight) {
-  //   selectedFlights.removeWhere((element) => element.id == flight.id);
-  //   notifyListeners();
-  // }
-
   void updatePrompt(String prompt) {
     this.prompt = prompt;
-  }
-
-  void goToLoading() {
-    _mainPageController.animateToPage(6,
-        duration: const Duration(milliseconds: 600),
-        curve: Curves.easeInOutCubicEmphasized);
   }
 
   Future<void> sendPrompt() async {
@@ -128,77 +70,37 @@ class TravelProvider extends ChangeNotifier {
       additionalPrompt += "Number of Persons: $numberPerson\n";
     }
 
-    print(additionalPrompt);
+    print("Final prompt $additionalPrompt");
 
-    // Update user
-    final interestProvider =
-        Provider.of<InterestProvider>(context, listen: false);
-    await interestProvider.fetchTrendingInterests();
-    await interestProvider.recommendBestDestinations();
-
-    final FirebaseFirestore firestore = FirebaseFirestore.instance;
-    final userDoc = firestore.collection('users').doc(interestProvider.userId);
-
-    DocumentSnapshot userSnapshot = await userDoc.get();
-    List<String> existingInterests =
-        List<String>.from(userSnapshot['interests'] ?? []);
-    List<InterestDestination> existingInterestDestinations = [];
-
-    if (userSnapshot.exists) {
-      QuerySnapshot destinationsSnapshot =
-          await userDoc.collection('interestDestinations').get();
-      existingInterestDestinations = destinationsSnapshot.docs
-          .map((doc) =>
-              InterestDestination.fromJson(doc.data() as Map<String, dynamic>))
-          .toList();
-    }
-
-    Set<String> updatedInterests = {
-      ...existingInterests,
-      // ...selectedInterests.map((e) => e.name)
-    };
-
-    await userDoc.update({
-      'interests': updatedInterests.toList(),
-      'startDate': startDate,
-      'endDate': endDate,
-      'budget': budget,
-      'numberPerson': numberPerson,
-    });
-
-    final newInterestDestinations = interestProvider.getInterests();
-    final updatedInterestDestinations = {
-      ...existingInterestDestinations,
-      ...newInterestDestinations
-    };
-
-    final interestsCollection = userDoc.collection('interestDestinations');
-    final batch = firestore.batch();
-
-    for (final interest in updatedInterestDestinations) {
-      final docRef = interestsCollection.doc(interest.id);
-      batch.set(docRef, interest.toJson());
-    }
-
-    await batch.commit();
+    final prefs = await SharedPreferences.getInstance();
+    String? userId = prefs.getString('userId');
 
     // Update trip
     final tripProvider = Provider.of<TripProvider>(context, listen: false);
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final userProps =
-        await userProvider.fetchUserProps(interestProvider.userId);
+    final userProps = await userProvider.fetchUserProps(userId ?? "");
 
     String userPropsString = "";
     userProps.forEach((key, value) {
       userPropsString += "$key: $value; ";
     });
 
+    print("Before Response");
     final response =
         await tripApi.generateTrip(additionalPrompt, userPropsString);
     tripProvider.addTripFromJson(response);
+    tripProvider.addTripsToFirebase(userId ?? "");
 
     isLoading = false;
     notifyListeners();
-    nextPage();
+
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => TripDetails(
+          trip: tripProvider.trips.first,
+          isEditing: true,
+        ),
+      ),
+    );
   }
 }

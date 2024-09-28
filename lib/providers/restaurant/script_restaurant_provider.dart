@@ -23,11 +23,9 @@ class ScriptRestaurantProvider extends ChangeNotifier {
   Future<void> selectGame(ScriptGame game) async {
     selectedGame = game;
     restaurants = [];
-    for (var resId in game.restaurantIds) {
-      final scriptRestaurant = await fetchResFromFirestore(resId);
-      if (scriptRestaurant != null) {
-        restaurants.add(scriptRestaurant);
-      }
+    final scriptRestaurant = await fetchResFromFirestore(game.restaurantId);
+    if (scriptRestaurant != null) {
+      restaurants.add(scriptRestaurant);
     }
     notifyListeners();
   }

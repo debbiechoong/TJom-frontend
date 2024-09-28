@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jejom/modules/user/trip/components/get_photo_url.dart';
 import 'package:jejom/utils/m3_carousel.dart';
 
 class BuildCarousel extends StatefulWidget {
@@ -25,7 +26,7 @@ class _BuildCarouselState extends State<BuildCarousel> {
           titleFadeAnimationDuration: 200, // milliseconds
           children: [
             ...widget.photos.map((url) {
-              return {"image": url, "title": ""};
+              return {"image": getPhotoUrl(url), "title": ""};
             }),
           ],
         ),

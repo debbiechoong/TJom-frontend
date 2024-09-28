@@ -43,10 +43,9 @@ class Destination {
       openingHours: json['OpeningHours'] != null
           ? List<String>.from(json['OpeningHours'].map((x) => x))
           : [],
-      photos: (json['Photos'] as List<dynamic>)
-          // .map((photo) => getPhotoUrl(photo['photo_reference'] as String))
-          .map((photo) => (photo['photo_reference'] as String))
-          .toList(),
+      photos: json['Photos'] != null
+          ? List<String>.from(json['Photos'].map((x) => (x)))
+          : [],
       price: json['Price'] ?? 'Unknown',
       rating: json['Rating'] ?? 'Unknown',
       endDate: json['endDate'] ?? 'Unknown',

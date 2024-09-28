@@ -6,7 +6,7 @@ class ScriptGame {
   final String playerInstructionWriter;
   final String title;
   final String duration;
-  final List<String> restaurantIds;
+  final String restaurantId;
   final List<String> images;
 
   ScriptGame({
@@ -17,7 +17,7 @@ class ScriptGame {
     required this.playerInstructionWriter,
     required this.title,
     required this.duration,
-    required this.restaurantIds,
+    required this.restaurantId,
     required this.images,
   });
 
@@ -31,7 +31,7 @@ class ScriptGame {
       playerInstructionWriter: json['Player Instruction Writer'],
       title: json['Title'],
       duration: json['Duration'],
-      restaurantIds: List<String>.from(json['restaurants']),
+      restaurantId: json['restaurant'],
       images: List<String>.from(json['images']),
     );
   }
@@ -44,7 +44,7 @@ class ScriptGame {
       'Script Writer': scriptWriter,
       'Clue Generator': clueGenerator,
       'Player Instruction Writer': playerInstructionWriter,
-      'restaurants': restaurantIds,
+      'restaurant': restaurantId,
       'Title': title,
       'Duration': duration,
       'images': images,

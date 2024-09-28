@@ -36,12 +36,14 @@ class TripApi {
     var body = {
       'query': query,
       "user_props": userProps,
+      // "mode": "test",
     };
 
     var response = await http.post(
       url,
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
+        'Connection': 'keep-alive', // Keep connection alive
       },
       body: body,
     );
@@ -53,6 +55,10 @@ class TripApi {
     } else {
       print('Request failed with status: ${response.statusCode}.');
     }
+    // final String response = await rootBundle.loadString('assets/trip.json');
+    // final data = await json.decode(response);
+    // print("Trip json is ${data['data']}");
+    // return data['data'];
   }
 
   Future<void> addTripToFirebase(
@@ -69,18 +75,13 @@ class TripApi {
 
   Future<List<Trip>> fetchTripFromFirebase(String userId) async {
     try {
-      // var trip = await FirebaseFirestore.instance
-      //     .collection('trips')
-      //     .where('userId', isEqualTo: userId)
-      //     .get();
+      var trip = await FirebaseFirestore.instance
+          .collection('trips')
+          .where('userId', isEqualTo: userId)
+          .get();
+      print('Trip fetched from Firebase: ${trip.docs}');
+      final trips = trip.docs.map((doc) => Trip.fromJson(doc.data())).toList();
 
-      final String response = await rootBundle.loadString('assets/trip.json');
-      final data = await json.decode(response);
-      print("Trip json is ${data}");
-
-      // final trips = trip.docs.map((doc) => Trip.fromJson(doc.data())).toList();
-      final trips = [Trip.fromJson(data['data'])];
-      print(trips[0]);
       return trips;
     } catch (e) {
       print('Error fetching trip from Firebase: $e');

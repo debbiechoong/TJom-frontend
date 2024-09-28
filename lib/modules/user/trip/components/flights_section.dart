@@ -38,7 +38,27 @@ class _FlightsSectionState extends State<FlightsSection>
     final Trip trip = widget.trip;
 
     if (trip.flight.departureFlight?.airlineLogo == null) {
-      return const Text("No flights available for this trip.");
+      return Scaffold(
+          body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 80),
+            IconButton(
+              visualDensity: VisualDensity.adaptivePlatformDensity,
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              icon: const Icon(
+                Icons.arrow_back,
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text("No flights available for this trip."),
+          ],
+        ),
+      ));
     }
     return Scaffold(
       body: SingleChildScrollView(

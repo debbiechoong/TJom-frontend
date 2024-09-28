@@ -9,10 +9,9 @@ class TripProvider extends ChangeNotifier {
   String newPrompt = "";
 
   void addTripFromJson(dynamic response) {
-    trips.clear();
     Trip trip = Trip.fromJson(response);
 
-    trips.add(trip);
+    trips.insert(0, trip);
     notifyListeners();
   }
 

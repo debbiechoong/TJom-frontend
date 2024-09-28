@@ -3,17 +3,20 @@ import 'dart:ui';
 import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:jejom/models/trip.dart';
+import 'package:jejom/modules/user/travel_prompting/prompt_success.dart';
 import 'package:jejom/modules/user/trip/components/accom_section.dart';
 import 'package:jejom/modules/user/trip/components/dest_section.dart';
 import 'package:jejom/modules/user/trip/components/flights_section.dart';
+import 'package:jejom/modules/user/trip/components/get_photo_url.dart';
 import 'package:jejom/modules/user/trip/story_view.dart';
 import 'package:jejom/utils/clean_text.dart';
 import 'package:sticky_headers/sticky_headers.dart';
 import 'package:story_view/story_view.dart';
 
 class TripDetails extends StatefulWidget {
+  const TripDetails({super.key, required this.trip, this.isEditing = false});
   final Trip trip;
-  const TripDetails({super.key, required this.trip});
+  final bool isEditing;
 
   @override
   State<TripDetails> createState() => _TripDetailsState();
@@ -21,7 +24,6 @@ class TripDetails extends StatefulWidget {
 
 class _TripDetailsState extends State<TripDetails> {
   late DateTime focusDate;
-  bool _isExpanded = false;
   final StoryController controller = StoryController();
 
   @override
@@ -124,8 +126,8 @@ class _TripDetailsState extends State<TripDetails> {
                         InkWell(
                           onTap: () {
                             List<StoryItem> storyItems = dest.photos
-                                .map((e) => StoryItem.pageImage(
-                                    url: e, controller: controller))
+                                .map((imgUrl) => StoryItem.pageImage(
+                                    url: getPhotoUrl(imgUrl), controller: controller))
                                 .toList();
                             Navigator.of(context).push(
                               MaterialPageRoute(
@@ -154,7 +156,7 @@ class _TripDetailsState extends State<TripDetails> {
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(32),
                               child: Image.network(
-                                url,
+                                getPhotoUrl(url),
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -195,6 +197,44 @@ class _TripDetailsState extends State<TripDetails> {
                 ],
               ),
             ),
+            widget.isEditing
+                ? Row(
+                    children: [
+                      const Spacer(),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: FilledButton(
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all(
+                                Theme.of(context).colorScheme.primaryContainer),
+                            visualDensity:
+                                VisualDensity.adaptivePlatformDensity,
+                            padding: MaterialStateProperty.all(
+                              const EdgeInsets.symmetric(
+                                  horizontal: 32, vertical: 16),
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => const PromptSuccess(),
+                              ),
+                            );
+                          },
+                          child: Text("Get Started",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onPrimaryContainer,
+                                  )),
+                        ),
+                      ),
+                    ],
+                  )
+                : const SizedBox(),
           ],
         ),
       ),
@@ -283,54 +323,54 @@ class _TripDetailsState extends State<TripDetails> {
     );
   }
 
-  Widget _buildDescriptionText() {
-    final String description = widget.trip.description;
-    return LayoutBuilder(
-      builder: (BuildContext context, BoxConstraints constraints) {
-        final textStyle = Theme.of(context).textTheme.bodyMedium;
+  // Widget _buildDescriptionText() {
+  //   final String description = widget.trip.description;
+  //   return LayoutBuilder(
+  //     builder: (BuildContext context, BoxConstraints constraints) {
+  //       final textStyle = Theme.of(context).textTheme.bodyMedium;
 
-        // Create a TextSpan to measure the text size
-        final textSpan = TextSpan(text: description, style: textStyle);
-        final textPainter = TextPainter(
-          text: textSpan,
-          maxLines: _isExpanded ? null : 3, // Limit to 3 lines if collapsed
-          textAlign: TextAlign.left,
-          textDirection: TextDirection.ltr,
-        );
+  //       // Create a TextSpan to measure the text size
+  //       final textSpan = TextSpan(text: description, style: textStyle);
+  //       final textPainter = TextPainter(
+  //         text: textSpan,
+  //         maxLines: _isExpanded ? null : 3, // Limit to 3 lines if collapsed
+  //         textAlign: TextAlign.left,
+  //         textDirection: TextDirection.ltr,
+  //       );
 
-        textPainter.layout(maxWidth: constraints.maxWidth);
+  //       textPainter.layout(maxWidth: constraints.maxWidth);
 
-        // Check if text is overflowing
-        bool isTextOverflowing = textPainter.didExceedMaxLines;
+  //       // Check if text is overflowing
+  //       bool isTextOverflowing = textPainter.didExceedMaxLines;
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              description,
-              maxLines: _isExpanded ? null : 3, // Show full text if expanded
-              overflow: TextOverflow.ellipsis,
-              style: textStyle,
-            ),
-            if (isTextOverflowing) // Show "Read More" only if text overflows
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _isExpanded =
-                        !_isExpanded; // Toggle between collapsed and expanded
-                  });
-                },
-                child: Text(
-                  _isExpanded ? "Show Less" : "Read More",
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.primary,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-          ],
-        );
-      },
-    );
-  }
+  //       return Column(
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           Text(
+  //             description,
+  //             maxLines: _isExpanded ? null : 3, // Show full text if expanded
+  //             overflow: TextOverflow.ellipsis,
+  //             style: textStyle,
+  //           ),
+  //           if (isTextOverflowing) // Show "Read More" only if text overflows
+  //             GestureDetector(
+  //               onTap: () {
+  //                 setState(() {
+  //                   _isExpanded =
+  //                       !_isExpanded; // Toggle between collapsed and expanded
+  //                 });
+  //               },
+  //               child: Text(
+  //                 _isExpanded ? "Show Less" : "Read More",
+  //                 style: TextStyle(
+  //                   color: Theme.of(context).colorScheme.primary,
+  //                   fontWeight: FontWeight.bold,
+  //                 ),
+  //               ),
+  //             ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 }
