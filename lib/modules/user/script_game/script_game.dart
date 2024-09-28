@@ -1,5 +1,6 @@
 import 'package:crystal_navigation_bar/crystal_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_rating/flutter_rating.dart';
 import 'package:jejom/models/language_enum.dart';
 import 'package:jejom/modules/user/trip/components/build_carousel.dart';
@@ -162,7 +163,7 @@ class _ScriptGamePageState extends State<ScriptGamePage> {
             ),
             const SizedBox(height: 32),
             Text(
-              "Offered Restaurants",
+              scriptGameProvider.restaurant?.name ?? "",
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 16),
@@ -175,39 +176,6 @@ class _ScriptGamePageState extends State<ScriptGamePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Text(
-                          scriptGameProvider.restaurant?.name ?? "",
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        const Spacer(),
-                        // scriptGameProvider.restaurant?.destinationWebsiteUrl ?? "" == ""
-                        //     ? const SizedBox()
-                        //     : IconButton(
-                        //         onPressed: () async {
-                        //           final Uri url = Uri.parse(
-                        //               destination.destinationWebsiteUrl);
-                        //           if (!await launchUrl(url)) {
-                        //             throw Exception('Could not launch $url');
-                        //           }
-                        //         },
-                        //         icon: const Icon(Icons.language)),
-                        // const SizedBox(width: 8),
-                        // destination.googleMapsUrl == ""
-                        //     ? const SizedBox()
-                        //     : IconButton(
-                        //         onPressed: () async {
-                        //           final Uri url =
-                        //               Uri.parse(destination.googleMapsUrl);
-                        //           if (!await launchUrl(url)) {
-                        //             throw Exception('Could not launch $url');
-                        //           }
-                        //         },
-                        //         icon: const Icon(Icons.directions)),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
                     Text(
                       scriptGameProvider.restaurant?.description ?? "",
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(
@@ -216,7 +184,7 @@ class _ScriptGamePageState extends State<ScriptGamePage> {
                               .onBackground
                               .withOpacity(0.8)),
                       overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
+                      maxLines: 7,
                     ),
                     const SizedBox(height: 8),
                     Row(
@@ -255,22 +223,22 @@ class _ScriptGamePageState extends State<ScriptGamePage> {
                       ],
                     ),
                     const SizedBox(height: 8),
-                    // Row(
-                    //   children: [
-                    //     Icon(
-                    //       Icons.travel_explore_rounded,
-                    //       color: Theme.of(context).colorScheme.primary,
-                    //       size: 16,
-                    //     ),
-                    //     const SizedBox(width: 8),
-                    //     Text(
-                    //       "Recommended Visiting Hours: ${destination.visitingTime.toTitleCase()}",
-                    //       style: Theme.of(context).textTheme.labelMedium,
-                    //     ),
-                    //   ],
-                    // ),
-                    const SizedBox(height: 16),
-
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.location_on_rounded,
+                          color: Theme.of(context).colorScheme.primary,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            "Address: ${(scriptGameProvider.restaurant?.address)}",
+                            style: Theme.of(context).textTheme.labelMedium,
+                          ),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 56),
                   ],
                 ),
