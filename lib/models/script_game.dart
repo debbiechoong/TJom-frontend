@@ -7,6 +7,7 @@ class ScriptGame {
   final String title;
   final String duration;
   final List<String> restaurantIds;
+  final List<String> images;
 
   ScriptGame({
     required this.scriptPlanner,
@@ -17,6 +18,7 @@ class ScriptGame {
     required this.title,
     required this.duration,
     required this.restaurantIds,
+    required this.images,
   });
 
   // Factory constructor to create a ScriptGame from JSON
@@ -30,6 +32,7 @@ class ScriptGame {
       title: json['Title'],
       duration: json['Duration'],
       restaurantIds: List<String>.from(json['restaurants']),
+      images: List<String>.from(json['images']),
     );
   }
 
@@ -44,6 +47,7 @@ class ScriptGame {
       'restaurants': restaurantIds,
       'Title': title,
       'Duration': duration,
+      'images': images,
     };
   }
 }
