@@ -6,7 +6,9 @@ import 'package:jejom/models/trip.dart';
 import 'package:jejom/modules/user/trip/components/accom_section.dart';
 import 'package:jejom/modules/user/trip/components/dest_section.dart';
 import 'package:jejom/modules/user/trip/components/flights_section.dart';
+import 'package:jejom/modules/user/trip/story_view.dart';
 import 'package:sticky_headers/sticky_headers.dart';
+import 'package:story_view/story_view.dart';
 
 class TripDetails extends StatefulWidget {
   final Trip trip;
@@ -19,6 +21,7 @@ class TripDetails extends StatefulWidget {
 class _TripDetailsState extends State<TripDetails> {
   late DateTime focusDate;
   bool _isExpanded = false;
+  final StoryController controller = StoryController();
 
   @override
   void initState() {
@@ -68,41 +71,110 @@ class _TripDetailsState extends State<TripDetails> {
                   ],
                 )),
             const SizedBox(height: 32),
-            Row(
-              children: [
-                const SizedBox(width: 16),
-                Padding(
-                  padding: const EdgeInsets.only(right: 16.0),
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => FlightsSection(trip: trip),
-                        ),
-                      );
-                    },
-                    child: Container(
-                        width: 64,
-                        height: 64,
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surface,
-                          borderRadius: BorderRadius.circular(32),
-                        ),
-                        child: Transform.rotate(
-                          angle: 1.5708 / 2,
-                          child: const Icon(Icons.flight),
-                        )),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  const SizedBox(width: 16),
+                  Column(
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => FlightsSection(trip: trip),
+                            ),
+                          );
+                        },
+                        child: Container(
+                            width: 64,
+                            height: 64,
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.surface,
+                              borderRadius: BorderRadius.circular(32),
+                            ),
+                            child: Transform.rotate(
+                              angle: 1.5708 / 2,
+                              child: const Icon(Icons.flight),
+                            )),
+                      ),
+                      const SizedBox(height: 8),
+                      Text("Flights",
+                          style: Theme.of(context).textTheme.labelSmall),
+                    ],
                   ),
-                ),
-                const SizedBox(width: 8),
-                Container(
-                    height: 64,
-                    width: 1,
-                    color:
-                        Theme.of(context).colorScheme.outline.withOpacity(0.6)),
-                const SizedBox(width: 8),
-              ],
+                  const SizedBox(width: 16),
+                  Container(
+                      height: 64,
+                      width: 1,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .outline
+                          .withOpacity(0.6)),
+                  const SizedBox(width: 16),
+                  ...trip.destinations.map((dest) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            List<StoryItem> storyItems = dest.photos
+                                .map((e) => StoryItem.pageImage(
+                                    url: e,
+                                    controller: controller))
+                                .toList();
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => StoryViewPage(
+                                    storyItems: storyItems,
+                                    controller: controller,
+                                    dest: dest),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            height: 64,
+                            width: 64,
+                            padding: const EdgeInsets.all(4),
+                            margin: const EdgeInsets.only(right: 16),
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                width: 2,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .primaryContainer
+                                    .withOpacity(0.6),
+                              ),
+                              borderRadius: BorderRadius.circular(32),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(32),
+                              child: Image.network(
+                                dest.photos[0],
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        SizedBox(
+                          width: 64, // Set fixed width
+                          child: Text(
+                            dest.name,
+                            style: Theme.of(context).textTheme.labelSmall,
+                            maxLines: 1, // Limit to 1 line
+                            overflow: TextOverflow
+                                .ellipsis, // Add ellipsis if text overflows
+                            textAlign:
+                                TextAlign.center, // Center align the text
+                          ),
+                        ),
+                      ],
+                    );
+                  }),
+                ],
+              ),
             ),
             const SizedBox(height: 40),
             StickyHeader(

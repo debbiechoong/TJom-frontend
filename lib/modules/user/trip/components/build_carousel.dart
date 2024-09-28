@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:jejom/utils/m3_carousel.dart';
 
 class BuildCarousel extends StatefulWidget {
@@ -12,11 +11,6 @@ class BuildCarousel extends StatefulWidget {
 }
 
 class _BuildCarouselState extends State<BuildCarousel> {
-  final String googleApiKey = dotenv.env['GOOGLE_API_KEY'] ?? '';
-
-  String _getPhotoUrl(String photoReference) {
-    return 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=$photoReference&key=$googleApiKey';
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +25,7 @@ class _BuildCarouselState extends State<BuildCarousel> {
           titleFadeAnimationDuration: 200, // milliseconds
           children: [
             ...widget.photos.map((url) {
-              return {"image": _getPhotoUrl(url), "title": ""};
+              return {"image": url, "title": ""};
             }),
           ],
         ),

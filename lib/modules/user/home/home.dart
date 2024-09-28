@@ -67,6 +67,7 @@ class _HomeState extends State<Home> {
                     children: [
                       Expanded(
                         child: TextField(
+                          autofocus: false,
                           decoration: InputDecoration(
                             hintText: "Vacation",
                             filled: true,
