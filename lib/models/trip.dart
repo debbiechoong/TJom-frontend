@@ -9,7 +9,7 @@ class Trip {
   final String endDate;
   final List<Destination> destinations;
   final List<Accommodation> accommodations;
-  final FlightInfo flightInfo;
+  final FlightInfo flight;
 
   Trip({
     required this.title,
@@ -18,7 +18,7 @@ class Trip {
     required this.endDate,
     required this.destinations,
     required this.accommodations,
-    required this.flightInfo,
+    required this.flight,
   });
 
   factory Trip.fromJson(Map<String, dynamic> json) {
@@ -35,7 +35,7 @@ class Trip {
           ? List<Accommodation>.from(
               json['accomodations'].map((x) => Accommodation.fromJson(x)))
           : [],
-      flightInfo: FlightInfo.fromJson(json['flightInfo']),
+      flight: FlightInfo.fromJson(json['flightInfo']),
     );
   }
 
@@ -47,7 +47,7 @@ class Trip {
       'endDate': endDate,
       'destinations': destinations.map((x) => x.toJson()).toList(),
       'accomodations': accommodations.map((x) => x.toJson()).toList(),
-      'flightInfo': flightInfo.toJson(),
+      'flightInfo': flight.toJson(),
     };
   }
 
@@ -58,7 +58,7 @@ class Trip {
     String? endDate,
     List<Destination>? destinations,
     List<Accommodation>? accommodations,
-    FlightInfo? flights,
+    FlightInfo? flight,
   }) {
     return Trip(
       title: title ?? this.title,
@@ -67,7 +67,7 @@ class Trip {
       endDate: endDate ?? this.endDate,
       destinations: destinations ?? this.destinations,
       accommodations: accommodations ?? this.accommodations,
-      flightInfo: flightInfo,
+      flight: flight ?? this.flight,
     );
   }
 }

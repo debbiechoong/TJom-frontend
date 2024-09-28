@@ -3,6 +3,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:jejom/models/trip.dart';
 import 'package:jejom/modules/user/trip/trip_details.dart';
 import 'package:jejom/providers/user/trip_provider.dart';
+import 'package:jejom/utils/clean_text.dart';
 import 'package:jejom/utils/constants/curve.dart';
 import 'package:jejom/utils/glass_container.dart';
 import 'package:provider/provider.dart';
@@ -94,7 +95,7 @@ class _TripListState extends State<TripList> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        trip.title,
+                        cleanText(trip.title),
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const SizedBox(height: 8),
@@ -109,7 +110,7 @@ class _TripListState extends State<TripList> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        trip.description,
+                        cleanText(trip.description),
                         maxLines: 2,
                         style: Theme.of(context).textTheme.labelLarge,
                       ),

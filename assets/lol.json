@@ -1,0 +1,202 @@
+{
+  "departureFlight": {
+    "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/multi.png",
+    "carbon_emissions": {
+      "this_flight": 9937000
+    },
+    "departure_token": "WyJDalJJTURGVGVWSjROUzB4WWtWQlJWOWlUa0ZDUnkwdExTMHRMUzB0TFMxMmQzRnlOa0ZCUVVGQlIySXljbG93UXpoVE9YVkJFaEZUVVRNeU1YeFRVVFl3T0h3M1F6RXlNeG9NQ0tUdDNCRVFBQm9EUzFKWE9CeHdqWWF0QVE9PSIsW1siTEhSIiwiMjAyNC0xMS0zMCIsIlNJTiIsbnVsbCwiU1EiLCIzMjEiXSxbIlNJTiIsIjIwMjQtMTItMDIiLCJJQ04iLG51bGwsIlNRIiwiNjA4Il0sWyJHTVAiLCIyMDI0LTEyLTAyIiwiQ0pVIixudWxsLCI3QyIsIjEyMyJdXV0=",
+    "flights": [
+      {
+        "airline": "Singapore Airlines",
+        "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/SQ.png",
+        "airplane": "Boeing 777",
+        "arrival_airport": {
+          "id": "SIN",
+          "name": "Singapore Changi Airport",
+          "time": "2024-12-01 19:00"
+        },
+        "departure_airport": {
+          "id": "LHR",
+          "name": "Heathrow Airport",
+          "time": "2024-11-30 22:05"
+        },
+        "duration": "12 hr 55 min",
+        "extensions": [
+          "Extra reclining seat",
+          "Free Wi-Fi",
+          "In-seat power & USB outlets",
+          "On-demand video",
+          "Carbon emissions estimate: 8222 kg"
+        ],
+        "flight_number": "SQ 321",
+        "often_delayed_by_over_30_min": true,
+        "overnight": true,
+        "travel_class": "Premium Economy"
+      },
+      {
+        "airline": "Singapore Airlines",
+        "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/SQ.png",
+        "airplane": "Boeing 787",
+        "arrival_airport": {
+          "id": "ICN",
+          "name": "Incheon International Airport",
+          "time": "2024-12-02 07:25"
+        },
+        "departure_airport": {
+          "id": "SIN",
+          "name": "Singapore Changi Airport",
+          "time": "2024-12-02 00:10"
+        },
+        "duration": "6 hr 15 min",
+        "extensions": [
+          "Above average legroom (32 in)",
+          "Free Wi-Fi",
+          "In-seat power & USB outlets",
+          "On-demand video",
+          "Carbon emissions estimate: 1389 kg"
+        ],
+        "flight_number": "SQ 608",
+        "legroom": "32 in",
+        "overnight": true,
+        "travel_class": "Economy"
+      },
+      {
+        "airline": "Jeju Air",
+        "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/7C.png",
+        "airplane": "Boeing 737",
+        "arrival_airport": {
+          "id": "CJU",
+          "name": "Jeju International Airport",
+          "time": "2024-12-02 14:50"
+        },
+        "departure_airport": {
+          "id": "GMP",
+          "name": "Gimpo International Airport",
+          "time": "2024-12-02 13:40"
+        },
+        "duration": "1 hr 10 min",
+        "extensions": [
+          "Below average legroom (29 in)",
+          "Carbon emissions estimate: 325 kg"
+        ],
+        "flight_number": "7C 123",
+        "legroom": "29 in",
+        "travel_class": "Economy"
+      }
+    ],
+    "layovers": [
+      {
+        "duration": "5 hr 10 min",
+        "id": "SIN",
+        "name": "Singapore Changi Airport"
+      },
+      {
+        "duration": "6 hr 15 min",
+        "id": "ICN",
+        "name": "Gimpo International Airport"
+      }
+    ],
+    "total_duration": "31 hr 45 min",
+    "type": "Round trip"
+  },
+  "priceTotal": 37172900,
+  "returnFlight": {
+    "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/multi.png",
+    "booking_token": "WyJDalJJYUdwdWNub3dNMmhZWldOQlJHWXpUbmRDUnkwdExTMHRMUzB0TFhsc1puWXhNVUZCUVVGQlIySXljbUpCU2swM2VHTkJFaE0zUXpFd09IeFRVVFl3TVh4VFVUTXdOaU14R2d3SXBPM2NFUkFBR2dOTFVsYzRISENOaHEwQiIsW1siTEhSIiwiMjAyNC0xMS0zMCIsIlNJTiIsbnVsbCwiU1EiLCIzMjEiXSxbIlNJTiIsIjIwMjQtMTItMDIiLCJJQ04iLG51bGwsIlNRIiwiNjA4Il0sWyJHTVAiLCIyMDI0LTEyLTAyIiwiQ0pVIixudWxsLCI3QyIsIjEyMyJdXSxbWyJDSlUiLCIyMDI0LTEyLTA5IiwiR01QIixudWxsLCI3QyIsIjEwOCJdLFsiSUNOIiwiMjAyNC0xMi0wOSIsIlNJTiIsbnVsbCwiU1EiLCI2MDEiXSxbIlNJTiIsIjIwMjQtMTItMTAiLCJMSFIiLG51bGwsIlNRIiwiMzA2Il1dXQ==",
+    "carbon_emissions": {
+      "this_flight": 9963000
+    },
+    "flights": [
+      {
+        "airline": "Jeju Air",
+        "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/7C.png",
+        "airplane": "Boeing 737",
+        "arrival_airport": {
+          "id": "GMP",
+          "name": "Gimpo International Airport",
+          "time": "2024-12-09 11:35"
+        },
+        "departure_airport": {
+          "id": "CJU",
+          "name": "Jeju International Airport",
+          "time": "2024-12-09 10:25"
+        },
+        "duration": "1 hr 10 min",
+        "extensions": [
+          "Below average legroom (29 in)",
+          "Carbon emissions estimate: 325 kg"
+        ],
+        "flight_number": "7C 108",
+        "legroom": "29 in",
+        "travel_class": "Economy"
+      },
+      {
+        "airline": "Singapore Airlines",
+        "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/SQ.png",
+        "airplane": "Boeing 787",
+        "arrival_airport": {
+          "id": "SIN",
+          "name": "Singapore Changi Airport",
+          "time": "2024-12-09 22:20"
+        },
+        "departure_airport": {
+          "id": "ICN",
+          "name": "Incheon International Airport",
+          "time": "2024-12-09 16:45"
+        },
+        "duration": "6 hr 35 min",
+        "extensions": [
+          "Above average legroom (32 in)",
+          "Free Wi-Fi",
+          "In-seat power & USB outlets",
+          "On-demand video",
+          "Carbon emissions estimate: 1389 kg"
+        ],
+        "flight_number": "SQ 601",
+        "legroom": "32 in",
+        "travel_class": "Economy"
+      },
+      {
+        "airline": "Singapore Airlines",
+        "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/SQ.png",
+        "airplane": "Boeing 777",
+        "arrival_airport": {
+          "id": "LHR",
+          "name": "Heathrow Airport",
+          "time": "2024-12-10 07:25"
+        },
+        "departure_airport": {
+          "id": "SIN",
+          "name": "Singapore Changi Airport",
+          "time": "2024-12-10 01:10"
+        },
+        "duration": "14 hr 15 min",
+        "extensions": [
+          "Extra reclining seat",
+          "Free Wi-Fi",
+          "In-seat power & USB outlets",
+          "On-demand video",
+          "Carbon emissions estimate: 8248 kg"
+        ],
+        "flight_number": "SQ 306",
+        "often_delayed_by_over_30_min": true,
+        "overnight": true,
+        "travel_class": "Premium Economy"
+      }
+    ],
+    "layovers": [
+      {
+        "duration": "5 hr 10 min",
+        "id": "GMP",
+        "name": "Incheon International Airport"
+      },
+      {
+        "duration": "2 hr 50 min",
+        "id": "SIN",
+        "name": "Singapore Changi Airport"
+      }
+    ],
+    "total_duration": "30 hr 0 min",
+    "type": "Round trip"
+  }
+}

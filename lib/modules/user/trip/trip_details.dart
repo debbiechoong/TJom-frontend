@@ -7,6 +7,7 @@ import 'package:jejom/modules/user/trip/components/accom_section.dart';
 import 'package:jejom/modules/user/trip/components/dest_section.dart';
 import 'package:jejom/modules/user/trip/components/flights_section.dart';
 import 'package:jejom/modules/user/trip/story_view.dart';
+import 'package:jejom/utils/clean_text.dart';
 import 'package:sticky_headers/sticky_headers.dart';
 import 'package:story_view/story_view.dart';
 
@@ -55,7 +56,7 @@ class _TripDetailsState extends State<TripDetails> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      trip.title,
+                      cleanText(trip.title),
                       style: Theme.of(context)
                           .textTheme
                           .titleLarge
@@ -65,7 +66,7 @@ class _TripDetailsState extends State<TripDetails> {
                     Text("${trip.startDate} until ${trip.endDate}",
                         style: Theme.of(context).textTheme.labelLarge),
                     const SizedBox(height: 24),
-                    Text(trip.description,
+                    Text(cleanText(trip.description),
                         style: Theme.of(context).textTheme.bodyMedium),
                     // _buildDescriptionText(),
                   ],
@@ -114,6 +115,9 @@ class _TripDetailsState extends State<TripDetails> {
                           .withOpacity(0.6)),
                   const SizedBox(width: 16),
                   ...trip.destinations.map((dest) {
+                    String url = dest.photos.isEmpty
+                        ? "https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM="
+                        : dest.photos.first;
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -121,8 +125,7 @@ class _TripDetailsState extends State<TripDetails> {
                           onTap: () {
                             List<StoryItem> storyItems = dest.photos
                                 .map((e) => StoryItem.pageImage(
-                                    url: e,
-                                    controller: controller))
+                                    url: e, controller: controller))
                                 .toList();
                             Navigator.of(context).push(
                               MaterialPageRoute(
@@ -151,7 +154,7 @@ class _TripDetailsState extends State<TripDetails> {
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(32),
                               child: Image.network(
-                                dest.photos[0],
+                                url,
                                 fit: BoxFit.cover,
                               ),
                             ),
