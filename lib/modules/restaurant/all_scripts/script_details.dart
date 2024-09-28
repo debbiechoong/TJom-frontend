@@ -250,7 +250,52 @@ class _ScriptDetailsPageState extends State<ScriptDetailsPage> {
     );
   }
 
+  // Widget _buildScriptTab(ScriptRestaurantProvider scriptGameProvider) {
+  //   return SingleChildScrollView(
+  //     child: Padding(
+  //       padding: const EdgeInsets.all(16.0),
+  //       child: Column(
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           const SizedBox(height: 32),
+  //           Text(
+  //             scriptGameProvider.selectedGame?.title ?? "",
+  //             style: Theme.of(context).textTheme.headlineLarge,
+  //           ),
+  //           const SizedBox(height: 8),
+  //           Text(
+  //             "Duration: ${scriptGameProvider.selectedGame?.duration ?? ""}",
+  //             style: Theme.of(context).textTheme.bodyLarge,
+  //           ),
+  //           const SizedBox(height: 32),
+  //           Text(
+  //             "Storyline",
+  //             style: Theme.of(context).textTheme.titleLarge,
+  //           ),
+  //           const SizedBox(height: 16),
+  //           Text(
+  //             scriptGameProvider.games.first.scriptPlanner
+  //                 .replaceAll(r'\n', '\n'),
+  //             style: Theme.of(context).textTheme.bodyLarge,
+  //           ),
+  //           const SizedBox(height: 120),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
+
   Widget _buildScriptTab(ScriptRestaurantProvider scriptGameProvider) {
+    final selectedGame = scriptGameProvider.selectedGame;
+
+    if (selectedGame == null) {
+      return Center(child: Text('No game selected.'));
+    }
+
+    final List<String> scriptSections =
+        selectedGame.scriptPlanner.split("<image>");
+    final List<String> images = selectedGame.images;
+
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -259,12 +304,12 @@ class _ScriptDetailsPageState extends State<ScriptDetailsPage> {
           children: [
             const SizedBox(height: 32),
             Text(
-              scriptGameProvider.selectedGame?.title ?? "",
+              selectedGame.title,
               style: Theme.of(context).textTheme.headlineLarge,
             ),
             const SizedBox(height: 8),
             Text(
-              "Duration: ${scriptGameProvider.selectedGame?.duration ?? ""}",
+              "Duration: ${selectedGame.duration}",
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: 32),
@@ -273,16 +318,41 @@ class _ScriptDetailsPageState extends State<ScriptDetailsPage> {
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 16),
-            Text(
-              scriptGameProvider.games.first.scriptPlanner
-                  .replaceAll(r'\n', '\n'),
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
+            ..._buildScriptWithImages(scriptSections, images),
             const SizedBox(height: 120),
           ],
         ),
       ),
     );
+  }
+
+  List<Widget> _buildScriptWithImages(
+      List<String> scriptSections, List<String> images) {
+    List<Widget> widgets = [];
+
+    for (int i = 0; i < scriptSections.length; i++) {
+      widgets.add(
+        Text(
+          scriptSections[i].replaceAll(r'\n', '\n'),
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+      );
+
+      if (i < images.length && images[i].isNotEmpty) {
+        widgets.add(
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            child: Image.network(
+              images[i],
+              errorBuilder: (context, error, stackTrace) =>
+                  const Icon(Icons.broken_image),
+            ),
+          ),
+        );
+      }
+    }
+
+    return widgets;
   }
 
   Widget _buildCharacterTab(ScriptRestaurantProvider scriptGameProvider) {
