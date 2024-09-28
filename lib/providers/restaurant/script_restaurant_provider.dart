@@ -16,7 +16,17 @@ class ScriptRestaurantProvider extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     String? userId = prefs.getString('userId');
     lang = newLang;
-    fetchGames(lang, userId!);
+
+    // Fetch games based on new language and wait for completion
+    await fetchGames(lang, userId!);
+
+    // Ensure games list is not empty before setting the selected game
+    if (games.isNotEmpty) {
+      selectedGame = games.first; // Set selected game to the first game
+    } else {
+      selectedGame = null; // No games available, set selectedGame to null
+    }
+
     notifyListeners();
   }
 

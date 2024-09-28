@@ -44,6 +44,16 @@ class _ScriptDetailsPageState extends State<ScriptDetailsPage> {
   Widget build(BuildContext context) {
     final scriptGameProvider = Provider.of<ScriptRestaurantProvider>(context);
 
+    // Check if the games list is empty or no selected game is available
+    if (scriptGameProvider.games.isEmpty ||
+        scriptGameProvider.selectedGame == null) {
+      return Scaffold(
+        body: Center(
+          child: Text('No games available or no game selected.'),
+        ),
+      );
+    }
+
     return Scaffold(
       body: Column(
         children: [
@@ -75,7 +85,7 @@ class _ScriptDetailsPageState extends State<ScriptDetailsPage> {
             ),
           ),
           const SizedBox(height: 16),
-          //Show divider when on scroll
+          // Show divider when on scroll
           Container(
             height: 1,
             color: Theme.of(context).colorScheme.surfaceContainerHigh,
@@ -89,7 +99,6 @@ class _ScriptDetailsPageState extends State<ScriptDetailsPage> {
                 });
               },
               children: [
-                // _buildRestaurantTab(scriptGameProvider),
                 _buildScriptTab(scriptGameProvider),
                 _buildCharacterTab(scriptGameProvider),
                 _buildAddTab(scriptGameProvider),
@@ -112,30 +121,19 @@ class _ScriptDetailsPageState extends State<ScriptDetailsPage> {
           onTap: handleIndexChanged,
           enableFloatingNavBar: true,
           items: [
-            // CrystalNavigationBarItem(
-            //   icon: Icons.restaurant_rounded,
-            //   unselectedIcon: Icons.restaurant_outlined,
-            // ),
             CrystalNavigationBarItem(
-              icon: Icons.home,
-              unselectedIcon: Icons.home_outlined,
-            ),
+                icon: Icons.home, unselectedIcon: Icons.home_outlined),
             CrystalNavigationBarItem(
-              icon: Icons.child_care_rounded,
-              unselectedIcon: Icons.child_care_outlined,
-            ),
+                icon: Icons.child_care_rounded,
+                unselectedIcon: Icons.child_care_outlined),
             CrystalNavigationBarItem(
-              icon: Icons.book_rounded,
-              unselectedIcon: Icons.book_outlined,
-            ),
+                icon: Icons.book_rounded, unselectedIcon: Icons.book_outlined),
             CrystalNavigationBarItem(
-              icon: Icons.follow_the_signs_rounded,
-              unselectedIcon: Icons.follow_the_signs_outlined,
-            ),
+                icon: Icons.follow_the_signs_rounded,
+                unselectedIcon: Icons.follow_the_signs_outlined),
             CrystalNavigationBarItem(
-              icon: Icons.person_rounded,
-              unselectedIcon: Icons.person_outline_rounded,
-            ),
+                icon: Icons.person_rounded,
+                unselectedIcon: Icons.person_outline_rounded),
           ],
         ),
       ),
@@ -292,6 +290,10 @@ class _ScriptDetailsPageState extends State<ScriptDetailsPage> {
       return Center(child: Text('No game selected.'));
     }
 
+    if (scriptGameProvider.games.isEmpty) {
+      return Center(child: Text('No games available.'));
+    }
+
     final List<String> scriptSections =
         selectedGame.scriptPlanner.split("<image>");
     final List<String> images = selectedGame.images;
@@ -341,11 +343,18 @@ class _ScriptDetailsPageState extends State<ScriptDetailsPage> {
       if (i < images.length && images[i].isNotEmpty) {
         widgets.add(
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
-            child: Image.network(
-              images[i],
-              errorBuilder: (context, error, stackTrace) =>
-                  const Icon(Icons.broken_image),
+            padding: const EdgeInsets.symmetric(vertical: 48.0),
+            child: SizedBox(
+              width: double.infinity,
+              height: 400,
+              child: Image.network(
+                images[i],
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => const Icon(
+                  Icons.broken_image,
+                  size: 100,
+                ),
+              ),
             ),
           ),
         );
@@ -356,6 +365,16 @@ class _ScriptDetailsPageState extends State<ScriptDetailsPage> {
   }
 
   Widget _buildCharacterTab(ScriptRestaurantProvider scriptGameProvider) {
+    // Check if games list is empty
+    if (scriptGameProvider.games.isEmpty) {
+      return Center(child: Text('No games available.'));
+    }
+
+    // Ensure selectedGame is not null
+    if (scriptGameProvider.selectedGame == null) {
+      return Center(child: Text('No game selected.'));
+    }
+
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -369,7 +388,7 @@ class _ScriptDetailsPageState extends State<ScriptDetailsPage> {
             ),
             const SizedBox(height: 16),
             Text(
-              scriptGameProvider.games.first.characterDesigner
+              scriptGameProvider.selectedGame!.characterDesigner
                   .replaceAll(r'\n', '\n'),
               style: Theme.of(context).textTheme.bodyLarge,
             ),

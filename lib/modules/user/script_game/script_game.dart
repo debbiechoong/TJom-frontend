@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating/flutter_rating.dart';
 import 'package:jejom/models/language_enum.dart';
 import 'package:jejom/modules/user/trip/components/build_carousel.dart';
-import 'package:jejom/modules/user/trip/components/get_photo_url.dart';
 import 'package:jejom/providers/user/script_game_provider.dart';
-import 'package:jejom/utils/glass_container.dart';
-import 'package:jejom/utils/m3_carousel.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -283,41 +280,7 @@ class _ScriptGamePageState extends State<ScriptGamePage> {
     );
   }
 
-  // Widget _buildScriptTab(ScriptGameProvider scriptGameProvider) {
-  //   return SingleChildScrollView(
-  //     child: Padding(
-  //       padding: const EdgeInsets.all(16.0),
-  //       child: Column(
-  //         crossAxisAlignment: CrossAxisAlignment.start,
-  //         children: [
-  //           const SizedBox(height: 32),
-  //           Text(
-  //             "Storyline",
-  //             style: Theme.of(context).textTheme.headlineLarge,
-  //           ),
-  //           const SizedBox(height: 16),
-  //           Text(
-  //             scriptGameProvider.games.first.scriptPlanner
-  //                 .replaceAll(r'\n', '\n'),
-  //             style: Theme.of(context).textTheme.bodyLarge,
-  //             maxLines: 9,
-  //             overflow: TextOverflow.ellipsis,
-  //           ),
-  //           const SizedBox(height: 24),
-  //           Text("Visit the restaurant to know about the full story!",
-  //               style: Theme.of(context).textTheme.bodyMedium),
-  //           const SizedBox(height: 120),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
-
   Widget _buildScriptTab(ScriptGameProvider scriptGameProvider) {
-    final List<String> scriptSections =
-        scriptGameProvider.games.first.scriptPlanner.split("<image>");
-    final List<String> images = scriptGameProvider.games.first.images;
-
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -330,48 +293,21 @@ class _ScriptGamePageState extends State<ScriptGamePage> {
               style: Theme.of(context).textTheme.headlineLarge,
             ),
             const SizedBox(height: 16),
-            ..._buildScriptWithImages(scriptSections, images),
-            const SizedBox(height: 24),
             Text(
-              "Visit the restaurant to know about the full story!",
-              style: Theme.of(context).textTheme.bodyMedium,
+              scriptGameProvider.games.first.scriptPlanner
+                  .replaceAll(r'\n', '\n'),
+              style: Theme.of(context).textTheme.bodyLarge,
+              maxLines: 9,
+              overflow: TextOverflow.ellipsis,
             ),
+            const SizedBox(height: 24),
+            Text("Visit the restaurant to know about the full story!",
+                style: Theme.of(context).textTheme.bodyMedium),
             const SizedBox(height: 120),
           ],
         ),
       ),
     );
-  }
-
-  List<Widget> _buildScriptWithImages(
-      List<String> scriptSections, List<String> images) {
-    List<Widget> widgets = [];
-
-    for (int i = 0; i < scriptSections.length; i++) {
-      widgets.add(
-        Text(
-          scriptSections[i].replaceAll(r'\n', '\n'),
-          style: Theme.of(context).textTheme.bodyLarge,
-          maxLines: 9,
-          overflow: TextOverflow.ellipsis,
-        ),
-      );
-
-      if (i < images.length && images[i].isNotEmpty) {
-        widgets.add(
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
-            child: Image.network(
-              images[i],
-              errorBuilder: (context, error, stackTrace) =>
-                  const Icon(Icons.broken_image),
-            ),
-          ),
-        );
-      }
-    }
-
-    return widgets;
   }
 
   Widget _buildCharacterTab(ScriptGameProvider scriptGameProvider) {
