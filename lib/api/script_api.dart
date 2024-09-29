@@ -48,10 +48,10 @@ Future<List<ScriptGame>> fetchResScriptFromFirestore(
 
     if (scriptDocs.docs.isNotEmpty) {
       for (var scriptDoc in scriptDocs.docs) {
-        List<dynamic> restaurants = scriptDoc.data()['restaurant'] ?? '';
+        String restaurant = scriptDoc.data()['restaurant'] ?? '';
 
         // Check if the restaurants array contains the given resId
-        if (restaurants.contains(resId)) {
+        if (restaurant == resId) {
           final nestedCollection = lang == Language.english ? 'eng' : 'kor';
           final nestedDocs =
               await scriptDoc.reference.collection(nestedCollection).get();
