@@ -48,7 +48,7 @@ Future<List<ScriptGame>> fetchResScriptFromFirestore(
 
     if (scriptDocs.docs.isNotEmpty) {
       for (var scriptDoc in scriptDocs.docs) {
-        List<dynamic> restaurants = scriptDoc.data()['restaurants'] ?? [];
+        List<dynamic> restaurants = scriptDoc.data()['restaurant'] ?? '';
 
         // Check if the restaurants array contains the given resId
         if (restaurants.contains(resId)) {
