@@ -7,7 +7,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:jejom/modules/user/food/menu.dart';
 import 'package:jejom/providers/user/user_provider.dart';
 import 'package:provider/provider.dart';
-import 'dart:ui';
 
 class MenuOCRPage extends StatefulWidget {
   const MenuOCRPage({super.key});
@@ -31,6 +30,9 @@ class _MenuOCRPageState extends State<MenuOCRPage> {
   @override
   void initState() {
     super.initState();
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   _openModal();
+    // });
   }
 
   @override
@@ -93,149 +95,29 @@ class _MenuOCRPageState extends State<MenuOCRPage> {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
-        return ClipRRect(
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Color(0xFFE0E6FF),
-                    Color(0xFFD5E6F3),
-                  ],
-                ),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.2),
-                  width: 1.5,
-                ),
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Handle
-                  Center(
-                    child: Container(
-                      width: 64,
-                      height: 4,
-                      margin: const EdgeInsets.only(bottom: 20),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(2),
-                        color: Colors.black26,
-                      ),
-                    ),
-                  ),
-                  
-                  const Text(
-                    "Choose an option",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 24),
-                  
-                  // Camera option
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                      _openCamera();
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.2),
-                          width: 1.5,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: Colors.black87,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Icon(
-                              Icons.photo_camera,
-                              color: Colors.white,
-                              size: 24,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          const Text(
-                            "Open Camera",
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black87,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 16),
-                  
-                  // Gallery option
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                      _pickFromGallery();
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.2),
-                          width: 1.5,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: Colors.black87,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Icon(
-                              Icons.photo_library,
-                              color: Colors.white,
-                              size: 24,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          const Text(
-                            "Choose from Gallery",
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black87,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ListTile(
+              leading: const Icon(Icons.photo_camera),
+              title: Text('Open Camera',
+                  style: Theme.of(context).textTheme.bodyLarge),
+              onTap: () {
+                Navigator.pop(context);
+                _openCamera();
+              },
             ),
-          ),
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: Text('Choose from Gallery',
+                  style: Theme.of(context).textTheme.bodyLarge),
+              onTap: () {
+                Navigator.pop(context);
+                _pickFromGallery();
+              },
+            ),
+          ],
         );
       },
     );
@@ -295,11 +177,11 @@ class _MenuOCRPageState extends State<MenuOCRPage> {
       _messages.add({'role': 'system', 'content': 'Loading...'});
     });
 
-    final url = Uri.parse('https://api.upstage.ai/v1/solar/chat/completions');
-    String apiKey = dotenv.env['UPSTAGE_API_KEY'] ?? '';
+    final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro-preview-03-25:generateContent');
+    String apiKey = dotenv.env['GEMINI_API_KEY'] ?? '';
     final headers = {
-      'Authorization': 'Bearer $apiKey',
       'Content-Type': 'application/json',
+      'x-goog-api-key': apiKey,
     };
 
     List<Map<String, String?>> recentMessages =
@@ -320,12 +202,21 @@ class _MenuOCRPageState extends State<MenuOCRPage> {
     ''';
 
     final body = json.encode({
-      'model': 'solar-pro',
-      'messages': [
-        {'role': 'system', 'content': systemPrompt},
-        {'role': 'user', 'content': userPrompt},
+      'contents': [
+        {
+          'role': 'user',
+          'parts': [
+            {'text': systemPrompt},
+            {'text': userPrompt},
+          ]
+        }
       ],
-      'stream': false,
+      'generationConfig': {
+        'temperature': 0.7,
+        'topK': 40,
+        'topP': 0.95,
+        'maxOutputTokens': 1024,
+      },
     });
 
     final response = await http.post(url, headers: headers, body: body);
@@ -335,8 +226,9 @@ class _MenuOCRPageState extends State<MenuOCRPage> {
       final responseBody = json.decode(responseData);
 
       if (responseBody is Map<String, dynamic> &&
-          responseBody.containsKey('choices')) {
-        final llmMessage = responseBody['choices'][0]['message']['content'];
+          responseBody.containsKey('candidates') &&
+          responseBody['candidates'].isNotEmpty) {
+        final llmMessage = responseBody['candidates'][0]['content']['parts'][0]['text'];
         setState(() {
           _messages.removeWhere((msg) => msg['content'] == 'Loading...');
           _messages.add({'role': 'system', 'content': llmMessage});
@@ -367,19 +259,34 @@ class _MenuOCRPageState extends State<MenuOCRPage> {
       _messages.add({'role': 'system', 'content': 'Translating...'});
     });
 
-    final url = Uri.parse('https://api.upstage.ai/v1/solar/chat/completions');
-    String apiKey = dotenv.env['UPSTAGE_API_KEY'] ?? '';
+    final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent');
+    String apiKey = dotenv.env['GEMINI_API_KEY'] ?? '';
     final headers = {
-      'Authorization': 'Bearer $apiKey',
       'Content-Type': 'application/json',
+      'x-goog-api-key': apiKey,
     };
 
+    final translationPrompt = '''
+    Translate the following menu text to English. Make sure to maintain the formatting and structure of the menu:
+    
+    $textToTranslate
+    ''';
+
     final body = json.encode({
-      'model': 'solar-1-mini-translate-koen',
-      'messages': [
-        {'role': 'user', 'content': textToTranslate}
+      'contents': [
+        {
+          'role': 'user',
+          'parts': [
+            {'text': translationPrompt}
+          ]
+        }
       ],
-      'stream': false,
+      'generationConfig': {
+        'temperature': 0.2,
+        'topK': 40,
+        'topP': 0.95,
+        'maxOutputTokens': 1024,
+      },
     });
 
     final response = await http.post(url, headers: headers, body: body);
@@ -389,16 +296,15 @@ class _MenuOCRPageState extends State<MenuOCRPage> {
       final responseBody = json.decode(responseData);
 
       if (responseBody is Map<String, dynamic> &&
-          responseBody.containsKey('choices')) {
-        final translatedText = responseBody['choices'][0]['message']['content'];
+          responseBody.containsKey('candidates') &&
+          responseBody['candidates'].isNotEmpty) {
+        final translatedText = responseBody['candidates'][0]['content']['parts'][0]['text'];
 
         // Call the LLM API to format the translated text
         final formatMenuPrompt = '''
       You are given a food menu. Your task is to format the menu in the following format:
       [Food item] - [Price]
       [Food item] - [Price]
-
-      ===
 
       Here is the unformatted food menu:
       $translatedText
@@ -434,15 +340,11 @@ class _MenuOCRPageState extends State<MenuOCRPage> {
   }
 
   void _scrollToBottom() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      }
-    });
+    _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent,
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
   }
 
   void _handleSubmit() {
@@ -463,8 +365,9 @@ class _MenuOCRPageState extends State<MenuOCRPage> {
   void _handleOrder() {
     if (_ocrText != null) {
       _callLLM('''
-      Generate 3 sentences to teach foreigners how to order food from the menu. Each sentence should be in the following format: Korean (Romanized) - English. 
-      For example, 아이스 아메리카노 한 잔 주세요 (Aiseu Amerikano han jan juseyo) - One iced Americano, please.
+      Based on the menu, provide 3 example phrases that would be helpful for ordering food in this restaurant. 
+      For each example, provide the phrase in Mandarin. 
+      For example: "我想点一杯奶茶冰."
       ''');
     } else {
       setState(() {
@@ -518,11 +421,11 @@ class _MenuOCRPageState extends State<MenuOCRPage> {
       After that, you need to identify which food items in the menu may contain the allergens listed. 
       The menu might contain the ingredients of each dish, you need to think step by step to identify the ingredients in each dish that may contain the allergens listed.
       Respond in the following format: 
-      Food item that suits the dietary preference (the name of the dietary preference):
+      Food items suitable for $dietaryPreference:
       [Food item] - Reason
-      Food item with allergens (the name of the allergens): 
-      [Food item] - Reason 
-      Generate fully in english.
+      
+      Food items containing potential allergens ($allergyList): 
+      [Food item] - Reason
       ''';
 
       _callLLM(prompt);
@@ -538,382 +441,196 @@ class _MenuOCRPageState extends State<MenuOCRPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
-      body: Stack(
-        children: [
-          // Background gradient
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFFE0E6FF),
-                  Color(0xFFD5E6F3),
-                ],
-              ),
-            ),
-          ),
-          
-          // Abstract design elements
-          Positioned(
-            top: -100,
-            right: -100,
-            child: Container(
-              height: 300,
-              width: 300,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.blue.withOpacity(0.1),
-              ),
-            ),
-          ),
-          
-          Positioned(
-            bottom: -50,
-            left: -50,
-            child: Container(
-              height: 200,
-              width: 200,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.purple.withOpacity(0.1),
-              ),
-            ),
-          ),
-      
-          // Main content
-          SafeArea(
-            child: Column(
+      backgroundColor: Colors.transparent,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Column(
               children: [
-                // Back button
                 Align(
                   alignment: Alignment.topLeft,
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: GestureDetector(
-                      onTap: () {
+                    child: IconButton(
+                      visualDensity: VisualDensity.adaptivePlatformDensity,
+                      onPressed: () {
                         Navigator.pop(context);
                       },
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.2),
-                            width: 1,
-                          ),
-                        ),
-                        child: const Icon(Icons.arrow_back, color: Colors.black54),
+                      icon: const Icon(
+                        Icons.arrow_back,
+                        color: Colors.white,
                       ),
                     ),
                   ),
                 ),
-                
-                // Chat content
                 Expanded(
-                  child: _showPrompt
-                    ? _buildPromptView()
-                    : _buildChatView(),
-                ),
-                
-                // Input bar
-                if (!_showPrompt)
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(25),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.15),
-                            borderRadius: BorderRadius.circular(25),
-                            border: Border.all(
-                              color: Colors.white.withOpacity(0.2),
-                              width: 1.5,
-                            ),
-                          ),
-                          child: Row(
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: SingleChildScrollView(
+                          controller: _scrollController,
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Column(
                             children: [
-                              // Camera button
-                              Material(
-                                color: Colors.transparent,
-                                child: IconButton(
-                                  icon: const Icon(Icons.photo_camera),
-                                  color: Colors.black54,
-                                  onPressed: _openModal,
-                                ),
+                              ListView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: _messages.length,
+                                itemBuilder: (context, index) {
+                                  final message = _messages[index];
+                                  final isUser = message['role'] == 'user';
+                                  return Align(
+                                    alignment: isUser
+                                        ? Alignment.centerRight
+                                        : Alignment.centerLeft,
+                                    child: Container(
+                                      margin: const EdgeInsets.symmetric(
+                                          vertical: 5),
+                                      padding: const EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        color: isUser
+                                            ? Theme.of(context)
+                                                .colorScheme
+                                                .primaryContainer
+                                            : Theme.of(context)
+                                                .colorScheme
+                                                .surface,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: message['image'] != null
+                                          ? Image.file(
+                                              File(message['image']!),
+                                              width:
+                                                  200, // Adjust size as needed
+                                              fit: BoxFit.cover,
+                                            )
+                                          : Text(
+                                              message['content']!,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium,
+                                            ),
+                                    ),
+                                  );
+                                },
                               ),
-                              
-                              // Text field
-                              Expanded(
-                                child: TextField(
-                                  controller: _textController,
-                                  decoration: const InputDecoration(
-                                    hintText: "Chat here",
-                                    hintStyle: TextStyle(color: Colors.black54),
-                                    border: InputBorder.none,
-                                    contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 14),
+                              if (_messages.isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 16.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      ActionChip(
+                                        label: const Text('Order Food'),
+                                        onPressed: _handleOrder,
+                                        backgroundColor: Theme.of(context)
+                                            .colorScheme
+                                            .primaryContainer,
+                                        labelStyle: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium!
+                                            .copyWith(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onPrimaryContainer),
+                                      ),
+                                      const SizedBox(width: 16),
+                                      ActionChip(
+                                        label: const Text('Allergy check'),
+                                        onPressed: _handleAllergyCheck,
+                                        backgroundColor: Theme.of(context)
+                                            .colorScheme
+                                            .primaryContainer,
+                                        labelStyle: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium!
+                                            .copyWith(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onPrimaryContainer),
+                                      ),
+                                    ],
                                   ),
-                                  style: const TextStyle(color: Colors.black87),
                                 ),
-                              ),
-                              
-                              // Send button
-                              Material(
-                                color: Colors.transparent,
-                                child: IconButton(
-                                  icon: const Icon(Icons.send_rounded),
-                                  color: Colors.black87,
-                                  onPressed: _handleSubmit,
-                                ),
-                              ),
                             ],
                           ),
                         ),
                       ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-  
-  Widget _buildPromptView() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 40),
-          
-          const Text(
-            "Menu & OCR",
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
-          
-          const SizedBox(height: 12),
-          
-          const Text(
-            "Translating food has never been so easy, start by taking a picture of the menu.",
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.black54,
-              height: 1.5,
-            ),
-          ),
-          
-          const SizedBox(height: 40),
-          
-          // Camera option
-          GestureDetector(
-            onTap: _openCamera,
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.2),
-                  width: 1.5,
-                ),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Colors.black87,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(
-                      Icons.photo_camera,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  const Text(
-                    "Take a photo",
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.black87,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          
-          const SizedBox(height: 16),
-          
-          // Gallery option
-          GestureDetector(
-            onTap: _pickFromGallery,
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.2),
-                  width: 1.5,
-                ),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Colors.black87,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(
-                      Icons.photo_library,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  const Text(
-                    "Choose from gallery",
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.black87,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-  
-  Widget _buildChatView() {
-    return Column(
-      children: [
-        // Messages
-        Expanded(
-          child: SingleChildScrollView(
-            controller: _scrollController,
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Column(
-              children: [
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: _messages.length,
-                  itemBuilder: (context, index) {
-                    final message = _messages[index];
-                    final isUser = message['role'] == 'user';
-                    
-                    return Align(
-                      alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
-                      child: Container(
-                        constraints: BoxConstraints(
-                          maxWidth: MediaQuery.of(context).size.width * 0.8,
-                        ),
-                        margin: const EdgeInsets.symmetric(vertical: 8),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(16),
-                          child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                            child: Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: isUser 
-                                  ? Colors.black.withOpacity(0.1) 
-                                  : Colors.white.withOpacity(0.15),
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                  color: isUser
-                                    ? Colors.black.withOpacity(0.1)
-                                    : Colors.white.withOpacity(0.2),
-                                  width: 1.5,
-                                ),
-                              ),
-                              child: message['image'] != null
-                                ? ClipRRect(
-                                    borderRadius: BorderRadius.circular(12),
-                                    child: Image.file(
-                                      File(message['image']!),
-                                      width: 200,
-                                      height: 200,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  )
-                                : Text(
-                                    message['content']!,
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                
-                // Action buttons
-                if (_messages.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    child: GestureDetector(
-                      onTap: _handleAllergyCheck,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: Colors.black.withOpacity(0.1),
-                            width: 1,
-                          ),
-                        ),
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
                           children: [
-                            Icon(
-                              Icons.warning_amber_rounded,
-                              size: 18,
-                              color: Colors.black87,
-                            ),
-                            SizedBox(width: 6),
-                            Text(
-                              "Allergy check",
-                              style: TextStyle(
-                                color: Colors.black87,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
+                            Expanded(
+                              child: TextField(
+                                controller: _textController,
+                                decoration: InputDecoration(
+                                  hintText: "Chat here",
+                                  prefixIcon: IconButton(
+                                    icon: const Icon(Icons.photo_camera),
+                                    color: Colors.white,
+                                    onPressed: _openModal,
+                                  ),
+                                  suffixIcon: IconButton(
+                                    icon: const Icon(Icons.send),
+                                    color: Colors.white,
+                                    onPressed: _handleSubmit,
+                                  ),
+                                  filled: true,
+                                  fillColor:
+                                      Theme.of(context).colorScheme.background,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
-                    ),
+                    ],
                   ),
+                ),
               ],
             ),
-          ),
+            if (_showPrompt)
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 80),
+                    Text("Menu & OCR",
+                        style: Theme.of(context).textTheme.headlineLarge),
+                    const SizedBox(height: 16),
+                    Text(
+                        "Translating food has never been so easy, start by taking a picture of the menu.",
+                        style: Theme.of(context).textTheme.bodyLarge),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        OutlinedButton.icon(
+                          onPressed: _openCamera,
+                          icon: const Icon(Icons.photo_camera),
+                          label: const Text('Camera'),
+                        ),
+                        const SizedBox(width: 16),
+                        OutlinedButton.icon(
+                          onPressed: _pickFromGallery,
+                          icon: const Icon(Icons.photo_library),
+                          label: const Text('Gallery'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              )
+          ],
         ),
-      ],
+      ),
     );
   }
 }
