@@ -178,11 +178,12 @@ class _MenuOCRPageState extends State<MenuOCRPage> {
       _messages.add({'role': 'system', 'content': 'Loading...'});
     });
 
-    final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent');
     String apiKey = dotenv.env['GEMINI_API_KEY'] ?? '';
+
+    final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$apiKey');
+    
     final headers = {
-      'Content-Type': 'application/json',
-      'x-goog-api-key': apiKey,
+      'Content-Type': 'application/json'
     };
 
     List<Map<String, String?>> recentMessages =
