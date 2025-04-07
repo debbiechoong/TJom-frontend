@@ -27,6 +27,7 @@ class ScriptGameProvider extends ChangeNotifier {
   }
 
   Future<void> fetchGames(Language lang) async {
+    print("Fetching scripts");
     try {
       games = await fetchAllScriptFromFirestore(lang);
 
@@ -39,6 +40,7 @@ class ScriptGameProvider extends ChangeNotifier {
   }
 
   List<ScriptGame>? getGames() {
+    print("Getting All games");
     return games;
   }
 }

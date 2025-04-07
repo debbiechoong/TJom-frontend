@@ -5,7 +5,8 @@ import 'package:jejom/modules/user/trip/trip_details.dart';
 import 'package:jejom/providers/user/trip_provider.dart';
 import 'package:jejom/utils/clean_text.dart';
 import 'package:jejom/utils/constants/curve.dart';
-import 'package:jejom/utils/glass_container.dart';
+import 'package:jejom/utils/widgets/glass_container.dart';
+import 'package:jejom/utils/theme/app_theme.dart';
 import 'package:provider/provider.dart';
 
 class TripList extends StatefulWidget {
@@ -21,120 +22,303 @@ class _TripListState extends State<TripList> {
     final tripProvider = Provider.of<TripProvider>(context);
 
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            const SizedBox(height: 80),
-            Padding(
-              padding: const EdgeInsets.only(left: 16.0),
-              child: IconButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                icon: const Icon(Icons.arrow_back),
+      body: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color(0xFFE0E6FF),
+                  Color(0xFFD5E6F3),
+                ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text('Trip List',
-                  style: Theme.of(context).textTheme.headlineLarge),
+          ),
+
+          // Abstract design elements
+          Positioned(
+            top: -100,
+            right: -100,
+            child: Container(
+              height: 300,
+              width: 300,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.blue.withOpacity(0.1),
+              ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: AnimationLimiter(
-                child: MediaQuery.removePadding(
-                  context: context,
-                  removeTop: true,
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: tripProvider.trips.length,
-                    itemBuilder: (context, index) {
-                      return AnimationConfiguration.staggeredList(
-                        position: index,
-                        duration: const Duration(milliseconds: 375),
-                        child: SlideAnimation(
-                          curve: EMPHASIZED_DECELERATE,
-                          child: FadeInAnimation(
-                            curve: EMPHASIZED_DECELERATE,
-                            child: GlassContainer(
-                              padding: 0,
-                              marginBottom: 16,
-                              width: double.infinity,
-                              child: tripCard(tripProvider.trips[index]),
+          ),
+
+          Positioned(
+            bottom: -50,
+            left: -50,
+            child: Container(
+              height: 200,
+              width: 200,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.purple.withOpacity(0.1),
+              ),
+            ),
+          ),
+
+          SafeArea(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.2),
+                              width: 1,
+                            ),
+                          ),
+                          child: const Icon(Icons.arrow_back,
+                              color: Colors.black54),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 40),
+                        const Text(
+                          'My Trips',
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        AnimationLimiter(
+                          child: MediaQuery.removePadding(
+                            context: context,
+                            removeTop: true,
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: tripProvider.trips.length,
+                              itemBuilder: (context, index) {
+                                return AnimationConfiguration.staggeredList(
+                                  position: index,
+                                  duration: const Duration(milliseconds: 375),
+                                  child: SlideAnimation(
+                                    curve: EMPHASIZED_DECELERATE,
+                                    child: FadeInAnimation(
+                                      curve: EMPHASIZED_DECELERATE,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            bottom: AppTheme.paddingMedium),
+                                        child:
+                                            tripCard(tripProvider.trips[index]),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
                           ),
                         ),
-                      );
-                    },
+                      ],
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
   Widget tripCard(Trip trip) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-      ),
+    return GlassContainer(
+      borderRadius: BorderRadius.circular(AppTheme.borderRadius),
+      padding: EdgeInsets.zero,
       child: Column(
         children: [
-          const SizedBox(height: 16),
+          const SizedBox(height: AppTheme.paddingMedium),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal:  16.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: AppTheme.paddingMedium),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Image.network(
-                trip.thumbnail,
-                width: double.infinity,
-                height: 200,
-                fit: BoxFit.cover,
+              borderRadius: BorderRadius.circular(AppTheme.borderRadius),
+              child: Stack(
+                children: [
+                  Image.network(
+                    trip.thumbnail,
+                    width: double.infinity,
+                    height: 200,
+                    fit: BoxFit.cover,
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(AppTheme.paddingMedium),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter,
+                          colors: [
+                            Colors.black.withOpacity(0.8),
+                            Colors.transparent,
+                          ],
+                        ),
+                      ),
+                      child: Text(
+                        cleanText(trip.title),
+                        style: AppTheme.displaySmall.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            padding: const EdgeInsets.all(AppTheme.paddingMedium),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        cleanText(trip.title),
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '${trip.startDate} until ${trip.endDate}',
-                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onBackground
-                                  .withOpacity(0.8),
-                            ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        cleanText(trip.description),
-                        maxLines: 2,
-                        style: Theme.of(context).textTheme.labelLarge,
-                      ),
-                    ],
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppTheme.paddingSmall,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppTheme.travelPrimary.withOpacity(0.2),
+                    borderRadius:
+                        BorderRadius.circular(AppTheme.borderRadiusSmall),
+                  ),
+                  child: Text(
+                    '${trip.startDate} until ${trip.endDate}',
+                    style: AppTheme.labelMedium.copyWith(
+                      color: AppTheme.travelPrimary,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                const SizedBox(height: AppTheme.paddingSmall),
+                Text(
+                  cleanText(trip.description),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTheme.bodyMedium.copyWith(
+                    color: AppTheme.textDark.withOpacity(0.8),
+                  ),
+                ),
+                const SizedBox(height: AppTheme.paddingMedium),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    InkWell(
+                    Expanded(
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          // Calculate approximately how many items can fit in a row
+                          // Assuming average chip width of 100 + spacing
+                          final double chipWidth = 100 + AppTheme.paddingSmall;
+                          final int itemsPerRow =
+                              (constraints.maxWidth / chipWidth).floor();
+
+                          // 2 rows maximum
+                          final int maxItems = itemsPerRow * 2;
+
+                          final destinations = trip.destinations;
+                          final displayedDestinations = destinations.length >
+                                  maxItems
+                              ? destinations.sublist(
+                                  0, maxItems - 1) // Leave space for "+X more"
+                              : destinations;
+
+                          final List<Widget> chips =
+                              displayedDestinations.map((destination) {
+                            return Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AppTheme.paddingSmall,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.3),
+                                borderRadius: BorderRadius.circular(
+                                    AppTheme.borderRadiusSmall),
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.3),
+                                  width: 1.0,
+                                ),
+                              ),
+                              child: Text(
+                                destination.name,
+                                style: AppTheme.labelSmall.copyWith(
+                                  color: AppTheme.textDark,
+                                ),
+                              ),
+                            );
+                          }).toList();
+
+                          // Add "+X more" chip if needed
+                          if (destinations.length > maxItems) {
+                            final moreCount =
+                                destinations.length - (maxItems - 1);
+                            chips.add(
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: AppTheme.paddingSmall,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color:
+                                      AppTheme.travelPrimary.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(
+                                      AppTheme.borderRadiusSmall),
+                                  border: Border.all(
+                                    color:
+                                        AppTheme.travelPrimary.withOpacity(0.3),
+                                    width: 1.0,
+                                  ),
+                                ),
+                                child: Text(
+                                  "+$moreCount more",
+                                  style: AppTheme.labelSmall.copyWith(
+                                    color: AppTheme.travelPrimary,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+
+                          return Wrap(
+                            spacing: AppTheme.paddingSmall,
+                            runSpacing: AppTheme.paddingSmall,
+                            children: chips,
+                          );
+                        },
+                      ),
+                    ),
+                    GestureDetector(
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
@@ -145,48 +329,28 @@ class _TripListState extends State<TripList> {
                         );
                       },
                       child: Container(
-                          width: 64,
-                          height: 64,
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .primaryContainer,
-                              width: 2,
-                            ),
-                            borderRadius: BorderRadius.circular(32),
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: AppTheme.travelPrimary.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(
+                            color: AppTheme.travelPrimary.withOpacity(0.3),
+                            width: 1.5,
                           ),
-                          child: AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 300),
-                              child: Transform.rotate(
-                                angle: 1.5708 / 2,
-                                child: const Icon(Icons.arrow_upward_rounded),
-                              ))),
-                    )
+                        ),
+                        child: Icon(
+                          Icons.arrow_forward_rounded,
+                          color: AppTheme.travelPrimary,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ],
             ),
           ),
-          SizedBox(
-            height: 32,
-            child: ListView.builder(
-                itemCount: trip.destinations.length,
-                scrollDirection: Axis.horizontal,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: EdgeInsets.only(
-                        left: 16.0,
-                        right:
-                            index == trip.destinations.length - 1 ? 16.0 : 0),
-                    child: Chip(
-                        label: Text(trip.destinations[index].name,
-                            style: Theme.of(context).textTheme.labelMedium)),
-                  );
-                }),
-          ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppTheme.paddingSmall),
         ],
       ),
     );

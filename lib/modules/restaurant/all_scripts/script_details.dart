@@ -1,13 +1,9 @@
-import 'package:crystal_navigation_bar/crystal_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:jejom/models/language_enum.dart';
-import 'package:jejom/modules/user/trip/components/get_photo_url.dart';
 import 'package:jejom/providers/restaurant/script_restaurant_provider.dart';
-import 'package:jejom/utils/glass_container.dart';
-import 'package:jejom/utils/m3_carousel.dart';
-import 'package:jejom/utils/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'dart:ui';
 
 class ScriptDetailsPage extends StatefulWidget {
   const ScriptDetailsPage({super.key});
@@ -31,7 +27,6 @@ class _ScriptDetailsPageState extends State<ScriptDetailsPage> {
       double destinationLatitude, double destinationLongitude) async {
     final uri = Uri(
         scheme: "google.navigation",
-        // host: '"0,0"',  {here we can put host}
         queryParameters: {'q': '$destinationLatitude, $destinationLongitude'});
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri);
@@ -43,54 +38,75 @@ class _ScriptDetailsPageState extends State<ScriptDetailsPage> {
   @override
   Widget build(BuildContext context) {
     final scriptGameProvider = Provider.of<ScriptRestaurantProvider>(context);
+    final screenWidth = MediaQuery.of(context).size.width;
 
     // Check if the games list is empty or no selected game is available
     if (scriptGameProvider.games.isEmpty ||
         scriptGameProvider.selectedGame == null) {
       return Scaffold(
-        body: Center(
-          child: Text('No games available or no game selected.'),
+        backgroundColor: Colors.grey[200],
+        body: const Center(
+          child: Text(
+            'No scripts available',
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.black54,
+            ),
+          ),
         ),
       );
     }
 
     return Scaffold(
-      body: Column(
+      backgroundColor: Colors.grey[200],
+      extendBody: true,
+      extendBodyBehindAppBar: true,
+      body: Stack(
         children: [
-          const SizedBox(height: 80),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
-              children: [
-                IconButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  icon: const Icon(Icons.arrow_back),
-                ),
-                const Spacer(),
-                SegmentedButton<Language>(
-                  segments: const <ButtonSegment<Language>>[
-                    ButtonSegment<Language>(
-                        value: Language.english, label: Text('Eng')),
-                    ButtonSegment<Language>(
-                        value: Language.korean, label: Text('Kor')),
-                  ],
-                  selected: <Language>{scriptGameProvider.lang},
-                  onSelectionChanged: (Set<Language> newSelection) {
-                    scriptGameProvider.updateLanguage(newSelection.first);
-                  },
-                )
-              ],
+          // Background gradient
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color(0xFFE0E6FF),
+                  Color(0xFFD5E6F3),
+                ],
+              ),
             ),
           ),
-          const SizedBox(height: 16),
-          // Show divider when on scroll
-          Container(
-            height: 1,
-            color: Theme.of(context).colorScheme.surfaceContainerHigh,
+
+          // Abstract design elements
+          Positioned(
+            top: -100,
+            right: -100,
+            child: Container(
+              height: 300,
+              width: 300,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.blue.withOpacity(0.1),
+              ),
+            ),
           ),
-          Expanded(
+
+          Positioned(
+            bottom: -50,
+            left: -50,
+            child: Container(
+              height: 200,
+              width: 200,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.purple.withOpacity(0.1),
+              ),
+            ),
+          ),
+
+          // Main scrollable content
+          SafeArea(
+            bottom: false,
             child: PageView(
               controller: _pageController,
               onPageChanged: (index) {
@@ -107,191 +123,335 @@ class _ScriptDetailsPageState extends State<ScriptDetailsPage> {
               ],
             ),
           ),
-        ],
-      ),
-      extendBody: true,
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(bottom: 10),
-        child: CrystalNavigationBar(
-          marginR: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          currentIndex: _SelectedTab.values.indexOf(selectedTab),
-          unselectedItemColor: Colors.white70,
-          selectedItemColor: Theme.of(context).colorScheme.primaryContainer,
-          backgroundColor: Colors.black.withOpacity(0.1),
-          onTap: handleIndexChanged,
-          enableFloatingNavBar: true,
-          items: [
-            CrystalNavigationBarItem(
-                icon: Icons.home, unselectedIcon: Icons.home_outlined),
-            CrystalNavigationBarItem(
-                icon: Icons.child_care_rounded,
-                unselectedIcon: Icons.child_care_outlined),
-            CrystalNavigationBarItem(
-                icon: Icons.book_rounded, unselectedIcon: Icons.book_outlined),
-            CrystalNavigationBarItem(
-                icon: Icons.follow_the_signs_rounded,
-                unselectedIcon: Icons.follow_the_signs_outlined),
-            CrystalNavigationBarItem(
-                icon: Icons.person_rounded,
-                unselectedIcon: Icons.person_outline_rounded),
-          ],
-        ),
-      ),
-    );
-  }
 
-  Widget _buildRestaurantTab(ScriptRestaurantProvider scriptGameProvider) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 32),
-
-            // const SizedBox(height: 32),
-            // Text(
-            //   "Offered Restaurants",
-            //   style: Theme.of(context).textTheme.titleLarge,
-            // ),
-            // const SizedBox(height: 16),
-            MediaQuery.removePadding(
-              context: context,
-              child: ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: scriptGameProvider.restaurants.length,
-                itemBuilder: (context, index) {
-                  final restaurant = scriptGameProvider.restaurants[index];
-                  return GlassContainer(
-                    padding: 16,
-                    marginBottom: 16,
-                    width: double.infinity,
+          // Top header overlay - more translucent
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: ClipRRect(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                child: Container(
+                  color: Colors.white.withOpacity(0.1),
+                  child: SafeArea(
+                    bottom: false,
                     child: Column(
                       children: [
-                        SizedBox(
-                          height: 200,
-                          width: double.infinity,
-                          child: M3Carousel(
-                            visible: 2,
-                            slideAnimationDuration: 300, // milliseconds
-                            titleFadeAnimationDuration: 200, // milliseconds
+                        // Header with back button and language selector
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20.0, vertical: 16.0),
+                          child: Row(
                             children: [
-                              ...restaurant.images!.map((url) {
-                                return {"image": getPhotoUrl(url), "title": ""};
-                              }),
+                              GestureDetector(
+                                onTap: () => Navigator.of(context).pop(),
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.3),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(Icons.arrow_back,
+                                      color: Colors.black87),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              const Text(
+                                "Script Details",
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              const Spacer(),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.7),
+                                  borderRadius: BorderRadius.circular(25),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        scriptGameProvider
+                                            .updateLanguage(Language.english);
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16, vertical: 8),
+                                        decoration: BoxDecoration(
+                                          color: scriptGameProvider.lang ==
+                                                  Language.english
+                                              ? Colors.black
+                                              : Colors.transparent,
+                                          borderRadius:
+                                              BorderRadius.circular(25),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            if (scriptGameProvider.lang ==
+                                                Language.english)
+                                              const Icon(Icons.check,
+                                                  size: 14,
+                                                  color: Colors.white),
+                                            if (scriptGameProvider.lang ==
+                                                Language.english)
+                                              const SizedBox(width: 4),
+                                            const Text(
+                                              "Eng",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        scriptGameProvider
+                                            .updateLanguage(Language.korean);
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16, vertical: 8),
+                                        decoration: BoxDecoration(
+                                          color: scriptGameProvider.lang ==
+                                                  Language.korean
+                                              ? Colors.black
+                                              : Colors.transparent,
+                                          borderRadius:
+                                              BorderRadius.circular(25),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            if (scriptGameProvider.lang ==
+                                                Language.korean)
+                                              const Icon(Icons.check,
+                                                  size: 14,
+                                                  color: Colors.white),
+                                            if (scriptGameProvider.lang ==
+                                                Language.korean)
+                                              const SizedBox(width: 4),
+                                            const Text(
+                                              "Kor",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    restaurant.name ?? "",
-                                    style:
-                                        Theme.of(context).textTheme.titleLarge,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
+
+                        // Time and script info card - more transparent
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: BackdropFilter(
+                              filter:
+                                  ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                              child: Container(
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(
+                                    color: Colors.white.withOpacity(0.1),
+                                    width: 1,
                                   ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    restaurant.description ?? "",
-                                    style:
-                                        Theme.of(context).textTheme.bodyLarge,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
+                                ),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            scriptGameProvider
+                                                    .selectedGame?.title ??
+                                                "",
+                                            style: const TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black87,
+                                            ),
+                                            maxLines: 2,
+                                            overflow: TextOverflow.visible,
+                                          ),
+                                          const SizedBox(height: 6),
+                                          Text(
+                                            "Duration: ${scriptGameProvider.selectedGame?.duration ?? ""}",
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.black87,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                            const SizedBox(width: 8),
-                            // InkWell(
-                            //   onTap: () {
-                            //     launchGoogleMaps(
-                            //         restaurant., restaurant.long);
-                            //   },
-                            //   child: Container(
-                            //     width: 64,
-                            //     height: 64,
-                            //     padding: const EdgeInsets.all(8),
-                            //     decoration: BoxDecoration(
-                            //       border: Border.all(
-                            //         color: Theme.of(context)
-                            //             .colorScheme
-                            //             .primaryContainer,
-                            //         width: 2,
-                            //       ),
-                            //       borderRadius: BorderRadius.circular(32),
-                            //     ),
-                            //     child: Transform.rotate(
-                            //       angle: 1.5708 / 2,
-                            //       child: const Icon(Icons.arrow_upward_rounded),
-                            //     ),
-                            //   ),
-                            // ),
-                          ],
+                          ),
                         ),
                       ],
                     ),
-                  );
-                },
+                  ),
+                ),
               ),
             ),
-            const SizedBox(height: 120),
-          ],
-        ),
+          ),
+
+          // Bottom navigation overlay - fixed overflow
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: ClipRRect(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Container(
+                  color: Colors.white.withOpacity(0.1),
+                  padding: const EdgeInsets.only(bottom: 16, top: 8),
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 20),
+                    height: 60,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        _buildNavItem(0, Icons.menu_book,
+                            Icons.menu_book_outlined, "Story"),
+                        _buildNavItem(1, Icons.person, Icons.person_outlined,
+                            "Character"),
+                        _buildNavItem(2, Icons.theater_comedy,
+                            Icons.theater_comedy_outlined, "Script"),
+                        _buildNavItem(
+                            3, Icons.search, Icons.search_outlined, "Clues"),
+                        _buildNavItem(4, Icons.people_alt,
+                            Icons.people_alt_outlined, "Players"),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  // Widget _buildScriptTab(ScriptRestaurantProvider scriptGameProvider) {
-  //   return SingleChildScrollView(
-  //     child: Padding(
-  //       padding: const EdgeInsets.all(16.0),
-  //       child: Column(
-  //         crossAxisAlignment: CrossAxisAlignment.start,
-  //         children: [
-  //           const SizedBox(height: 32),
-  //           Text(
-  //             scriptGameProvider.selectedGame?.title ?? "",
-  //             style: Theme.of(context).textTheme.headlineLarge,
-  //           ),
-  //           const SizedBox(height: 8),
-  //           Text(
-  //             "Duration: ${scriptGameProvider.selectedGame?.duration ?? ""}",
-  //             style: Theme.of(context).textTheme.bodyLarge,
-  //           ),
-  //           const SizedBox(height: 32),
-  //           Text(
-  //             "Storyline",
-  //             style: Theme.of(context).textTheme.titleLarge,
-  //           ),
-  //           const SizedBox(height: 16),
-  //           Text(
-  //             scriptGameProvider.games.first.scriptPlanner
-  //                 .replaceAll(r'\n', '\n'),
-  //             style: Theme.of(context).textTheme.bodyLarge,
-  //           ),
-  //           const SizedBox(height: 120),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
+  Widget _buildNavItem(
+      int index, IconData selectedIcon, IconData unselectedIcon, String label) {
+    final isSelected = index == _SelectedTab.values.indexOf(selectedTab);
+
+    return GestureDetector(
+      onTap: () => handleIndexChanged(index),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color:
+                  isSelected ? Colors.black87 : Colors.white.withOpacity(0.15),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              isSelected ? selectedIcon : unselectedIcon,
+              color: isSelected ? Colors.white : Colors.black87,
+              size: 20,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              color:
+                  isSelected ? Colors.black87 : Colors.black87.withOpacity(0.7),
+              fontSize: 11,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContentCard(String title, String content) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.2),
+                width: 1,
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  content.replaceAll(r'\n', '\n'),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.black87,
+                    height: 1.5,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
   Widget _buildScriptTab(ScriptRestaurantProvider scriptGameProvider) {
     final selectedGame = scriptGameProvider.selectedGame;
 
     if (selectedGame == null) {
-      return Center(child: Text('No game selected.'));
+      return const Center(child: Text('No game selected.'));
     }
 
     if (scriptGameProvider.games.isEmpty) {
-      return Center(child: Text('No games available.'));
+      return const Center(child: Text('No games available.'));
     }
 
     final List<String> scriptSections =
@@ -299,29 +459,26 @@ class _ScriptDetailsPageState extends State<ScriptDetailsPage> {
     final List<String> images = selectedGame.images;
 
     return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.only(top: 200), // Reduced padding for header
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 32),
-            Text(
-              selectedGame.title,
-              style: Theme.of(context).textTheme.headlineLarge,
+            const Padding(
+              padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
+              child: Text(
+                "Storyline",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
             ),
             const SizedBox(height: 8),
-            Text(
-              "Duration: ${selectedGame.duration}",
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            const SizedBox(height: 32),
-            Text(
-              "Storyline",
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 16),
             ..._buildScriptWithImages(scriptSections, images),
-            const SizedBox(height: 120),
+            const SizedBox(height: 80), // Reduced padding for bottom
           ],
         ),
       ),
@@ -333,26 +490,43 @@ class _ScriptDetailsPageState extends State<ScriptDetailsPage> {
     List<Widget> widgets = [];
 
     for (int i = 0; i < scriptSections.length; i++) {
-      widgets.add(
-        Text(
-          scriptSections[i].replaceAll(r'\n', '\n'),
-          style: Theme.of(context).textTheme.bodyLarge,
-        ),
-      );
+      if (scriptSections[i].trim().isNotEmpty) {
+        widgets.add(
+          _buildContentCard("Part ${i + 1}", scriptSections[i]),
+        );
+      }
 
       if (i < images.length && images[i].isNotEmpty) {
         widgets.add(
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 48.0),
-            child: SizedBox(
-              width: double.infinity,
-              height: 400,
-              child: Image.network(
-                images[i],
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => const Icon(
-                  Icons.broken_image,
-                  size: 100,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Container(
+                width: double.infinity,
+                height: 300,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 10,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+                child: Image.network(
+                  images[i],
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    alignment: Alignment.center,
+                    color: Colors.grey[200],
+                    child: const Icon(
+                      Icons.broken_image,
+                      size: 60,
+                      color: Colors.black38,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -365,34 +539,37 @@ class _ScriptDetailsPageState extends State<ScriptDetailsPage> {
   }
 
   Widget _buildCharacterTab(ScriptRestaurantProvider scriptGameProvider) {
-    // Check if games list is empty
     if (scriptGameProvider.games.isEmpty) {
-      return Center(child: Text('No games available.'));
+      return const Center(child: Text('No games available.'));
     }
 
-    // Ensure selectedGame is not null
     if (scriptGameProvider.selectedGame == null) {
-      return Center(child: Text('No game selected.'));
+      return const Center(child: Text('No game selected.'));
     }
 
     return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.only(top: 200), // Reduced paFdding for header
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 32),
-            Text(
-              "Character Designer",
-              style: Theme.of(context).textTheme.headlineLarge,
+            const Padding(
+              padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
+              child: Text(
+                "Character Designer",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
             ),
-            const SizedBox(height: 16),
-            Text(
-              scriptGameProvider.selectedGame!.characterDesigner
-                  .replaceAll(r'\n', '\n'),
-              style: Theme.of(context).textTheme.bodyLarge,
+            _buildContentCard(
+              "Character Details",
+              scriptGameProvider.selectedGame!.characterDesigner,
             ),
-            const SizedBox(height: 120),
+            const SizedBox(height: 80), // Reduced padding for bottom
           ],
         ),
       ),
@@ -401,23 +578,28 @@ class _ScriptDetailsPageState extends State<ScriptDetailsPage> {
 
   Widget _buildAddTab(ScriptRestaurantProvider scriptGameProvider) {
     return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.only(top: 200), // Reduced padding for header
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 32),
-            Text(
-              "Script Writer",
-              style: Theme.of(context).textTheme.headlineLarge,
+            const Padding(
+              padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
+              child: Text(
+                "Script Writer",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
             ),
-            const SizedBox(height: 16),
-            Text(
-              scriptGameProvider.games.first.scriptWriter
-                  .replaceAll(r'\n', '\n'),
-              style: Theme.of(context).textTheme.bodyLarge,
+            _buildContentCard(
+              "Script Details",
+              scriptGameProvider.games.first.scriptWriter,
             ),
-            const SizedBox(height: 120),
+            const SizedBox(height: 80), // Reduced padding for bottom
           ],
         ),
       ),
@@ -426,23 +608,28 @@ class _ScriptDetailsPageState extends State<ScriptDetailsPage> {
 
   Widget _buildClueTab(ScriptRestaurantProvider scriptGameProvider) {
     return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.only(top: 200), // Reduced padding for header
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 32),
-            Text(
-              "Clue Generator",
-              style: Theme.of(context).textTheme.headlineLarge,
+            const Padding(
+              padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
+              child: Text(
+                "Clue Generator",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
             ),
-            const SizedBox(height: 16),
-            Text(
-              scriptGameProvider.games.first.clueGenerator
-                  .replaceAll(r'\n', '\n'),
-              style: Theme.of(context).textTheme.bodyLarge,
+            _buildContentCard(
+              "Clue Details",
+              scriptGameProvider.games.first.clueGenerator,
             ),
-            const SizedBox(height: 120),
+            const SizedBox(height: 80), // Reduced padding for bottom
           ],
         ),
       ),
@@ -451,23 +638,28 @@ class _ScriptDetailsPageState extends State<ScriptDetailsPage> {
 
   Widget _buildPlayerTab(ScriptRestaurantProvider scriptGameProvider) {
     return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.only(top: 200), // Reduced padding for header
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 32),
-            Text(
-              "Player Instruction Writer",
-              style: Theme.of(context).textTheme.headlineLarge,
+            const Padding(
+              padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
+              child: Text(
+                "Player Instruction Writer",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
             ),
-            const SizedBox(height: 16),
-            Text(
-              scriptGameProvider.games.first.playerInstructionWriter
-                  .replaceAll(r'\n', '\n'),
-              style: Theme.of(context).textTheme.bodyLarge,
+            _buildContentCard(
+              "Player Instructions",
+              scriptGameProvider.games.first.playerInstructionWriter,
             ),
-            const SizedBox(height: 120),
+            const SizedBox(height: 80), // Reduced padding for bottom
           ],
         ),
       ),

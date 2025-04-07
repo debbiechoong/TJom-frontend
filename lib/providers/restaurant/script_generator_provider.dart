@@ -4,7 +4,6 @@ import 'package:jejom/api/script_api.dart';
 import 'package:jejom/models/script_restaurant.dart';
 import 'package:jejom/modules/restaurant/script_generator/ScriptGenerationSuccess.dart';
 import 'package:jejom/utils/loading_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class RestaurantScriptGeneratorProvider extends ChangeNotifier {
   String prompt = "";
@@ -21,13 +20,15 @@ class RestaurantScriptGeneratorProvider extends ChangeNotifier {
   }
 
   void sendPrompt(BuildContext context, int charactersNum) async {
-    final prefs = await SharedPreferences.getInstance();
-    String? userId = prefs.getString('userId');
+    // final prefs = await SharedPreferences.getInstance();
+    // String? userId = prefs.getString('userId');
 
-    if (userId == null) {
-      debugPrint('User ID not found in SharedPreferences');
-      return;
-    }
+    // if (userId == null) {
+    //   debugPrint('User ID not found in SharedPreferences');
+    //   return;
+    // }
+
+    String userId = "40872c7d-0e1e-4fde-a1e7-192f3b0ba95e";
 
     ScriptRestaurant? restaurant = await fetchRestaurantFromFirestore(userId);
     if (restaurant == null) {

@@ -9,8 +9,8 @@ import 'package:jejom/providers/user/travel_provider.dart';
 import 'package:jejom/providers/user/trip_provider.dart';
 import 'package:jejom/providers/user/user_provider.dart';
 import 'package:jejom/utils/clean_text.dart';
-import 'package:jejom/utils/glass_container.dart';
 import 'package:provider/provider.dart';
+import 'dart:ui';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -35,11 +35,59 @@ class _HomeState extends State<Home> {
     final travelProvider = Provider.of<TravelProvider>(context);
 
     return Scaffold(
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Transform.translate(
-              offset: const Offset(0, 300),
+      backgroundColor: Colors.grey[200],
+      body: Stack(
+        children: [
+          // Background gradient
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color(0xFFE0E6FF),
+                  Color(0xFFD5E6F3),
+                ],
+              ),
+            ),
+          ),
+
+          // Abstract design elements
+          Positioned(
+            top: -100,
+            right: -100,
+            child: Container(
+              height: 300,
+              width: 300,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.blue.withOpacity(0.1),
+              ),
+            ),
+          ),
+
+          Positioned(
+            bottom: -50,
+            left: -50,
+            child: Container(
+              height: 200,
+              width: 200,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.purple.withOpacity(0.1),
+              ),
+            ),
+          ),
+
+          // Earth image background
+          Positioned(
+            bottom: 0,
+            right: 0,
+            left: 0,
+            child: Container(
+              width: double.infinity,
+              height: double.infinity,
+              // opacity: 0.6,
               child: Image.asset(
                 'assets/images/earth.png',
                 fit: BoxFit.cover,
@@ -47,237 +95,302 @@ class _HomeState extends State<Home> {
                 height: double.infinity,
               ),
             ),
-            Padding(
+          ),
+
+          // Main content
+          SafeArea(
+            child: Padding(
               padding: const EdgeInsets.all(24.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Welcome to Jejom",
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onBackground
-                                .withOpacity(0.6),
-                          )),
+                  // Welcome text
+                  const Text(
+                    "Welcome to Jejom",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black54,
+                    ),
+                  ),
+
                   const SizedBox(height: 8),
-                  Text("Plan The",
-                      style: Theme.of(context).textTheme.headlineLarge),
-                  Text("Best Trip To The",
-                      style: Theme.of(context).textTheme.headlineLarge),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          maxLines: null,
-                          autofocus: false,
-                          decoration: InputDecoration(
-                            hintText: "Vacation",
-                            filled: true,
-                            fillColor: Theme.of(context).colorScheme.background,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              borderSide: BorderSide.none,
-                            ),
+
+                  // Main heading
+                  const Text(
+                    "Plan The",
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+
+                  const Text(
+                    "Best Trip To The",
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Destination input field
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.2),
+                            width: 1.5,
                           ),
-                          textInputAction: TextInputAction.send,
-                          onChanged: (value) =>
-                              travelProvider.updatePrompt(value),
-                          onSubmitted: (value) {
-                            travelProvider.sendPrompt();
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => const TravelWrapper(),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                maxLines: null,
+                                autofocus: false,
+                                decoration: const InputDecoration(
+                                  hintText: "Vacation",
+                                  hintStyle: TextStyle(color: Colors.black54),
+                                  contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 16),
+                                  border: InputBorder.none,
+                                ),
+                                style: const TextStyle(color: Colors.black87),
+                                textInputAction: TextInputAction.send,
+                                onChanged: (value) =>
+                                    travelProvider.updatePrompt(value),
+                                onSubmitted: (value) {
+                                  travelProvider.sendPrompt();
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const TravelWrapper(),
+                                    ),
+                                  );
+                                },
                               ),
-                            );
-                          },
+                            ),
+                            Material(
+                              color: Colors.transparent,
+                              child: IconButton(
+                                onPressed: () {
+                                  travelProvider.sendPrompt();
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const TravelWrapper(),
+                                    ),
+                                  );
+                                },
+                                icon: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: const BoxDecoration(
+                                    color: Colors.black87,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.arrow_forward,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      IconButton(
-                        onPressed: () {
-                          travelProvider.sendPrompt();
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const TravelWrapper(),
-                            ),
-                          );
-                        },
-                        icon: const Icon(Icons.send_rounded),
-                      ),
-                    ],
+                    ),
                   ),
-                  const SizedBox(height: 16),
+
                   const Spacer(),
+
+                  // Action buttons
                   _buildActionBar(),
-                  const SizedBox(height: 16),
-                  tripProvider.trips.isEmpty
-                      ? const SizedBox()
-                      : GlassContainer(
-                          padding: 0,
+
+                  const SizedBox(height: 24),
+
+                  // Current trip card
+                  if (tripProvider.trips.isNotEmpty)
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                        child: Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.2),
+                              width: 1.5,
+                            ),
+                          ),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text("Current Trip",
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .labelLarge),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                          cleanText(
-                                              tripProvider.trips.first.title),
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleLarge),
-                                    ],
-                                  ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Text(
+                                      "Current Trip",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.black54,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      cleanText(tripProvider.trips.first.title),
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.only(right: 16.0),
-                                child: InkWell(
-                                  onTap: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) => TripDetails(
-                                          trip: tripProvider.trips.first,
-                                        ),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => TripDetails(
+                                        trip: tripProvider.trips.first,
                                       ),
-                                    );
-                                  },
-                                  child: Container(
-                                      width: 64,
-                                      height: 64,
-                                      padding: const EdgeInsets.all(8),
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primaryContainer,
-                                          width: 2,
-                                        ),
-                                        borderRadius: BorderRadius.circular(32),
-                                      ),
-                                      child: Transform.rotate(
-                                        angle: 1.5708 / 2,
-                                        child: const Icon(
-                                            Icons.arrow_upward_rounded),
-                                      )),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  width: 48,
+                                  height: 48,
+                                  decoration: const BoxDecoration(
+                                    color: Colors.black87,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.arrow_forward,
+                                    color: Colors.white,
+                                    size: 24,
+                                  ),
                                 ),
                               ),
                             ],
                           ),
                         ),
+                      ),
+                    ),
                 ],
               ),
-            )
-          ],
-        ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildActionBar() {
-    return Row(
-      children: [
-        InkWell(
-          onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => const TripList(),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
+        child: Container(
+          // padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          // decoration: BoxDecoration(
+          //   color: Colors.white.withOpacity(0.15),
+          //   borderRadius: BorderRadius.circular(20),
+          //   border: Border.all(
+          //     color: Colors.white.withOpacity(0.2),
+          //     width: 1.5,
+          //   ),
+          // ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildActionButton(
+                icon: Icons.travel_explore_rounded,
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const TripList(),
+                    ),
+                  );
+                },
               ),
-            );
-          },
-          child: Container(
-              width: 64,
-              height: 64,
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.onBackground,
-                borderRadius: BorderRadius.circular(32),
+              _buildActionButton(
+                icon: Icons.restaurant_menu_rounded,
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const MenuOCRPage(),
+                    ),
+                  );
+                },
               ),
-              child: Icon(
-                Icons.travel_explore_rounded,
-                color: Theme.of(context).colorScheme.background,
-              )),
+              _buildActionButton(
+                icon: Icons.local_play_rounded,
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const GameList(),
+                    ),
+                  );
+                },
+              ),
+              _buildActionButton(
+                icon: Icons.explore_rounded,
+                isHighlighted: true,
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const ExploreWrapper(),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
-        const SizedBox(width: 16),
-        InkWell(
-          onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => const MenuOCRPage(),
-              ),
-            );
-          },
-          child: Container(
-              width: 64,
-              height: 64,
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.onBackground,
-                borderRadius: BorderRadius.circular(32),
-              ),
-              child: Icon(
-                Icons.restaurant_menu_rounded,
-                color: Theme.of(context).colorScheme.background,
-              )),
+      ),
+    );
+  }
+
+  Widget _buildActionButton({
+    required IconData icon,
+    required VoidCallback onTap,
+    bool isHighlighted = false,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 56,
+        height: 56,
+        decoration: BoxDecoration(
+          color: isHighlighted ? Colors.black87 : Colors.white.withOpacity(0.2),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color:
+                isHighlighted ? Colors.black87 : Colors.white.withOpacity(0.2),
+            width: 1.5,
+          ),
         ),
-        const SizedBox(width: 16),
-        InkWell(
-          onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => const GameList(),
-              ),
-            );
-          },
-          child: Container(
-              width: 64,
-              height: 64,
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.onBackground,
-                borderRadius: BorderRadius.circular(32),
-              ),
-              child: Icon(
-                Icons.local_play_rounded,
-                color: Theme.of(context).colorScheme.background,
-              )),
+        child: Icon(
+          icon,
+          color: isHighlighted ? Colors.white : Colors.black87,
+          size: 24,
         ),
-        const Spacer(),
-        InkWell(
-          onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => const ExploreWrapper(),
-              ),
-            );
-          },
-          child: Container(
-              width: 64,
-              height: 64,
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  width: 2,
-                ),
-                color: Theme.of(context).colorScheme.primaryContainer,
-                borderRadius: BorderRadius.circular(32),
-              ),
-              child: Icon(
-                Icons.explore_rounded,
-                color: Theme.of(context).colorScheme.background,
-              )),
-        ),
-      ],
+      ),
     );
   }
 }

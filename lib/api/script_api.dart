@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +14,8 @@ Future<List<ScriptGame>> fetchAllScriptFromFirestore(Language lang) async {
     final scriptDocs =
         await FirebaseFirestore.instance.collection('script').get();
     List<ScriptGame> scripts = [];
+
+    print("scriptDocs: ${scriptDocs.docs.length}");
 
     if (scriptDocs.docs.isNotEmpty) {
       for (var scriptDoc in scriptDocs.docs) {
@@ -109,8 +110,10 @@ Future<void> generateScript(String restaurantId, int charactersNum,
     'characters_num': charactersNum.toString(),
     'cafe_name': cafeName,
     'cafe_environment': cafeEnv,
+    'mode': ''
   };
 
+  print("Sent Script Generator");
   var response = await http.post(
     url,
     headers: {
@@ -119,11 +122,16 @@ Future<void> generateScript(String restaurantId, int charactersNum,
     body: body,
   );
 
+  print("Responsed");
+
   if (response.statusCode == 200) {
     var responseBody = json.decode(response.body);
 
     var engScript = responseBody['eng_script'];
     var korScript = responseBody['kor_script'];
+
+    print('Eng Script: $engScript');
+    print('Kor Script: $korScript');
 
     await uploadScriptToFirestore(restaurantId, korScript, engScript);
 
@@ -134,7 +142,7 @@ Future<void> generateScript(String restaurantId, int charactersNum,
 }
 
 Future<void> uploadScriptToFirestore(String restaurantId,
-    Map<String, dynamic> kor_script, Map<String, dynamic> eng_script) async {
+    Map<String, dynamic> korScript, Map<String, dynamic> engScript) async {
   try {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     String collectionPath = 'script';
@@ -143,8 +151,14 @@ Future<void> uploadScriptToFirestore(String restaurantId,
       'restaurant': restaurantId,
     });
 
-    await docRef.collection('kor').doc().set(kor_script);
-    await docRef.collection('eng').doc().set(eng_script);
+    await docRef
+        .collection('kor')
+        .doc()
+        .set({...korScript, 'restaurant': restaurantId});
+    await docRef
+        .collection('eng')
+        .doc()
+        .set({...engScript, 'restaurant': restaurantId});
 
     print('Script uploaded successfully to Firestore: $collectionPath');
   } catch (e) {

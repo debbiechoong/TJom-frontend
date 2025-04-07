@@ -6,9 +6,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 class RestaurantProvider extends ChangeNotifier {
   ScriptRestaurant? _restaurant;
 
-  RestaurantProvider() {
-    fetchRestaurant();
-  }
+  // RestaurantProvider() {
+  //   fetchRestaurant();
+  // }
 
   ScriptRestaurant? get restaurant => _restaurant;
 

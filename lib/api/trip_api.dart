@@ -55,7 +55,6 @@ class TripApi {
     } else {
       print('Request failed with status: ${response.statusCode}.');
     }
-    
   }
 
   Future<void> addTripToFirebase(
@@ -74,11 +73,12 @@ class TripApi {
     try {
       var trip = await FirebaseFirestore.instance
           .collection('trips')
-          .where('userId', isEqualTo: userId)
+          // .where('userId', isEqualTo: userId)
           .get();
       print('Trip fetched from Firebase: ${trip.docs}');
       final trips = trip.docs.map((doc) => Trip.fromJson(doc.data())).toList();
 
+      print("Fetched Trips are: $trips");
       return trips;
     } catch (e) {
       print('Error fetching trip from Firebase: $e');

@@ -13,12 +13,13 @@ class ScriptRestaurantProvider extends ChangeNotifier {
   Language lang = Language.english;
 
   Future<void> updateLanguage(Language newLang) async {
-    final prefs = await SharedPreferences.getInstance();
-    String? userId = prefs.getString('userId');
+    // final prefs = await SharedPreferences.getInstance();
+    // String? userId = prefs.getString('userId');
+    String? userId = '40872c7d-0e1e-4fde-a1e7-192f3b0ba95e';
     lang = newLang;
 
     // Fetch games based on new language and wait for completion
-    await fetchGames(lang, userId!);
+    await fetchGames(lang, userId);
 
     // Ensure games list is not empty before setting the selected game
     if (games.isNotEmpty) {

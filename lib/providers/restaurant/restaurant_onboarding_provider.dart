@@ -78,8 +78,8 @@ class RestaurantOnboardingProvider extends ChangeNotifier {
       // phoneNum: phoneNum,
     );
 
-
     await createRestaurantInFirestore(userId, restaurant);
+    print("Restaurant created");
     await prefs.setBool('onboarded', true);
     await prefs.setBool('isRestaurant', true);
   }

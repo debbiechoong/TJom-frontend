@@ -106,4 +106,9 @@ class UserProvider extends ChangeNotifier {
     debugPrint('User is null');
     return {};
   }
+
+  void updateDietaryPreferences({required String dietary, required List<String> allergies}) {
+    updateUserDietary(dietary);
+    updateUserAllergies(allergies);
+  }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jejom/providers/user/onboarding_provider.dart';
 import 'package:provider/provider.dart';
+import 'dart:ui';
 
 class DietaryPreferences extends StatefulWidget {
   const DietaryPreferences({super.key});
@@ -15,103 +16,220 @@ class _DietaryPreferencesState extends State<DietaryPreferences> {
     final onBoardingProvider = Provider.of<OnboardingProvider>(context);
 
     return SingleChildScrollView(
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          minHeight: MediaQuery.of(context).size.height,
-        ),
+      physics: const BouncingScrollPhysics(),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 80),
-            IconButton(
-                visualDensity: VisualDensity.adaptivePlatformDensity,
-                iconSize: 80,
-                onPressed: () => onBoardingProvider.previousPage(),
-                icon: const Icon(
-                  Icons.arrow_back,
-                  size: 24,
-                )),
-            const SizedBox(height: 16),
-            Text(
-              "Food Preferences & Allergies",
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineLarge
-                  ?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 32),
-            Text("Type of food", style: Theme.of(context).textTheme.bodyLarge),
-            const SizedBox(height: 16),
-            ..._buildFoodTypeRadioButtons(),
-            const SizedBox(height: 32),
-            Text("Allergens", style: Theme.of(context).textTheme.bodyLarge),
-            const SizedBox(height: 4),
-            Text("Enter your allergens (separated by commas)",
-                style: Theme.of(context).textTheme.bodyMedium),
-            const SizedBox(height: 16),
-            TextField(
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'egg, milk, peanuts',
+            
+            // Back button
+            GestureDetector(
+              onTap: () => onBoardingProvider.previousPage(),
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.2),
+                    width: 1.5,
+                  ),
+                ),
+                child: const Icon(Icons.arrow_back, color: Colors.black54),
               ),
-              onChanged: (value) => onBoardingProvider.setAllergies(value),
             ),
+            
+            const SizedBox(height: 24),
+            
+            // Title
+            const Text(
+              "Food Preferences & Allergies",
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            
+            const SizedBox(height: 16),
+            
+            const Text(
+              "Tell us your preferences to help you find suitable food options",
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.black54,
+                height: 1.5,
+              ),
+            ),
+            
             const SizedBox(height: 32),
-            Row(
-              children: [
-                const Spacer(),
-                FilledButton(
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(
-                        Theme.of(context).colorScheme.primaryContainer),
-                    visualDensity: VisualDensity.adaptivePlatformDensity,
-                    padding: MaterialStateProperty.all(
-                      const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+            
+            // Food types section
+            ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.2),
+                      width: 1.5,
                     ),
                   ),
-                  onPressed: onBoardingProvider.isLoading
-                      ? null // Disable the button when loading
-                      : () => onBoardingProvider.updateUser(),
-                  child: onBoardingProvider.isLoading
-                      ? Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(Colors.white),
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Text(
-                              "Loading...",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge
-                                  ?.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onPrimaryContainer,
-                                  ),
-                            ),
-                          ],
-                        )
-                      : Text(
-                          "Let's Go!",
-                          style:
-                              Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onPrimaryContainer,
-                                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Type of food",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
                         ),
-                )
-              ],
+                      ),
+                      
+                      const SizedBox(height: 16),
+                      
+                      ..._buildFoodTypeRadioButtons(),
+                    ],
+                  ),
+                ),
+              ),
             ),
-            const SizedBox(height: 16),
+            
+            const SizedBox(height: 32),
+            
+            // Allergens section
+            ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.2),
+                      width: 1.5,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Allergens",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 8),
+                      
+                      const Text(
+                        "Enter your allergens (separated by commas)",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black54,
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 16),
+                      
+                      TextField(
+                        decoration: InputDecoration(
+                          hintText: 'egg, milk, peanuts',
+                          hintStyle: const TextStyle(color: Colors.black54),
+                          filled: true,
+                          fillColor: Colors.white.withOpacity(0.1),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: Colors.white.withOpacity(0.2),
+                              width: 1.5,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: Colors.white.withOpacity(0.3),
+                              width: 1.5,
+                            ),
+                          ),
+                        ),
+                        style: const TextStyle(color: Colors.black87),
+                        onChanged: (value) => onBoardingProvider.setAllergies(value),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            
+            const SizedBox(height: 40),
+            
+            // Complete button
+            GestureDetector(
+              onTap: onBoardingProvider.isLoading
+                ? null
+                : () => onBoardingProvider.updateUser(),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                decoration: BoxDecoration(
+                  color: Colors.black87,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                alignment: Alignment.center,
+                child: onBoardingProvider.isLoading
+                ? const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      ),
+                      SizedBox(width: 12),
+                      Text(
+                        "Loading...",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  )
+                : const Text(
+                    "Let's Go!",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+              ),
+            ),
+            
+            const SizedBox(height: 32),
           ],
         ),
       ),
@@ -129,31 +247,55 @@ class _DietaryPreferencesState extends State<DietaryPreferences> {
 
   Widget _buildFoodTypeRadioButton(String value) {
     final onBoardingProvider = Provider.of<OnboardingProvider>(context);
-
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.white),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      margin: const EdgeInsets.symmetric(vertical: 5),
-      child: RadioListTile<String>(
-        title: Text(value),
-        value: value.toLowerCase(),
-        groupValue: onBoardingProvider.dietary,
-        onChanged: (String? value) => onBoardingProvider.setDietary(value!),
+    final isSelected = value.toLowerCase() == onBoardingProvider.dietary;
+    
+    return GestureDetector(
+      onTap: () => onBoardingProvider.setDietary(value.toLowerCase()),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: isSelected 
+            ? Colors.black.withOpacity(0.1) 
+            : Colors.white.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected
+              ? Colors.black.withOpacity(0.2)
+              : Colors.white.withOpacity(0.2),
+            width: 1.5,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 24,
+              height: 24,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isSelected 
+                  ? Colors.black87
+                  : Colors.white.withOpacity(0.3),
+                border: isSelected 
+                  ? null
+                  : Border.all(color: Colors.black38, width: 1.5),
+              ),
+              child: isSelected 
+                ? const Icon(Icons.check, color: Colors.white, size: 16)
+                : null,
+            ),
+            const SizedBox(width: 16),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                color: Colors.black87,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
-
-  // void _submitPreferences() {
-  //   final userProvider = Provider.of<UserProvider>(context, listen: false);
-  //   final allergies =
-  //       _allergyController.text.split(',').map((e) => e.trim()).toList();
-
-  //   userProvider.updateUserAllergies(allergies);
-  //   userProvider.updateUserDietary(_selectedFoodType);
-
-  //   Navigator.pop(context);
-  //   // widget.onPreferencesUpdated();
-  // }
 }

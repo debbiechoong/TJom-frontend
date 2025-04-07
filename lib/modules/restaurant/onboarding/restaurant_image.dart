@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:ui';
 
 class RestaurantImage extends StatefulWidget {
   const RestaurantImage({super.key});
@@ -58,148 +59,232 @@ class _RestaurantImageState extends State<RestaurantImage> {
         Provider.of<RestaurantOnboardingProvider>(context);
 
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 80),
-              IconButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                icon: const Icon(Icons.arrow_back),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                "Restaurant Images",
-                style: Theme.of(context)
-                    .textTheme
-                    .headlineLarge
-                    ?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 32),
-              Text("Please upload your images",
-                  style: Theme.of(context).textTheme.bodyLarge),
-              const SizedBox(height: 16),
-              GestureDetector(
-                onTap: _pickImages,
-                child: Container(
-                  width: double.infinity,
-                  height: 300,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.secondaryContainer,
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: _images.isEmpty
-                      ? Center(
-                          child: Text(
-                            "Tap to upload images",
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium!
-                                .copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurface),
-                          ),
-                        )
-                      : M3Carousel(
-                          isLocal: true,
-                          visible: _images.length,
-                          slideAnimationDuration: 300, // milliseconds
-                          titleFadeAnimationDuration: 200, // milliseconds
-                          children: [
-                            ..._images.map((img) {
-                              return {"image": img.path, "title": ""};
-                            }),
-                          ],
-                        ),
-                ),
-              ),
-              const SizedBox(height: 32),
-              Row(
-                children: [
-                  const Spacer(),
-                  FilledButton(
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(
-                          Theme.of(context).colorScheme.primaryContainer),
-                      visualDensity: VisualDensity.adaptivePlatformDensity,
-                      padding: MaterialStateProperty.all(
-                        const EdgeInsets.symmetric(
-                            horizontal: 32, vertical: 16),
-                      ),
-                    ),
-                    onPressed: _isLoading
-                        ? null
-                        : () async {
-                            if (_images.isNotEmpty) {
-                              setState(() {
-                                _isLoading = true; // Start loading
-                              });
-                              List<String> uploadedUrls = await _uploadImages();
-                              onBoardingProvider.setImages(uploadedUrls);
-
-                              // Proceed to the next screen
-                              if (mounted) {
-                                setState(() {
-                                  _isLoading = false; // Stop loading
-                                });
-                                onBoardingProvider.setImages(uploadedUrls);
-
-                                // Proceed to the next screen
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const RestaurantAddress(),
-                                  ),
-                                );
-                              }
-                            }
-                          },
-                    child: _isLoading
-                        ? Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.white),
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              Text(
-                                "Loading...",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge
-                                    ?.copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onPrimaryContainer,
-                                    ),
-                              ),
-                            ],
-                          )
-                        : Text("Next",
-                            style:
-                                Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onPrimaryContainer,
-                                    )),
-                  ),
+      backgroundColor: Colors.grey[200],
+      body: Stack(
+        children: [
+          // Background gradient
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color(0xFFE0E6FF),
+                  Color(0xFFD5E6F3),
                 ],
               ),
-              const SizedBox(height: 16),
-            ],
+            ),
           ),
-        ),
+          
+          // Abstract design elements
+          Positioned(
+            top: -100,
+            right: -100,
+            child: Container(
+              height: 300,
+              width: 300,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.blue.withOpacity(0.1),
+              ),
+            ),
+          ),
+          
+          Positioned(
+            bottom: -50,
+            left: -50,
+            child: Container(
+              height: 200,
+              width: 200,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.purple.withOpacity(0.1),
+              ),
+            ),
+          ),
+          
+          // Main content
+          SafeArea(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: Colors.white.withOpacity(0.2),
+                                width: 1,
+                              ),
+                            ),
+                            child: const Icon(Icons.arrow_back, color: Colors.black54),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      "Restaurant Images",
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      "Upload photos to showcase your restaurant",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.black54,
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+                    
+                    // Image upload section
+                    GestureDetector(
+                      onTap: _pickImages,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                          child: Container(
+                            width: double.infinity,
+                            height: 280,
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.15),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: Colors.white.withOpacity(0.2),
+                                width: 1.5,
+                              ),
+                            ),
+                            child: _images.isEmpty
+                                ? Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.add_photo_alternate_outlined,
+                                        size: 60,
+                                        color: Colors.black54,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        "Tap to upload images",
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.black54,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : ClipRRect(
+                                    borderRadius: BorderRadius.circular(20),
+                                    child: M3Carousel(
+                                      isLocal: true,
+                                      visible: _images.length,
+                                      slideAnimationDuration: 300,
+                                      titleFadeAnimationDuration: 200,
+                                      children: [
+                                        ..._images.map((img) {
+                                          return {"image": img.path, "title": ""};
+                                        }),
+                                      ],
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 40),
+                    
+                    // Next Button
+                    Center(
+                      child: GestureDetector(
+                        onTap: _isLoading
+                          ? null
+                          : () async {
+                              if (_images.isNotEmpty) {
+                                setState(() {
+                                  _isLoading = true;
+                                });
+                                List<String> uploadedUrls = await _uploadImages();
+                                onBoardingProvider.setImages(uploadedUrls);
+
+                                if (mounted) {
+                                  setState(() {
+                                    _isLoading = false;
+                                  });
+                                  
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => const RestaurantAddress(),
+                                    ),
+                                  );
+                                }
+                              }
+                            },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 60),
+                          decoration: BoxDecoration(
+                            color: _isLoading ? Colors.grey : Colors.black87,
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: _isLoading
+                            ? Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    "Uploading...",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : Text(
+                                "Next",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
