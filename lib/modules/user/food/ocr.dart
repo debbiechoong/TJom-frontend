@@ -130,12 +130,13 @@ class _MenuOCRPageState extends State<MenuOCRPage> {
       _messages.add({'role': 'system', 'content': 'Loading...'});
     });
 
-    final url = Uri.parse('https://api.upstage.ai/v1/document-ai/ocr');
+    final url = Uri.parse('https://api.upstage.ai/v1/document-digitization');
     final request = http.MultipartRequest('POST', url);
     String apiKey = dotenv.env['UPSTAGE_API_KEY'] ?? '';
     request.headers['Authorization'] = 'Bearer $apiKey';
     request.files.add(
         await http.MultipartFile.fromPath('document', _selectedImage!.path));
+    request.fields['model'] = 'ocr';
 
     final response = await request.send();
 
@@ -177,7 +178,7 @@ class _MenuOCRPageState extends State<MenuOCRPage> {
       _messages.add({'role': 'system', 'content': 'Loading...'});
     });
 
-    final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro-preview-03-25:generateContent');
+    final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent');
     String apiKey = dotenv.env['GEMINI_API_KEY'] ?? '';
     final headers = {
       'Content-Type': 'application/json',
@@ -259,11 +260,12 @@ class _MenuOCRPageState extends State<MenuOCRPage> {
       _messages.add({'role': 'system', 'content': 'Translating...'});
     });
 
-    final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent');
     String apiKey = dotenv.env['GEMINI_API_KEY'] ?? '';
+
+    final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$apiKey');
+    
     final headers = {
-      'Content-Type': 'application/json',
-      'x-goog-api-key': apiKey,
+      'Content-Type': 'application/json'
     };
 
     final translationPrompt = '''
@@ -367,7 +369,8 @@ class _MenuOCRPageState extends State<MenuOCRPage> {
       _callLLM('''
       Based on the menu, provide 3 example phrases that would be helpful for ordering food in this restaurant. 
       For each example, provide the phrase in Mandarin. 
-      For example: "我想点一杯奶茶冰."
+       
+      For example: "我想点一杯奶茶。"
       ''');
     } else {
       setState(() {
