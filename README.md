@@ -1,7 +1,5 @@
 # TJom
 
-![Local Image](./assets/jejomlogo.png)
-
 ## Project Introduction
 
 TJom is a AI-powered app that rejuvenates tourism in Taiwan Island by turning ordinary cafes into immersive murder mystery game venues (剧本杀). It also acts as a travel co-pilot, providing personalized itineraries, cultural experiences, and essential travel support, aiming to attract domestic and foreign tourist.
